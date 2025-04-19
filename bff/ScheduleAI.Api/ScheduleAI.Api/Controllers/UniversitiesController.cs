@@ -1,17 +1,24 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using ScheduleAI.Api.Schemas;
+using ScheduleAI.Core.Abstractions;
 using ScheduleAI.Core.Models;
 
 namespace ScheduleAI.Api.Controllers;
 
 [ApiController]
 [Route("/api/v1/universities")]
-public class UniversitiesController : Controller
+public class UniversitiesController(IUniversityService universityService) : Controller
 {
     [HttpGet]
-    public async Task<ActionResult<ResponseSchema<University>>> GetUniversities()
+    public async Task<ActionResult<ResponseSchema<University[]>>> GetUniversities()
     {
-        throw new NotImplementedException();
+        var universities = universityService.GetAllUniversities().ToArray();
+
+        return Ok(new ResponseSchema<University[]>()
+        {
+            Detail = "groups was selected",
+            Data = universities
+        });
     }
 }

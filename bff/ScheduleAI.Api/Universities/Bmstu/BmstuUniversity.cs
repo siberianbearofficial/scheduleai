@@ -7,6 +7,8 @@ public class BmstuUniversity : IUniversity
 {
     private readonly BmstuScheduleClient _client = new("https://bmstu-schedule-api.nachert.art/");
 
+    public string Name => "МГТУ им. Баумана";
+
     public async Task<IEnumerable<IUniversityGroup>> GetGroups()
     {
         return (await _client.GetGroups()).Data.Items
