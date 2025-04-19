@@ -1,0 +1,29 @@
+﻿namespace ScheduleAI.Core.Abstractions.Universities;
+
+public interface IUniversity
+{
+    public Task<IEnumerable<IUniversityGroup>> GetGroups();
+
+    public Task<IUniversityGroup> GetGroupById(string groupId,
+        CancellationToken cancellationToken = default);
+
+    public Task<IEnumerable<IUniversityGroup>> FindGroups(string groupName,
+        CancellationToken cancellationToken = default);
+
+    public Task<IEnumerable<IUniversityPair>> GetGroupSchedule(string groupId, DateTime startDate, DateTime endDate,
+        CancellationToken cancellationToken = default);
+
+    public Task<IEnumerable<IUniversityPair>> GetTeacherById(string teacherId,
+        CancellationToken cancellationToken = default);
+
+    public Task<IEnumerable<IUniversityTeacher>> FindTeachers(string fullName,
+        CancellationToken cancellationToken = default);
+
+    public Task<IEnumerable<IUniversityTeacher>> GetTeachers(CancellationToken cancellationToken = default);
+
+    public Task<IEnumerable<IUniversityPair>> GetTeacherSchedule(string teacherId, DateTime startDate, DateTime endDate,
+        CancellationToken cancellationToken = default);
+
+    public Task<IEnumerable<IUniversityTeacher>> GetTeachersByGroup(string groupId,
+        CancellationToken cancellationToken = default);
+}
