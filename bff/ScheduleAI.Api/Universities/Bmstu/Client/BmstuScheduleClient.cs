@@ -118,12 +118,12 @@ public class BmstuScheduleClient
     /// <param name="dtFrom">Start datetime</param>
     /// <param name="dtTo">End datetime</param>
     /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-    public async Task<GroupScheduleResponse> GetSchedule(int groupId, DateTime? dtFrom = null, DateTime? dtTo = null, CancellationToken? cancellationToken = null)
+    public async Task<GroupScheduleResponse> GetGroupSchedule(int groupId, DateTime dtFrom, DateTime dtTo, CancellationToken? cancellationToken = null)
     {
         Dictionary<string, string?> query = [];
-        if (dtFrom != null) query["dt_from"] = dtFrom.Value.ToString("o");
-        if (dtTo != null) query["dt_to"] = dtTo.Value.ToString("o");
-        return await GetAsync<GroupScheduleResponse>($"/{groupId}/schedule", query, cancellationToken ?? CancellationToken.None);
+        query["dt_from"] = dtFrom.ToString("o");
+        query["dt_to"] = dtTo.ToString("o");
+        return await GetAsync<GroupScheduleResponse>($"/groups/{groupId}/schedule", query, cancellationToken ?? CancellationToken.None);
     }
 
     #endregion

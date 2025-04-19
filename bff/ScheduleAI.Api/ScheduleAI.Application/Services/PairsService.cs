@@ -1,20 +1,37 @@
 ﻿using ScheduleAI.Core.Abstractions;
+using ScheduleAI.Core.Abstractions.Universities;
 using ScheduleAI.Core.Models;
 
 namespace ScheduleAI.Application.Services;
 
-public class PairsService : IScheduleService
+public class PairsService(IUniversityService universityService) : IScheduleService
 {
-    public Task<IEnumerable<Pair>> GetGroupScheduleAsync(Guid universityId, string groupId, DateTime startDate,
+    public async Task<IEnumerable<Pair>> GetGroupScheduleAsync(Guid universityId, string groupId, DateTime startDate,
         DateTime endDate)
     {
-        throw new NotImplementedException();
+        var university = universityService.GetUniversity(universityId);
+        return (await university.GetGroupSchedule(groupId, startDate, endDate)).Select(UniversityPairToPair);
     }
 
-    public Task<IEnumerable<Pair>> GetTeacherScheduleAsync(Guid universityId, string teacherId, DateTime startDate,
+    public async Task<IEnumerable<Pair>> GetTeacherScheduleAsync(Guid universityId, string teacherId, DateTime startDate,
         DateTime endDate)
     {
-        throw new NotImplementedException();
+        var university = universityService.GetUniversity(universityId);
+        return (await university.GetTeacherSchedule(teacherId, startDate, endDate)).Select(UniversityPairToPair);
+    }
+
+    private static Pair UniversityPairToPair(IUniversityPair universityPair)
+    {
+        return new Pair
+        {
+            StartTime = universityPair.StartTime,
+            EndTime = universityPair.EndTime,
+            Discipline = universityPair.Discipline,
+            ActType = universityPair.ActType,
+            Teachers = universityPair.Teachers,
+            GroupId = universityPair.GroupId,
+            Rooms = universityPair.Rooms,
+        };
     }
 
     public async Task<IEnumerable<MergedPair>> GetMergedScheduleAsync(Guid universityId, string groupId,
