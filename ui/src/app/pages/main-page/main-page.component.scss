@@ -1,0 +1,44 @@
+.selectors {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  &__item {
+    width: 200px;
+  }
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.search-bar-container {
+  display: flex;
+  justify-content: center;
+}
+
+.page {
+  display: flex;
+  height: 100vh;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.welcome-word {
+  display: flex;
+  justify-content: center;
+  font-size: 42pt;
+  padding-bottom: 5%;
+}
+
+.footer {
+  display: flex;
+  justify-content: right;
+  padding-bottom: 2%;
+  padding-right: 2%;
+}
