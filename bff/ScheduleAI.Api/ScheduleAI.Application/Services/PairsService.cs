@@ -68,9 +68,9 @@ public class PairsService : IScheduleService
             StudentCollisions = studentPairs
                 .Where(p => e.StartTime < p.StartTime && p.StartTime < e.EndTime ||
                             e.StartTime < p.EndTime && p.EndTime < e.EndTime)
-        }).ToArray();
+        });
 
-        foreach (var collision in pairCollisions.Where(e => !e.StudentCollisions.Any()))
+        foreach (var collision in pairCollisions)
         {
             result.Add(MergedPairFromTeacherPair(collision.TeacherPair,
                 collision.StudentCollisions.Any() ? MergedPairStatus.Collision : MergedPairStatus.InGap,
