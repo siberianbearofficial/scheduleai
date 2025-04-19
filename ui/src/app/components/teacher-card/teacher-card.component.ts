@@ -1,5 +1,5 @@
 import {Component, inject, input, InputSignal} from '@angular/core';
-import {TeacherService} from '../../services/groups.service';
+import {TeacherService} from '../../services/teachers.service';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {switchMap} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
