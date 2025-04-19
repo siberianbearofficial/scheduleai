@@ -7,4 +7,6 @@ public interface IUniversityPair
     public DateTime StartTime { get; }
     public DateTime EndTime { get; }
     public string? Room { get; }
+    public string? Discipline { get; }
+    public string? ActType { get; }
 }

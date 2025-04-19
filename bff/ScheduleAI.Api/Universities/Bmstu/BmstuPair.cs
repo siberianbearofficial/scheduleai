@@ -10,6 +10,9 @@ public class BmstuPair : IUniversityPair
     public DateTime StartTime { get; init; }
     public DateTime EndTime { get; init; }
     public string? Room { get; init; } = string.Empty;
+    
+    public string? ActType { get; init; }
+    public string? Discipline { get; init; }
 
     internal static BmstuPair FromApiModel(GroupScheduleItem groupScheduleItem, string teacherId, string groupId)
     {
@@ -20,6 +23,8 @@ public class BmstuPair : IUniversityPair
             StartTime = groupScheduleItem.TimeSlot.StartTime,
             EndTime = groupScheduleItem.TimeSlot.EndTime,
             Room = groupScheduleItem.Room?.Name,
+            ActType = groupScheduleItem.Discipline.ActType,
+            Discipline = groupScheduleItem.Discipline.FullName,
         };
     }
 }

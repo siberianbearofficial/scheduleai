@@ -10,7 +10,7 @@ namespace ScheduleAI.Api.Controllers;
 public class AiHelperController : Controller
 {
     [HttpPost]
-    public async Task<ActionResult<ResponseSchema<Group>>> PostAiHelperPrompt(
+    public async Task<ActionResult<ResponseSchema<AiHelperResponseModel>>> PostAiHelperPrompt(
         [FromBody] [Required] AiHelperRequestModel request)
     {
         throw new NotImplementedException();

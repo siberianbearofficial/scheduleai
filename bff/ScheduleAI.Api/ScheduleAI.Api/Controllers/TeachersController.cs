@@ -10,7 +10,7 @@ namespace ScheduleAI.Api.Controllers;
 public class TeachersController : Controller
 {
     [HttpGet]
-    public async Task<ActionResult<ResponseSchema<Group>>> GetTeachers([FromQuery] [Required] Guid universityId,
+    public async Task<ActionResult<ResponseSchema<Teacher>>> GetTeachers([FromQuery] [Required] Guid universityId,
         [FromQuery] string? search = null)
     {
         throw new NotImplementedException();

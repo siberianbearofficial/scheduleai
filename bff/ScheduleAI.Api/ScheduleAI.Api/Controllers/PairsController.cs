@@ -6,13 +6,11 @@ using ScheduleAI.Core.Models;
 namespace ScheduleAI.Api.Controllers;
 
 [ApiController]
-[Route("/api/v1/pairs")]
+[Route("/api/v1/mergedPairs")]
 public class PairsController : Controller
 {
-    [HttpGet]
-    public async Task<ActionResult<ResponseSchema<Group>>> GetPairs([FromQuery] [Required] Guid universityId,
-        [FromQuery] [Required] string groupId, [FromQuery] [Required] string teacherId,
-        [FromQuery] [Required] DateTime startTime, [FromQuery] [Required] DateTime endTime)
+    [HttpPost]
+    public async Task<ActionResult<ResponseSchema<MergedPair[]>>> MergedPairs([FromBody] [Required] MergedPairsRequestSchema request)
     {
         throw new NotImplementedException();
     }
