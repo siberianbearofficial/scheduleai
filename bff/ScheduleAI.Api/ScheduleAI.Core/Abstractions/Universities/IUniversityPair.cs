@@ -2,11 +2,11 @@
 
 public interface IUniversityPair
 {
-    public string TeacherId { get; }
+    public string[] Teachers { get; }
     public string GroupId { get; }
     public DateTime StartTime { get; }
     public DateTime EndTime { get; }
-    public string? Room { get; }
+    public string[] Rooms { get; }
     public string? Discipline { get; }
     public string? ActType { get; }
 }

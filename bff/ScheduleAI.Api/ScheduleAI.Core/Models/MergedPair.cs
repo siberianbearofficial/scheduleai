@@ -7,4 +7,5 @@ public class MergedPair
     public string? ActType { get; init; }
     public string? Discipline { get; init; }
     public required int Convenience { get; init; }
+    public string[] Rooms { get; init; } = [];
 }
