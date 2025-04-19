@@ -16,4 +16,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENV ASPNETCORE_HTTP_PORTS=8081;3000
+ENTRYPOINT ["dotnet", "ScheduleAI.Api.dll"]
 EXPOSE 3000
