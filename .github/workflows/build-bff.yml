@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - bff/*
+      - .github/workflows/build-bff.yml
 
 env:
   REGISTRY: ghcr.io
