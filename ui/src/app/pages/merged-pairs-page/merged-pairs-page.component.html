@@ -1,0 +1,29 @@
+<!--<div class="page">-->
+<!--  @for (teacher of teachers$ | async; track teacher.id) {-->
+<!--    <div class="teacher-card">-->
+<!--      <app-teacher-card [teacherId]="teacher.id"></app-teacher-card>-->
+<!--    </div>-->
+<!--  }-->
+<!--</div>-->
+<div class="page">
+  <div class="header">
+    <div class="logo">
+      <app-logo></app-logo>
+    </div>
+  </div>
+  <div class="search-container">
+    <div class="search-bar">
+      <app-teacher-search-bar></app-teacher-search-bar>
+    </div>
+    <div class="teachers">
+        @for (teacher of teachers$ | async; track teacher.id) {
+          <div class="teacher-card" routerLink="/teacherSchedule/{{ teacher.id }}">
+            <app-teacher-card [teacherId]="teacher.id"></app-teacher-card>
+          </div>
+        }
+    </div>
+  </div>
+  <div class="footer">
+    <app-footer></app-footer>
+  </div>
+</div>
