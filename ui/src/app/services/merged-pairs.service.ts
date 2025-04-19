@@ -31,7 +31,7 @@ export class MergedPairsService {
       discipline: 'Программирование',
       rooms: ['Б-205', 'Б-206'],
       convenience: 7,
-      wait_time_sec: 900,
+      wait_time_sec: 7000,
       status: 'inGap',
       collisions: [],
     },
@@ -42,7 +42,7 @@ export class MergedPairsService {
       discipline: 'Физика',
       rooms: ['Л-301'],
       convenience: 6,
-      wait_time_sec: 0,
+      wait_time_sec: 7800,
       status: 'collision',
       collisions: [
         {
@@ -74,7 +74,7 @@ export class MergedPairsService {
       discipline: 'Линейная алгебра',
       rooms: ['А-201'],
       convenience: 8,
-      wait_time_sec: 0,
+      wait_time_sec: 12000,
       status: 'beforePairs',
       collisions: [],
     },

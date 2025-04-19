@@ -4,6 +4,14 @@
       <app-logo></app-logo>
     </div>
   </div>
+  <button class="back"
+    tuiButton
+    type="button"
+    icon="tuiIconChevronLeft"
+    (click)="goBack()"
+  >
+    < Назад
+  </button>
   <div class="schedule-container">
     <div class="schedule">
       @for (pair of mergedPairs$ | async; track pair) {
@@ -12,6 +20,11 @@
         </div>
       }
     </div>
+<!--    @if (teacher$ | async; as teacher) {-->
+<!--      <div class="teacher-info">-->
+<!--        {{ teacher.fullName }}-->
+<!--      </div>-->
+<!--    }-->
   </div>
   <div class="footer">
     <app-footer></app-footer>

@@ -15,6 +15,32 @@
   padding: 0 5%;
 }
 
+.back {
+  align-self: start;
+  margin-left: 5%;
+  background-color: transparent;
+}
+
+.schedule-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+.schedule {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 4 карточки в ряд */
+  gap: 16px; /* промежуток между карточками */
+  padding: 0 2%;
+}
+
+.teacher-info {
+  width: 30%;
+  height: auto;
+}
+
 .footer {
   display: flex;
   justify-content: right;

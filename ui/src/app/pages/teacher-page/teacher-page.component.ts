@@ -1,10 +1,14 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, input, InputSignal, OnInit} from '@angular/core';
 import {LogoComponent} from '../../components/logo/logo.component';
 import FooterComponent from '../../components/footer/footer.component';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {MergedPairsService} from '../../services/merged-pairs.service';
 import {PairComponent} from '../../components/pair/pair.component';
 import {AsyncPipe} from '@angular/common';
+import {TuiButton} from '@taiga-ui/core';
+import {TeacherService} from '../../services/groups.service';
+import {toObservable} from '@angular/core/rxjs-interop';
+import {switchMap} from 'rxjs';
 
 @Component({
   selector: 'app-teacher-page',
@@ -12,7 +16,8 @@ import {AsyncPipe} from '@angular/common';
     LogoComponent,
     FooterComponent,
     PairComponent,
-    AsyncPipe
+    AsyncPipe,
+    TuiButton
   ],
   templateUrl: './teacher-page.component.html',
   styleUrl: './teacher-page.component.scss'
@@ -20,7 +25,10 @@ import {AsyncPipe} from '@angular/common';
 export class TeacherPageComponent implements OnInit {
   teacherId: string | null = null;
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -28,6 +36,10 @@ export class TeacherPageComponent implements OnInit {
       console.log('Teacher ID:', this.teacherId);
       // Можно сделать запрос на сервер с этим ID, например, получить информацию о преподавателе
     });
+  }
+
+  goBack(): void {
+    this.router.navigate(['/teacherSchedule']);
   }
 
   private readonly mergedPairsService: MergedPairsService = inject(MergedPairsService);
