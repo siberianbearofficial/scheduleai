@@ -6,9 +6,6 @@ import {MergedPairsService} from '../../services/merged-pairs.service';
 import {PairComponent} from '../../components/pair/pair.component';
 import {AsyncPipe} from '@angular/common';
 import {TuiButton} from '@taiga-ui/core';
-import {TeacherService} from '../../services/groups.service';
-import {toObservable} from '@angular/core/rxjs-interop';
-import {switchMap} from 'rxjs';
 
 @Component({
   selector: 'app-teacher-page',
