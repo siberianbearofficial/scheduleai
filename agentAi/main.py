@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 import asyncio
 import os
 
-from openai_api.api import OpenAIClient
+from openai_api.client import OpenAIClient
 from openai_api.schema import *
 from config import *
 from utils.logger import logger

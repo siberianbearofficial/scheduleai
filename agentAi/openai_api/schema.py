@@ -1,6 +1,6 @@
 from pydantic import BaseModel, RootModel, Field
 from enum import Enum
-from typing import Annotated, Optional, Any, Type, TypedDict
+from typing import Annotated, Optional, Any, TypedDict, Literal
 from datetime import datetime
 
 
@@ -96,3 +96,69 @@ class OpenAIRequestModel(BaseModel):
         if self.tools is None:
             return None
         return [tool.model_dump() for tool in self.tools.root]
+
+
+class FunctionCall(BaseModel):
+    """Аргументы вызова функции, возвращаемые моделью."""
+    name: str = Field(
+        ...,
+        description="Название вызываемой функции",
+        examples=["get_weather", "calculate_distance"]
+    )
+    arguments: dict[str, Any] = Field(
+        ...,
+        description="Аргументы функции в виде JSON-строки",
+        examples=['{"latitude": 48.8566, "longitude": 2.3522}']
+    )
+
+class ToolCall(BaseModel):
+    """Вызов инструмента (function calling) в ответе API."""
+    id: str = Field(
+        ...,
+        description="Уникальный идентификатор вызова",
+        examples=["call_12345xyz", "call_abc6789"]
+    )
+    type: str = Field(
+        default="function",
+        description="Тип вызова (в текущей версии API всегда 'function')",
+        examples=["function"]
+    )
+    function: FunctionCall = Field(
+        ...,
+        description="Данные о вызываемой функции"
+    )
+
+class ToolCalls(BaseModel):
+    """Модель для сообщения с вызовами инструментов."""
+    tool_calls: Optional[list[ToolCall]] = Field(
+        default=None,
+        description="Список вызовов функций, возвращаемых моделью",
+        examples=[[
+            {
+                "id": "call_12345xyz",
+                "type": "function",
+                "function": {
+                    "name": "get_weather",
+                    "arguments": "{\"latitude\":48.8566,\"longitude\":2.3522}"
+                }
+            }
+        ]]
+    )
+
+
+class ToolCallResult(BaseModel):
+    role: Literal[OpenAIRole.TOOL] = Field(
+    default=OpenAIRole.TOOL,
+    frozen=True,
+    description=f"В данном случае это поле всегда должно быть {OpenAIRole.TOOL.value}, чтобы указать, что это результат вызова функций"
+    )
+    tool_call_id: str = Field(
+        ...,
+        description="Уникальный идентификатор вызова",
+        examples=["call_12345xyz", "call_abc6789"]
+    )   
+    content: str = Field(..., examples=['{"teachers": [Ryzan, Kurov]}'], description="Результат выполнения функции в текстовом виде (gpt сам будет его анализировать)")
+
+
+class ToolCallResults(RootModel):
+    root: list[ToolCallResult] = Field(...)
