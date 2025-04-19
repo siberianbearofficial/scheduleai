@@ -13,6 +13,7 @@ import FooterComponent from '../../components/footer/footer.component';
     UniversitySelectorComponent,
     HeaderComponent,
     FooterComponent,
+    SearchBarComponent
   ],
   templateUrl: './main-page.component.html',
   styleUrl: './main-page.component.scss'
