@@ -15,7 +15,7 @@ export default class FooterComponent {
   protected open = false;
 
   protected readonly options: Partial<TuiSheetDialogOptions> = {
-    label: 'Alexander Inkin',
+    label: 'ScheduleAI',
     closeable: true,
   };
 }
