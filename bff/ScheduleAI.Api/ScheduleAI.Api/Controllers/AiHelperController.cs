@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using ScheduleAI.Api.Schemas;
-using ScheduleAI.Core.Models;
 
 namespace ScheduleAI.Api.Controllers;
 

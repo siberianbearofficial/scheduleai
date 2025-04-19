@@ -2,6 +2,8 @@
 
 public interface IUniversity
 {
+    public string Name { get; }
+
     public Task<IEnumerable<IUniversityGroup>> GetGroups();
 
     public Task<IUniversityGroup> GetGroupById(string groupId,
