@@ -16,6 +16,13 @@
       #value
       let-item
     >
+      <tui-avatar
+        size="xs"
+        class="avatar"
+        [src]="item.avatarUrl"
+      >
+        {{ item.toString() | tuiInitials }}
+      </tui-avatar>
       <span class="name">{{ item.name }}</span>
     </ng-template>
     <ng-template tuiDataList>
@@ -26,6 +33,13 @@
           type="button"
           [value]="item.name"
         >
+          <tui-avatar
+            size="xs"
+            class="avatar"
+            [src]="item.avatarUrl"
+          >
+            {{ item.toString() | tuiInitials }}
+          </tui-avatar>
           <span class="name">{{ item.name }}</span>
         </button>
       </tui-data-list>

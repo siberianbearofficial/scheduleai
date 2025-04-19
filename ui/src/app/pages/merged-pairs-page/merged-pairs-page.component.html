@@ -1,3 +1,10 @@
+<!--<div class="page">-->
+<!--  @for (teacher of teachers$ | async; track teacher.id) {-->
+<!--    <div class="teacher-card">-->
+<!--      <app-teacher-card [teacherId]="teacher.id"></app-teacher-card>-->
+<!--    </div>-->
+<!--  }-->
+<!--</div>-->
 <div class="page">
   <div class="header">
     <div class="logo">
@@ -5,9 +12,14 @@
     </div>
   </div>
   <div class="search-container">
+    <div class="search-bar">
+      <app-teacher-search-bar></app-teacher-search-bar>
+    </div>
     <div class="teachers">
-        @for (pair of mergedPairs$ | async; track pair.startTime) {
-          <div>{{ pair.discipline }}</div>
+        @for (teacher of teachers$ | async; track teacher.id) {
+          <div class="teacher-card" routerLink="/teacherSchedule/{{ teacher.id }}">
+            <app-teacher-card [teacherId]="teacher.id"></app-teacher-card>
+          </div>
         }
     </div>
   </div>

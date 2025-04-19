@@ -16,6 +16,13 @@
       #value
       let-item
     >
+      <tui-avatar
+        size="xs"
+        class="avatar"
+        [src]="item.avatarUrl"
+      >
+        {{ item.toString() | tuiInitials }}
+      </tui-avatar>
       <span class="name">{{ item }}</span>
     </ng-template>
     <ng-template tuiDataList>
@@ -24,8 +31,16 @@
           *ngFor="let item of filtered"
           tuiOption
           type="button"
+          [disabled]="item.disabled"
           [value]="item"
         >
+          <tui-avatar
+            size="xs"
+            class="avatar"
+            [src]="item.avatarUrl"
+          >
+            {{ item.toString() | tuiInitials }}
+          </tui-avatar>
           <span class="name">{{ item }}</span>
         </button>
       </tui-data-list>

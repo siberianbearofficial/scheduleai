@@ -16,6 +16,7 @@ import FooterComponent from '../../components/footer/footer.component';
     SearchBarComponent
   ],
   templateUrl: './main-page.component.html',
+  standalone: true,
   styleUrl: './main-page.component.scss'
 })
 
