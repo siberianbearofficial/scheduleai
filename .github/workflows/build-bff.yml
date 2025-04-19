@@ -2,7 +2,7 @@ name: Build BFF
 on:
   push:
     paths:
-      - bff/*
+      - bff/**
       - .github/workflows/build-bff.yml
 
 env:
