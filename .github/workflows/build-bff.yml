@@ -1,7 +1,8 @@
 name: Build BFF
-on: [push]
-paths:
-  bff/*
+on:
+  push:
+    paths:
+      - bff/*
 
 env:
   REGISTRY: ghcr.io
