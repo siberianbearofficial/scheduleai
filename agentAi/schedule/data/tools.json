@@ -2,8 +2,8 @@
     {
         "type": "function",
         "function": {
-            "name": "get_schedule",
-            "description": "возвращает расписание на заданный день в заданной группе ученика МГТУ. None если такой группы нет",
+            "name": "get_group_schedule",
+            "description": "Возвращает расписание на заданный день в заданной группе. None если такой группы нет",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -15,11 +15,109 @@
                     "date": {
                         "type": "string",
                         "format": "date-time",
+                        "description": "День, на который нужно узнать расписание в формате ISO 8601 (YYYY-MM-DD)"
+                    }
+                },
+                "required": [
+                    "group",
+                    "date"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_teacher_schedule",
+            "description": "Возвращает расписание на заданный день заданного преподавателя. None если такого преподавателя нет",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "teacher_id": {
+                        "type": "string",
+                        "format": "string",
+                        "description": "ID преподавателя"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "день, на который нужно узнать расписание в формате ISO 8601 (YYYY-MM-DD)"
+                    }
+                },
+                "required": [
+                    "teacher_id",
+                    "date"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_teachers_by_name",
+            "description": "Возвращает всех преподавателей, в полном имени которых содержится указанная подстрока",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "substring": {
+                        "type": "string",
+                        "format": "string",
+                        "description": "подстрока для поиска"
+                    }
+                },
+                "required": [
+                    "name"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_teachers_by_group",
+            "description": "Возвращает всех преподавателей, преподающих что-либо в указанной группе. None, если такой группы не существует",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "group": {
+                        "type": "string",
+                        "format": "string",
+                        "description": "Группа студента"
+                    }
+                },
+                "required": [
+                    "group"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_merged_schedule",
+            "description": "Возвращает сопоставленное расписание преподавателя и группы на указанный день. None, если преподавателя или группы не существует",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "group": {
+                        "type": "string",
+                        "format": "string",
+                        "description": "Группа студента"
+                    },
+                    "teacher_id": {
+                        "type": "string",
+                        "format": "string",
+                        "description": "ID преподавателя"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date-time",
                         "description": "день, на который нужно узнать расписание в формате ISO 8601 (YYYY-MM-DD)"
                     }
                 },
                 "required": [
                     "group",
+                    "teacher_id",
                     "date"
                 ]
             }
