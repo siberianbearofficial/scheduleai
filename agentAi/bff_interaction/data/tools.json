@@ -1,0 +1,28 @@
+[
+    {
+        "type": "function",
+        "function": {
+            "name": "get_schedule",
+            "description": "возвращает расписание на заданный день в заданной группе ученика МГТУ. None если такой группы нет",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "group": {
+                        "type": "string",
+                        "format": "string",
+                        "description": "Группа студента"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "день, на который нужно узнать расписание в формате ISO 8601 (YYYY-MM-DD)"
+                    }
+                },
+                "required": [
+                    "group",
+                    "date"
+                ]
+            }
+        }
+    }
+]

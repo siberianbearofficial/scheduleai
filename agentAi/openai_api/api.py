@@ -1,5 +1,4 @@
 from openai import AsyncOpenAI, OpenAI
-import instructor
 from pydantic import BaseModel
 from typing import Type
 

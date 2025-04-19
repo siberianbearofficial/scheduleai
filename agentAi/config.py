@@ -4,8 +4,12 @@ import os
 load_dotenv(override=True, dotenv_path="./local.env")
 
 TOKEN_VAR = "OPENAI_TOKEN"
-API_URL_VAR = "GOAPI_URL"
+DEEPSEEK_TOKEN_VAR = "DEEPSEEK_TOKEN"
+DEEPSEEK_URL_VAR = "DEEPSEEK_URL"
 LOG_LVL_VAR = "LOG_LVL"
 LOG_FOLDER_PATH_VAR = "LOG_FOLDER_PATH"
 
-# OPENAI_TOKEN=bbcbb4a8748cf29aefa39c6c03eb96b34df358e7a0b1b5cd2abffc8595be6908
+BFF_DATA_FOLDER_PATH = "./bff_interaction/data"
+CONTEXT_FILE_NAME = "context.json"
+TOOLS_FILE_NAME = "tools.json"
+GPT_RESP_FORMAT_FILE_NAME = "gpt_resp_format.json"

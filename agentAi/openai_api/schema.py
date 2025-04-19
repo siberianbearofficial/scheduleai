@@ -1,12 +1,14 @@
 from pydantic import BaseModel, RootModel, Field
 from enum import Enum
 from typing import Annotated, Optional, Any, Type, TypedDict
+from datetime import datetime
 
 
 class OpenAIModel(str, Enum):
     TURBO = "gpt-3.5-turbo"
-    GPT4 = "gpt-4"
+    GPT4 = "gpt-4.1"
     GPT4_TURBO = "gpt-4-turbo-preview"
+    O4_MINI = "gpt-4o-2024-11-20"
     DEEPSEEK = "deepseek-chat"
 
 
@@ -60,6 +62,25 @@ class MessageModel(BaseModel):
 
 class MessagesModel(RootModel):
     root: list[MessageModel] = Field(...)
+    
+    def _create_date_model(self) -> MessageModel:
+        return MessageModel(role=OpenAIRole.SYSTEM, content=f"current date in ISO 8601 FORMAT: {datetime.now().isoformat()}")
+
+    # обновляет (или добавляет, если отсутствует) контекст текущего времени
+    def _update_date(self) -> None:
+        current_date_model = self._create_date_model()
+        updated = False
+        for i, msg in enumerate(self.root):
+            if msg.role == OpenAIRole.SYSTEM and msg.content.startswith("current date"):
+                self.root[i].content = current_date_model
+                updated = True
+        
+        if not updated:
+            self.root.append(current_date_model)
+    
+    def add(self, msg: MessageModel) -> None:
+        self.root.append(msg)
+        
 
 class OpenAIRequestModel(BaseModel):
     model: OpenAIModel = Field(..., examples="gpt-4")
@@ -71,5 +92,7 @@ class OpenAIRequestModel(BaseModel):
     def get_messages(self) -> list[dict[str, Any]]:
         return [msg.model_dump() for msg in self.messages.root]
 
-    def get_tools(self) -> list[dict[str, Any]]:
+    def get_tools(self) -> list[dict[str, Any]] | None:
+        if self.tools is None:
+            return None
         return [tool.model_dump() for tool in self.tools.root]
