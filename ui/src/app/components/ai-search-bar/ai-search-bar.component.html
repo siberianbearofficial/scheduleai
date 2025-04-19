@@ -1,0 +1,10 @@
+<tui-textfield iconStart="@tui.search">
+<!--  <label tuiLabel>Invalid</label>-->
+  <input
+    placeholder="Кого хотите найти сегодня?"
+    tuiTextfield
+    [invalid]="false"
+    [(ngModel)]="value"
+  />
+  <tui-icon tuiTooltip="Найдите нужного вам преподователя, просто спросив об этом нашего бота" />
+</tui-textfield>
