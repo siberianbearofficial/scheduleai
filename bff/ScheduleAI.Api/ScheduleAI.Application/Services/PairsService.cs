@@ -29,7 +29,7 @@ public class PairsService(IUniversityService universityService) : IScheduleServi
             Discipline = universityPair.Discipline,
             ActType = universityPair.ActType,
             Teachers = universityPair.Teachers,
-            GroupId = universityPair.GroupId,
+            Groups = universityPair.Groups,
             Rooms = universityPair.Rooms,
         };
     }

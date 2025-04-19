@@ -6,7 +6,7 @@ namespace Bmstu;
 public class BmstuPair : IUniversityPair
 {
     public required string[] Teachers { get; init; }
-    public required string GroupId { get; init; }
+    public required string[] Groups { get; init; }
     public DateTime StartTime { get; init; }
     public DateTime EndTime { get; init; }
     public string[] Rooms { get; init; } = [];
@@ -18,8 +18,8 @@ public class BmstuPair : IUniversityPair
     {
         return new BmstuPair()
         {
-            // Несколько групп или дисциплин для одной пары - явно некорректно. Поэтому Single()
-            GroupId = scheduleItem.Groups.Single().Id.ToString(),
+            // Несколько дисциплин для одной пары - явно некорректно. Поэтому Single()
+            Groups = scheduleItem.Groups.Select(e => e.Id.ToString()).ToArray(),
             Teachers = scheduleItem.Teachers?.Select(x => x.Id.ToString()).ToArray() ?? [],
             StartTime = scheduleItem.TimeSlot.StartTime,
             EndTime = scheduleItem.TimeSlot.EndTime,
