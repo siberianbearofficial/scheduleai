@@ -7,7 +7,7 @@ import {TuiAvatar} from '@taiga-ui/kit';
 import {TuiComboBoxModule, TuiTextfieldControllerModule} from '@taiga-ui/legacy';
 
 import {databaseMockData} from '../../services/database.service';
-import {TeacherService} from '../../services/teachers.service';
+import {TeacherService} from '../../services/groups.service';
 
 @Component({
   standalone: true,
