@@ -15,7 +15,7 @@ public interface IUniversity
     public Task<IEnumerable<IUniversityPair>> GetGroupSchedule(string groupId, DateTime startDate, DateTime endDate,
         CancellationToken cancellationToken = default);
 
-    public Task<IEnumerable<IUniversityPair>> GetTeacherById(string teacherId,
+    public Task<IUniversityTeacher> GetTeacherById(string teacherId,
         CancellationToken cancellationToken = default);
 
     public Task<IEnumerable<IUniversityTeacher>> FindTeachers(string fullName,

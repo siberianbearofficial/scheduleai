@@ -27,39 +27,42 @@ public class BmstuUniversity : IUniversity
             .Select(BmstuGroup.FromModel);
     }
 
-    public async Task<IEnumerable<IUniversityPair>> GetGroupSchedule(string groupId, DateTime startDate, DateTime endDate,
+    public async Task<IEnumerable<IUniversityPair>> GetGroupSchedule(string groupId, DateTime startDate,
+        DateTime endDate,
         CancellationToken cancellationToken = default)
     {
-        return (await _client.GetSchedule(Convert.ToInt32(groupId), startDate, endDate)).Data.Schedule
+        return (await _client.GetGroupSchedule(Convert.ToInt32(groupId), startDate, endDate)).Data.Schedule
             .Select(BmstuPair.FromApiModel);
     }
 
-    public async Task<IEnumerable<IUniversityPair>> GetTeacherById(string teacherId,
+    public async Task<IUniversityTeacher> GetTeacherById(string teacherId,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return BmstuTeacher.FromModel((await _client.GetTeacherById(Convert.ToInt32(teacherId))).Data);
     }
 
     public async Task<IEnumerable<IUniversityTeacher>> FindTeachers(string fullName,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return (await _client.GetTeachers(name: fullName)).Data.Items.Select(BmstuTeacher.FromModel);
     }
 
-    public async Task<IEnumerable<IUniversityPair>> GetTeacherSchedule(string teacherId, DateTime startDate, DateTime endDate,
+    public async Task<IEnumerable<IUniversityPair>> GetTeacherSchedule(string teacherId, DateTime startDate,
+        DateTime endDate,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return (await _client.GetTeacherSchedule(Convert.ToInt32(teacherId), startDate, endDate)).Data.Schedule
+            .Select(BmstuPair.FromApiModel);
     }
 
     public async Task<IEnumerable<IUniversityTeacher>> GetTeachers(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return (await _client.GetTeachers()).Data.Items.Select(BmstuTeacher.FromModel);
     }
 
-    public async Task<IEnumerable<IUniversityTeacher>> GetTeachersByGroup(string groupId,
+    public Task<IEnumerable<IUniversityTeacher>> GetTeachersByGroup(string groupId,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException("Not implemented in API");
     }
 }
