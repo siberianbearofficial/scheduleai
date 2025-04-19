@@ -80,14 +80,16 @@ public class PairsService : IScheduleService
         return result;
     }
 
+    private static TimeSpan MaxWaitTime { get; } = TimeSpan.FromHours(8);
+
     private MergedPair MergedPairFromTeacherPair(Pair pair, MergedPairStatus status,
         IEnumerable<Pair>? collisions = null, TimeSpan? waitTime = null)
     {
         collisions = collisions?.ToArray();
         var convenience = status switch
         {
-            MergedPairStatus.BeforePairs => 1 - waitTime / TimeSpan.FromHours(8),
-            MergedPairStatus.AfterPairs => 1 - waitTime / TimeSpan.FromHours(8),
+            MergedPairStatus.BeforePairs => 1 - waitTime / MaxWaitTime,
+            MergedPairStatus.AfterPairs => 1 - waitTime / MaxWaitTime,
             MergedPairStatus.InGap => 1,
             MergedPairStatus.Collision => collisions?.Count() > 1 ? 0 : 0.5,
             _ => 0
