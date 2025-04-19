@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+import {signalState} from '@ngrx/signals';
 import {MergedPairEntity} from '../entities/merged-pairs-entity';
 import moment from 'moment';
+import {toObservable} from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class MergedPairsService {
   constructor() {
   }
 
-  readonly merged_pairs$ = new BehaviorSubject<MergedPairEntity[]>([
+  private readonly merged_pairs$$ = signalState<MergedPairEntity[]>([
     {
       start_time: moment('2023-09-01T09:00:00'),
       end_time: moment('2023-09-01T10:30:00'),
@@ -273,4 +274,6 @@ export class MergedPairsService {
       collisions: [],
     },
   ])
+
+  readonly merged_pairs$ = toObservable(this.merged_pairs$$);
 }

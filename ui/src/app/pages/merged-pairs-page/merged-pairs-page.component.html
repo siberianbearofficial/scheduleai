@@ -5,14 +5,9 @@
     </div>
   </div>
   <div class="search-container">
-    <div class="search-bar">
-      <app-teacher-search-bar></app-teacher-search-bar>
-    </div>
     <div class="teachers">
-        @for (teacher of teachers$ | async; track teacher.id) {
-          <div class="teacher-card" routerLink="/teacherSchedule/{{ teacher.id }}">
-            <app-teacher-card [teacherId]="teacher.id"></app-teacher-card>
-          </div>
+        @for (pair of merged_pairs$ | async; track pair.start_time) {
+          <div>{{ pair.discipline }}</div>
         }
     </div>
   </div>
