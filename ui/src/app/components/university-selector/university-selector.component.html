@@ -1,7 +1,7 @@
 <label>
 
   <tui-combo-box
-    *tuiLet="service.request(search) | async as filtered"
+    *tuiLet="service.findUniversities(search) | async as filtered"
     [formControl]="control"
     [tuiTextfieldLabelOutside]="true"
     [valueContent]="value"
@@ -24,7 +24,6 @@
           *ngFor="let item of filtered"
           tuiOption
           type="button"
-          [disabled]="item.disabled"
           [value]="item"
         >
           <span class="name">{{ item }}</span>

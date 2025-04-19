@@ -12,7 +12,7 @@ export class MergedPairsService {
   constructor() {
   }
 
-  private readonly merged_pairs$$ = signalState<MergedPairEntity[]>([
+  private readonly mergedPairs$$ = signalState<MergedPairEntity[]>([
     {
       start_time: moment('2023-09-01T09:00:00'),
       end_time: moment('2023-09-01T10:30:00'),
@@ -275,5 +275,5 @@ export class MergedPairsService {
     },
   ])
 
-  readonly merged_pairs$ = toObservable(this.merged_pairs$$);
+  readonly mergedPairs$ = toObservable(this.mergedPairs$$);
 }

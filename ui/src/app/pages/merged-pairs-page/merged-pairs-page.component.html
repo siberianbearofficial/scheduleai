@@ -6,7 +6,7 @@
   </div>
   <div class="search-container">
     <div class="teachers">
-        @for (pair of merged_pairs$ | async; track pair.start_time) {
+        @for (pair of mergedPairs$ | async; track pair.start_time) {
           <div>{{ pair.discipline }}</div>
         }
     </div>

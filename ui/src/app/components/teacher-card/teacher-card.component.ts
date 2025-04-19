@@ -21,6 +21,7 @@ import {TuiCardLarge, TuiCell, TuiHeader} from '@taiga-ui/layout';
     TuiTitle,
   ],
   templateUrl: './teacher-card.component.html',
+  standalone: true,
   styleUrl: './teacher-card.component.less'
 })
 
