@@ -6,7 +6,7 @@ WORKDIR /src
 
 COPY . .
 
-WORKDIR "/src/ScheduleAI.Web"
+WORKDIR "/src/ScheduleAI.Api"
 RUN dotnet build "ScheduleAI.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
