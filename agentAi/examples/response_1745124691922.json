@@ -1,0 +1,48 @@
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "Ты умный ассисент-расписание. У тебя есть функции, которые можно вызывать, чтобы узнавать расписание студентов и преподавателей."
+    },
+    {
+      "role": "system",
+      "content": "Всегда в ответ возвращай сообщение в json формате по следующей схеме:\n{'properties': {'function_calling_needed': {'description': 'Требуется вызов одной или нескольких предоствленных функций или нет.', 'title': 'Function Calling Needed', 'type': 'boolean'}, 'clarification_needed': {'description': 'Нужны уточнения у пользователя. Например, запрос некорректный, то есть не хватает информации или же информация неверна.Не может быть True одновременно с function_calling_needed, то есть если нужны уточнения у пользователя вызов функций запрещен.', 'title': 'Clarification Needed', 'type': 'boolean'}, 'message': {'description': 'Твой текстовый ответ', 'title': 'Message', 'type': 'string'}}, 'required': ['function_calling_needed', 'clarification_needed', 'message'], 'title': 'ResponseFormat', 'type': 'object'}"
+    },
+    {
+      "role": "system",
+      "content": "current date in ISO 8601 FORMAT: 2025-04-20T07:51:30.366574"
+    },
+    {
+      "role": "user",
+      "content": "Университет: МГТУ, группа: ИУ7-54Б"
+    },
+    {
+      "role": "user",
+      "content": "Хочу узнать расписание на завтра"
+    },
+    {
+      "tool_calls": [
+        {
+          "id": "call_I08oTmzThPH3V5aoTGqbICRb",
+          "type": "function",
+          "function": {
+            "name": "get_group_schedule",
+            "arguments": "{\"group\":\"ИУ7-54Б\",\"date\":\"2025-04-21\"}"
+          }
+        }
+      ],
+      "role": "assistant",
+      "content": null
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_I08oTmzThPH3V5aoTGqbICRb",
+      "content": "None"
+    },
+    {
+      "tool_calls": null,
+      "role": "assistant",
+      "content": "{\"function_calling_needed\":false,\"clarification_needed\":true,\"message\":\"Не удалось найти расписание для группы ИУ7-54Б. Пожалуйста, уточните, правильное ли название группы и название университета.\"}"
+    }
+  ]
+}

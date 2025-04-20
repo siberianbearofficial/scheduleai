@@ -1,0 +1,48 @@
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "Ты умный ассисент-расписание. У тебя есть функции, которые можно вызывать, чтобы узнавать расписание студентов и преподавателей."
+    },
+    {
+      "role": "system",
+      "content": "Всегда в ответ возвращай сообщение в json формате по следующей схеме:\n{'properties': {'function_calling_needed': {'description': 'Требуется вызов одной или нескольких предоствленных функций или нет.', 'title': 'Function Calling Needed', 'type': 'boolean'}, 'clarification_needed': {'description': 'Нужны уточнения у пользователя. Например, запрос некорректный, то есть не хватает информации или же информация неверна.Не может быть True одновременно с function_calling_needed, то есть если нужны уточнения у пользователя вызов функций запрещен.', 'title': 'Clarification Needed', 'type': 'boolean'}, 'message': {'description': 'Твой текстовый ответ', 'title': 'Message', 'type': 'string'}}, 'required': ['function_calling_needed', 'clarification_needed', 'message'], 'title': 'ResponseFormat', 'type': 'object'}"
+    },
+    {
+      "role": "system",
+      "content": "current date in ISO 8601 FORMAT: 2025-04-20T07:11:43.095981"
+    },
+    {
+      "role": "user",
+      "content": "Университет: МГТУ, группа: ИУ7-54Б"
+    },
+    {
+      "role": "user",
+      "content": "Что у меня будет через 3 дня?"
+    },
+    {
+      "tool_calls": [
+        {
+          "id": "call_5Zy1rvh36SxNFhljBHqjsjpy",
+          "type": "function",
+          "function": {
+            "name": "get_group_schedule",
+            "arguments": "{\"group\":\"ИУ7-54Б\",\"date\":\"2025-04-23\"}"
+          }
+        }
+      ],
+      "role": "assistant",
+      "content": null
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_5Zy1rvh36SxNFhljBHqjsjpy",
+      "content": "{\"schedule\": [{\"day\": \"Понедельник\", \"date\": \"23.04.2024\", \"classes\": [{\"time\": \"9:00-10:30\", \"subject\": \"Математический анализ\", \"type\": \"Лекция\", \"classroom\": \"Г-324\", \"teacher\": \"Проф. Иванов А.П.\"}, {\"time\": \"10:40-12:10\", \"subject\": \"Физика\", \"type\": \"Практика\", \"classroom\": \"В-215\", \"teacher\": \"Доц. Петрова С.М.\"}]}]}"
+    },
+    {
+      "tool_calls": null,
+      "role": "assistant",
+      "content": "{\n    \"function_calling_needed\": false,\n    \"clarification_needed\": false,\n    \"message\": \"Через 3 дня, 23 апреля 2025 года, у группы ИУ7-54Б будут следующие занятия:\\n1. 9:00-10:30 — Лекция по Математическому анализу (ауд. Г-324, преподаватель Проф. Иванов А.П.).\\n2. 10:40-12:10 — Практика по Физике (ауд. В-215, преподаватель Доц. Петрова С.М.).\"\n}"
+    }
+  ]
+}
