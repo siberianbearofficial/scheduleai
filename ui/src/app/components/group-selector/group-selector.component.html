@@ -1,37 +1,22 @@
 <label>
 
   <tui-combo-box
-    *tuiLet="service.findGroups(search) | async as filtered"
+    *tuiLet="filtered$ | async as filtered"
     [formControl]="control"
+    [stringify]="stringify"
     [tuiTextfieldLabelOutside]="true"
-    [valueContent]="value"
-    [(search)]="search"
+    [search]="search$ | async"
+    (searchChange)="search$.next($event)"
   >
     Группа
     <input
       placeholder="Группа"
       tuiTextfieldLegacy
     />
-    <ng-template
-      #value
-      let-item
-    >
-      <span class="name">{{ item }}</span>
-    </ng-template>
-    <ng-template tuiDataList>
-      <tui-data-list *ngIf="filtered; else loading">
-        <button
-          *ngFor="let item of filtered"
-          tuiOption
-          type="button"
-          [value]="item"
-        >
-          <span class="name">{{ item }}</span>
-        </button>
-      </tui-data-list>
-      <ng-template #loading>
-        <tui-loader class="tui-space_vertical-4" />
-      </ng-template>
-    </ng-template>
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="stringify | tuiStringifyContent"
+      [items]="filtered | tuiFilterByInput"
+    />
   </tui-combo-box>
 </label>

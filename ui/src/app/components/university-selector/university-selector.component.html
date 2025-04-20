@@ -3,7 +3,7 @@
   <tui-combo-box
     *tuiLet="filtered$ | async as filtered"
     [tuiTextfieldLabelOutside]="true"
-    [valueContent]="value"
+    [stringify]="stringify"
     [search]="search$ | async"
     (searchChange)="search$.next($event)"
     [formControl]="control"
@@ -14,27 +14,10 @@
       tuiTextfieldLegacy
     />
 
-    <ng-template
-      #value
-      let-item
-    >
-      <span class="name">{{ item.toString() }}</span>
-    </ng-template>
-
-    <ng-template tuiDataList>
-      <tui-data-list *ngIf="filtered; else loading">
-        <button
-          *ngFor="let universityEntity of filtered"
-          tuiOption
-          type="button"
-          [value]="universityEntity.name"
-        >
-          <span class="name">{{ universityEntity.name }}</span>
-        </button>
-      </tui-data-list>
-      <ng-template #loading>
-        <tui-loader class="tui-space_vertical-4" />
-      </ng-template>
-    </ng-template>
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="stringify | tuiStringifyContent"
+      [items]="filtered | tuiFilterByInput"
+    />
   </tui-combo-box>
 </label>

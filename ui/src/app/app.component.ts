@@ -1,9 +1,11 @@
-import { TuiRoot } from "@taiga-ui/core";
+import {TuiRoot} from "@taiga-ui/core";
 import {Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {ChangeDetectionStrategy} from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {RouterOutlet} from '@angular/router';
 import {UniversitiesService} from './services/universities.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {merge, Observable} from 'rxjs';
+import {GroupsService} from './services/groups.service';
 
 @Component({
   selector: 'app-root',
@@ -16,10 +18,18 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 export class AppComponent implements OnInit {
   private readonly destroyRef: DestroyRef = inject(DestroyRef);
   private readonly universitiesService: UniversitiesService = inject(UniversitiesService);
+  private readonly groupsService: GroupsService = inject(GroupsService);
 
   ngOnInit() {
-    this.universitiesService.loadUniversities().pipe(
+    this.mainObservables().pipe(
       takeUntilDestroyed(this.destroyRef),
     ).subscribe()
+  }
+
+  private mainObservables(): Observable<undefined> {
+    return merge(
+      this.universitiesService.loadUniversities(),
+      this.groupsService.loadGroupsOnUniversityChange$
+    )
   }
 }

@@ -92,7 +92,7 @@ export class BffClient {
    * @param search (optional)
    * @return OK
    */
-  groups(universityId: string, search: string | undefined): Observable<GroupArrayResponseSchema> {
+  groups(universityId: string, search: string | undefined = undefined): Observable<GroupArrayResponseSchema> {
     let url_ = this.baseUrl + "/api/v1/groups?";
     if (universityId === undefined || universityId === null)
       throw new Error("The parameter 'universityId' must be defined and cannot be null.");
