@@ -20,9 +20,24 @@
         </div>
       }
     </div>
-      <div class="teacher-info">
-        потом сделаем
-      </div>
+      @if (teacher$ | async; as teacher) {
+        <div class="teacher-info">
+            <div
+              tuiAppearance="floating"
+              tuiCardLarge
+            >
+              <header tuiHeader>
+                <h2 tuiTitle>{{ teacher.fullName }}</h2>
+              </header>
+
+              <img class="teacher-avatar" src="{{ teacher.avatarUrl }}" alt="no data">
+
+              <footer>
+                Преподает на кафедре: {{ teacher.department }}
+              </footer>
+            </div>
+        </div>
+      }
   </div>
   <div class="footer">
     <app-footer></app-footer>
