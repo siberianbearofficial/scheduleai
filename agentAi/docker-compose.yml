@@ -1,0 +1,12 @@
+services:
+  agentai-app:
+    build: .
+    container_name: agentai-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"  # напрямую выставляем порт FastAPI
+    environment:
+      - APP_ENV=production
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./app:/app  # монтирование кода приложения (опционально)
