@@ -4,12 +4,11 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>AiHelper.Client</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ScheduleAI.AiHelper.Client\ScheduleAI.AiHelper.Client.csproj" />
-      <ProjectReference Include="..\ScheduleAI.Core\ScheduleAI.Core.csproj" />
-      <ProjectReference Include="..\Universities\Bmstu\Bmstu.csproj" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
 </Project>

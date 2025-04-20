@@ -32,4 +32,10 @@ public class TeachersService(IUniversityService universityService) : ITeachersSe
             FullName = universityTeacher.FullName,
         };
     }
+
+    public async Task<IEnumerable<Teacher>> GetTeachersByGroupAsync(Guid universityId, string groupId)
+    {
+        var university = universityService.GetUniversity(universityId);
+        return (await university.GetTeachersByGroup(groupId)).Select(UniversityTeacherToTeacher);
+    }
 }
