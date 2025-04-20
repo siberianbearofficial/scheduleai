@@ -4,6 +4,7 @@ import GroupSelectorComponent from '../../components/group-selector/group-select
 import UniversitySelectorComponent from '../../components/university-selector/university-selector.component';
 import {HeaderComponent} from '../../components/header/header.component';
 import FooterComponent from '../../components/footer/footer.component';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-main-page',
@@ -19,5 +20,11 @@ import FooterComponent from '../../components/footer/footer.component';
 })
 
 export class MainPageComponent {
+  constructor(private router: Router) {}
 
+  onSearch(query: string) {
+    this.router.navigate(['/chat'], {
+      queryParams: { message: query },
+    });
+  }
 }
