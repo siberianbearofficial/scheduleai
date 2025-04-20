@@ -1,8 +1,9 @@
-import {Injectable} from '@angular/core';
-import {signalState} from '@ngrx/signals';
+import {inject, Injectable} from '@angular/core';
+import {patchState, signalState} from '@ngrx/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
-import {BehaviorSubject, map, Observable} from 'rxjs';
+import {EMPTY, map, Observable, switchMap, tap} from 'rxjs';
 import {UniversityEntity} from '../entities/university-entity';
+import {BffClient, University} from '../bff-client/bff-client';
 
 interface UniversityStore {
   universities: UniversityEntity[];
@@ -14,31 +15,36 @@ interface UniversityStore {
 })
 export class UniversitiesService {
 
+  private readonly bffClient: BffClient = inject(BffClient);
+
   private readonly universities$$ = signalState<UniversityStore>({
-    universities: [
-      {
-        id: "6",
-        name: "МГТУ им. Баумана",
-      },
-    ],
+    universities: [],
     selectedUniversity: null
   })
 
-  readonly universities$ = toObservable(this.universities$$).pipe(
-    map(store => store.universities),
-  );
+  readonly universities$ = toObservable(this.universities$$.universities);
 
-  readonly selectedUniversity$ = toObservable(this.universities$$).pipe(
-    map(store => store.selectedUniversity),
-  );
+  readonly selectedUniversity$ = toObservable(this.universities$$.selectedUniversity);
 
-  findUniversities(query: string | null): Observable<readonly UniversityEntity[] | null> {
-    return this.universities$.pipe(
-      map(universities => {
-        if (query === null)
-          return universities;
-        return universities.filter(group => group.name.includes(query))
-      }),
+  loadUniversities(): Observable<undefined> {
+    return this.bffClient.universities().pipe(
+      tap(resp => console.log(resp.detail)),
+      map(resp => resp.data?.map(universityToEntity)),
+      tap(universities => patchState(this.universities$$, {
+        universities,
+      })),
+      switchMap(() => EMPTY)
     )
   }
+
+  selectUniversity(university: UniversityEntity | null): void {
+    patchState(this.universities$$, {
+      selectedUniversity: university
+    })
+  }
 }
+
+const universityToEntity = (university: University): UniversityEntity => ({
+  id: university.id,
+  name: university.name ?? "<Неизвестный университет>",
+});

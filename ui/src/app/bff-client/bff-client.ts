@@ -13,7 +13,7 @@ import {Observable, throwError as _observableThrow, of as _observableOf} from 'r
 import {Injectable, Inject, Optional} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse, HttpResponseBase} from '@angular/common/http';
 
-export const API_BASE_URL = "http://localhost:5046";
+export const API_BASE_URL = "API_BASE_URL";
 
 @Injectable({
   providedIn: 'root',

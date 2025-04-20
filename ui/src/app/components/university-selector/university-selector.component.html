@@ -1,32 +1,35 @@
 <label>
 
   <tui-combo-box
-    *tuiLet="service.findUniversities(search) | async as filtered"
-    [formControl]="control"
+    *tuiLet="filtered$ | async as filtered"
     [tuiTextfieldLabelOutside]="true"
     [valueContent]="value"
-    [(search)]="search"
+    [search]="search$ | async"
+    (searchChange)="search$.next($event)"
+    [formControl]="control"
   >
     ВУЗ
     <input
       placeholder="ВУЗ"
       tuiTextfieldLegacy
     />
+
     <ng-template
       #value
       let-item
     >
-      <span class="name">{{ item }}</span>
+      <span class="name">{{ item.toString() }}</span>
     </ng-template>
+
     <ng-template tuiDataList>
       <tui-data-list *ngIf="filtered; else loading">
         <button
-          *ngFor="let item of filtered"
+          *ngFor="let universityEntity of filtered"
           tuiOption
           type="button"
-          [value]="item.name"
+          [value]="universityEntity.name"
         >
-          <span class="name">{{ item }}</span>
+          <span class="name">{{ universityEntity.name }}</span>
         </button>
       </tui-data-list>
       <ng-template #loading>
