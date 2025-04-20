@@ -1,44 +1,51 @@
-<!--<tui-badge-->
-<!--  appearance="positive"-->
-<!--  tuiStatus-->
-<!--&gt;-->
-<!--  {{ pair.act_type }}-->
-<!--</tui-badge>-->
-
 <button
   tuiCardLarge
   tuiHeader
   tuiSurface="floating"
   type="button"
+  [tuiHint]="tooltip"
 >
   @if (pair) {
     <h1 class="card" tuiTitle>
       <div class="convenience">
         {{ formatDate(pair.startTime) }}
-        @if (pair.waitTimeSec < 3600) {
-          <tui-badge
-          appearance="positive"
+        <tui-badge
+          [appearance]="getAppearance(pair)"
           tuiStatus
-          >
-          Удобно
-          </tui-badge>
-        } @else if (pair.waitTimeSec >= 3600 && pair.waitTimeSec < 7200) {
-          <tui-badge
-            appearance="warning"
-            tuiStatus
-          >
-            Ждать <2 часов
-          </tui-badge>
-        } @else if (pair.waitTimeSec >= 7200) {
-          <tui-badge
-            appearance="negative"
-            tuiStatus
-          >
-            Ждать >2 часов
-          </tui-badge>
-        }
+        >
+          @if (pair.status == "collision") {
+            <span>С пропуском пар</span>
+          } @else if (pair.status == "inGap" || pair.waitTimeSec < 1800) {
+            Удобно
+          } @else {
+            Ждать {{ pair.waitTimeSec / 3600 }}ч {{pair.waitTimeSec / 60 % 60 }}м
+          }
+        </tui-badge>
       </div>
       <span tuiSubtitle> {{ pair.discipline }}, {{ pair.actType }} </span>
     </h1>
   }
 </button>
+
+<ng-template #tooltip>
+  @if (pair) {
+    @if (pair.status == "collision") {
+      <p>Придется пропустить:</p>
+      <ul>
+        @for (collision of pair.collisions; track collision.start_time) {
+          <li>{{ collision.discipline }} ({{ collision.act_type }})</li>
+        }
+      </ul>
+    } @else if (pair.status == "inGap") {
+      <p>Во время "окна"</p>
+    } @else if (pair.status == "beforePairs") {
+      <p>Перед парами: после окончания ждать
+        <b>{{ pair.waitTimeSec / 3600 }}ч {{pair.waitTimeSec / 60 % 60 }}м</b>
+      </p>
+    } @else {
+      <p>После пар: ждать
+        <b>{{ pair.waitTimeSec / 3600 }}ч {{pair.waitTimeSec / 60 % 60 }}м</b>
+      </p>
+    }
+  }
+</ng-template>

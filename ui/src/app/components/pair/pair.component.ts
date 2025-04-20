@@ -1,11 +1,12 @@
-import {Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {TuiAvatar, TuiBadge, TuiStatus} from '@taiga-ui/kit'
 import {MergedPairEntity} from '../../entities/merged-pairs-entity';
 import {AsyncPipe, DatePipe} from '@angular/common';
 import {TuiCardLarge, TuiHeader} from '@taiga-ui/layout';
-import {TuiSurface, TuiTitle} from '@taiga-ui/core';
+import {TuiHint, TuiSurface, TuiTitle} from '@taiga-ui/core';
 import * as moment from 'moment';
 import 'moment/locale/ru';
+import {PairEntity} from '../../entities/pair-entity';
 
 @Component({
   selector: 'app-pair',
@@ -18,11 +19,13 @@ import 'moment/locale/ru';
     TuiHeader,
     TuiSurface,
     TuiTitle,
-    DatePipe
+    DatePipe,
+    TuiHint
   ],
   templateUrl: './pair.component.html',
   standalone: true,
-  styleUrl: './pair.component.scss'
+  styleUrl: './pair.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PairComponent {
   @Input() pair!: MergedPairEntity;
@@ -34,5 +37,15 @@ export class PairComponent {
   formatDate(date: moment.Moment): string {
     const formattedDate = date.locale('ru').format('dddd, HH:mm');
     return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+  }
+
+  getAppearance(pair: MergedPairEntity): string {
+    if (pair.status == "collision")
+      return "negative";
+    if (pair.convenience >= 0.8)
+      return "positive";
+    if (pair.convenience >= 0.5)
+      return "primary";
+    return "warning";
   }
 }
