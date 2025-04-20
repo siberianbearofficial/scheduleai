@@ -4,5 +4,5 @@ namespace AiHelper.Client.Models;
 
 public class AgentResponseModel
 {
-    [JsonProperty("messages")] public required MessagesModelOutput Messages { get; init; }
+    [JsonProperty("messages")] public required MessageModel[] Messages { get; init; }
 }

@@ -27,6 +27,7 @@ public class AiHelperClient
     /// <summary>
     /// Agent Request 
     /// </summary>
+    /// <param name="agentRequest">Request body</param>
     /// <param name="university">Университет студента</param>
     /// <param name="group">Группа студента</param>
     /// <param name="userMessage">Сообщение от пользователя. None если endpoint вызывается для передачи агенту результатов выполнения функций. Не может быть None одновременно с messages!</param>
@@ -48,14 +49,14 @@ public class AiHelperClient
     /// Add Function Results 
     /// </summary>
     /// <param name="toolCallId">id вызванной функции из messages.tool_calls</param>
-    /// <param name="agentRequest">request body</param>
+    /// <param name="functionResult">request body</param>
     /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-    public async Task<AgentResponseModel> PostApiAgentAddFunctionResults(AgentRequestModel agentRequest, string toolCallId,
+    public async Task<AgentResponseModel> PostApiAgentAddFunctionResults(FunctionResultsModel functionResult, string toolCallId,
         CancellationToken? cancellationToken = null)
     {
         Dictionary<string, string?> query = [];
         query["tool_call_id"] = Convert.ToString(toolCallId);
-        return await PostAsync<AgentResponseModel>($"/api/agent/add-function-results", agentRequest, query,
+        return await PostAsync<AgentResponseModel>($"/api/agent/add-function-results", functionResult, query,
             cancellationToken ?? CancellationToken.None);
     }
 
