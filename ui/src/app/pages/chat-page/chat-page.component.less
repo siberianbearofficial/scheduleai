@@ -37,7 +37,8 @@
 
 .chat {
   flex: 1;
-  overflow-y: auto;
+  width: 80%;
+  align-self: center;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -59,7 +60,7 @@
   > [tuiMessage] {
     margin-inline-start: 1rem;
     margin-inline-end: 2rem;
-    background: var(--tui-base-02);
+    //background: var(--tui-base-02);
   }
 }
 
@@ -69,14 +70,23 @@
   > [tuiMessage] {
     margin-inline-start: 2rem;
     margin-inline-end: 1rem;
-    background: var(--tui-accent);
-    color: var(--tui-accent-text);
   }
+}
+
+.msg {
+  flex-direction: column;
+}
+
+[tuiAppearance][data-appearance='user'] {
+  background: rgba(143, 143, 143, 0.8);
+}
+
+[tuiAppearance][data-appearance='server'] {
+  background: rgba(255, 93, 50, 0.8);
 }
 
 .message-time {
   font-size: 0.75rem;
-  color: var(--tui-text-03);
   text-align: right;
   margin-top: 0.5rem;
 }
