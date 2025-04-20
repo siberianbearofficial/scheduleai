@@ -25,7 +25,7 @@ class MergedPair(BaseModel):
 
 class ResponseFormat(BaseModel):
     function_calling_needed: bool = Field(..., description="Требуется вызов одной или нескольких предоствленных функций или нет.")
-    clarification_needed: bool  = Field(..., description="Нужны уточнения у пользователя. Например, запрос некорректный, то есть не хватает информации или же информация неверна." \
+    clarification_needed: bool  = Field(..., description="Нужны уточнения у пользователя (true если требуется любая информация от пользователя, чтобы вызвать функцию; true если нужно уточнить у пользователя что именно он хочет узнать)." \
     "Не может быть True одновременно с function_calling_needed, то есть если нужны уточнения у пользователя вызов функций запрещен.")
     message: str = Field(..., description="Ответ в произвольном текстовом формате.")
     schedule: Optional[list[MergedPair]] = Field(None, description="Задавать, только если конечное расписание (ответ для пользователя) было получено из get_merged_schedule. Ответ из get_merged_schedule полностью соответствует этой json-схеме")
