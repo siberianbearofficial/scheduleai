@@ -1,0 +1,549 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+      "title": "AIAgent",
+      "version": "0.1.0"
+    },
+    "paths": {
+      "/api/agent/request": {
+        "post": {
+          "tags": [
+            "agent"
+          ],
+          "summary": "Agent Request",
+          "operationId": "agent_request_api_agent_request_post",
+          "parameters": [
+            {
+              "name": "university",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "description": "Университет студента",
+                "examples": [
+                  "МГТУ им. Баумана"
+                ],
+                "title": "University"
+              },
+              "description": "Университет студента"
+            },
+            {
+              "name": "group",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "description": "Группа студента",
+                "examples": [
+                  "ИУ7-64Б"
+                ],
+                "title": "Group"
+              },
+              "description": "Группа студента"
+            },
+            {
+              "name": "user_message",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Сообщение от пользователя. None если endpoint вызывается для передачи агенту результатов выполнения функций.Не может быть None одновременно с messages!",
+                "examples": [
+                  "Привет, во сколько завтра я могу подойти к Рязановой.Н.Ю?"
+                ],
+                "title": "User Message"
+              },
+              "description": "Сообщение от пользователя. None если endpoint вызывается для передачи агенту результатов выполнения функций.Не может быть None одновременно с messages!"
+            },
+            {
+              "name": "user",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Можно передать имя пользователя",
+                "examples": [
+                  "Misha Kozin IU7-64B"
+                ],
+                "title": "User"
+              },
+              "description": "Можно передать имя пользователя"
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/AgentRequestModel"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Agent Request"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/AgentResponseModel"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/agent/add-function-results": {
+        "post": {
+          "tags": [
+            "agent"
+          ],
+          "summary": "Add Function Results",
+          "operationId": "add_function_results_api_agent_add_function_results_post",
+          "parameters": [
+            {
+              "name": "tool_call_id",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "description": "id вызванной функции из messages.tool_calls",
+                "examples": [
+                  "call_qxRt1h8a8HDwG4HEe2QQCmeT"
+                ],
+                "title": "Tool Call Id"
+              },
+              "description": "id вызванной функции из messages.tool_calls"
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FunctionResultsModel"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/AgentResponseModel"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "AgentRequestModel": {
+          "properties": {
+            "messages": {
+              "$ref": "#/components/schemas/MessagesModel-Input"
+            }
+          },
+          "type": "object",
+          "required": [
+            "messages"
+          ],
+          "title": "AgentRequestModel"
+        },
+        "AgentResponseModel": {
+          "properties": {
+            "messages": {
+              "$ref": "#/components/schemas/MessagesModel-Output",
+              "description": "messages от gpt с историей сообщений и его ответов"
+            }
+          },
+          "type": "object",
+          "required": [
+            "messages"
+          ],
+          "title": "AgentResponseModel"
+        },
+        "FunctionCall": {
+          "properties": {
+            "name": {
+              "type": "string",
+              "title": "Name",
+              "description": "Название вызываемой функции",
+              "examples": [
+                "get_weather",
+                "calculate_distance"
+              ]
+            },
+            "arguments": {
+              "type": "string",
+              "title": "Arguments",
+              "description": "Аргументы функции в виде JSON-строки",
+              "examples": [
+                "{\"latitude\": 48.8566, \"longitude\": 2.3522}"
+              ]
+            }
+          },
+          "type": "object",
+          "required": [
+            "name",
+            "arguments"
+          ],
+          "title": "FunctionCall",
+          "description": "Аргументы вызова функции, возвращаемые моделью."
+        },
+        "FunctionResultsModel": {
+          "properties": {
+            "messages": {
+              "$ref": "#/components/schemas/MessagesModel-Input"
+            },
+            "function_result": {
+              "type": "string",
+              "title": "Function Result",
+              "description": "Результат выполнения функции в текстовом виде (gpt сам будет его анализировать)"
+            }
+          },
+          "type": "object",
+          "required": [
+            "messages",
+            "function_result"
+          ],
+          "title": "FunctionResultsModel"
+        },
+        "HTTPValidationError": {
+          "properties": {
+            "detail": {
+              "items": {
+                "$ref": "#/components/schemas/ValidationError"
+              },
+              "type": "array",
+              "title": "Detail"
+            }
+          },
+          "type": "object",
+          "title": "HTTPValidationError"
+        },
+        "MessageModel": {
+          "properties": {
+            "role": {
+              "$ref": "#/components/schemas/OpenAIRole",
+              "examples": [
+                "user"
+              ]
+            },
+            "content": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Content",
+              "description": "Содержимое сообщения",
+              "examples": [
+                "Какие у меня завтра пары?"
+              ]
+            }
+          },
+          "type": "object",
+          "required": [
+            "role"
+          ],
+          "title": "MessageModel"
+        },
+        "MessagesModel-Input": {
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MessageModel"
+              },
+              {
+                "$ref": "#/components/schemas/ToolCallResult"
+              },
+              {
+                "$ref": "#/components/schemas/ToolCallsHistory-Input"
+              }
+            ]
+          },
+          "type": "array",
+          "title": "MessagesModel"
+        },
+        "MessagesModel-Output": {
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MessageModel"
+              },
+              {
+                "$ref": "#/components/schemas/ToolCallResult"
+              },
+              {
+                "$ref": "#/components/schemas/ToolCallsHistory-Output"
+              }
+            ]
+          },
+          "type": "array",
+          "title": "MessagesModel"
+        },
+        "OpenAIRole": {
+          "type": "string",
+          "enum": [
+            "system",
+            "user",
+            "assistant",
+            "tool"
+          ],
+          "title": "OpenAIRole"
+        },
+        "ToolCall": {
+          "properties": {
+            "id": {
+              "type": "string",
+              "title": "Id",
+              "description": "Уникальный идентификатор вызова",
+              "examples": [
+                "call_12345xyz",
+                "call_abc6789"
+              ]
+            },
+            "type": {
+              "type": "string",
+              "title": "Type",
+              "description": "Тип вызова (в текущей версии API всегда 'function')",
+              "default": "function",
+              "examples": [
+                "function"
+              ]
+            },
+            "function": {
+              "$ref": "#/components/schemas/FunctionCall",
+              "description": "Данные о вызываемой функции"
+            }
+          },
+          "type": "object",
+          "required": [
+            "id",
+            "function"
+          ],
+          "title": "ToolCall",
+          "description": "Вызов инструмента (function calling) в ответе API."
+        },
+        "ToolCallResult": {
+          "properties": {
+            "role": {
+              "type": "string",
+              "const": "tool",
+              "title": "Role",
+              "description": "В данном случае это поле всегда должно быть tool, чтобы указать, что это результат вызова функций",
+              "default": "tool"
+            },
+            "tool_call_id": {
+              "type": "string",
+              "title": "Tool Call Id",
+              "description": "Уникальный идентификатор вызова",
+              "examples": [
+                "call_12345xyz",
+                "call_abc6789"
+              ]
+            },
+            "content": {
+              "type": "string",
+              "title": "Content",
+              "description": "Результат выполнения функции в текстовом виде (gpt сам будет его анализировать)"
+            }
+          },
+          "type": "object",
+          "required": [
+            "tool_call_id",
+            "content"
+          ],
+          "title": "ToolCallResult"
+        },
+        "ToolCallsHistory-Input": {
+          "properties": {
+            "tool_calls": {
+              "anyOf": [
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/ToolCall"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tool Calls",
+              "description": "Список вызовов функций, возвращаемых моделью",
+              "examples": [
+                [
+                  {
+                    "function": {
+                      "arguments": "{\"latitude\":48.8566,\"longitude\":2.3522}",
+                      "name": "get_weather"
+                    },
+                    "id": "call_12345xyz",
+                    "type": "function"
+                  }
+                ]
+              ]
+            },
+            "role": {
+              "type": "string",
+              "const": "assistant",
+              "title": "Role",
+              "description": "В данном случае это поле всегда должно быть assistant, чтобы указать, что это вызовы, которые предложил сам gpt",
+              "default": "assistant"
+            },
+            "content": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Content",
+              "description": "Результат выполнения функции в текстовом виде (gpt сам будет его анализировать)"
+            }
+          },
+          "type": "object",
+          "title": "ToolCallsHistory"
+        },
+        "ToolCallsHistory-Output": {
+          "properties": {
+            "tool_calls": {
+              "anyOf": [
+                {
+                  "items": {
+                    "$ref": "#/components/schemas/ToolCall"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tool Calls",
+              "description": "Список вызовов функций, возвращаемых моделью",
+              "examples": [
+                [
+                  {
+                    "function": {
+                      "arguments": "{\"latitude\":48.8566,\"longitude\":2.3522}",
+                      "name": "get_weather"
+                    },
+                    "id": "call_12345xyz",
+                    "type": "function"
+                  }
+                ]
+              ]
+            },
+            "role": {
+              "type": "string",
+              "const": "assistant",
+              "title": "Role",
+              "description": "В данном случае это поле всегда должно быть assistant, чтобы указать, что это вызовы, которые предложил сам gpt",
+              "default": "assistant"
+            },
+            "content": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Content",
+              "description": "Результат выполнения функции в текстовом виде (gpt сам будет его анализировать)"
+            }
+          },
+          "type": "object",
+          "title": "ToolCallsHistory"
+        },
+        "ValidationError": {
+          "properties": {
+            "loc": {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ]
+              },
+              "type": "array",
+              "title": "Location"
+            },
+            "msg": {
+              "type": "string",
+              "title": "Message"
+            },
+            "type": {
+              "type": "string",
+              "title": "Error Type"
+            }
+          },
+          "type": "object",
+          "required": [
+            "loc",
+            "msg",
+            "type"
+          ],
+          "title": "ValidationError"
+        }
+      }
+    }
+  }

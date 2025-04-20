@@ -1,14 +1,14 @@
 from pydantic import BaseModel, RootModel, Field
 from enum import Enum
-from typing import Annotated, Optional, Any, TypedDict, Literal
+from typing import Annotated, Optional, Any, TypedDict, Literal, Union
 from datetime import datetime
-
+from openai.types.chat import ChatCompletionMessageToolCall
 
 class OpenAIModel(str, Enum):
     TURBO = "gpt-3.5-turbo"
     GPT4 = "gpt-4.1"
     GPT4_TURBO = "gpt-4-turbo-preview"
-    O4_MINI = "gpt-4o-2024-11-20"
+    GPT_4O = "gpt-4o-2024-11-20"
     DEEPSEEK = "deepseek-chat"
 
 
@@ -55,47 +55,18 @@ class ToolsModel(RootModel):
     root: list[ToolModel] = Field(...)
 
 
-class MessageModel(BaseModel):
-    role: OpenAIRole = Field(..., examples=["user"])
-    content: Optional[str] = Field(None, examples=["tell me about Lomonosov"], description="Содержимое сообщения")
-
-
-class MessagesModel(RootModel):
-    root: list[MessageModel] = Field(...)
-    
-    def _create_date_model(self) -> MessageModel:
-        return MessageModel(role=OpenAIRole.SYSTEM, content=f"current date in ISO 8601 FORMAT: {datetime.now().isoformat()}")
-
-    # обновляет (или добавляет, если отсутствует) контекст текущего времени
-    def _update_date(self) -> None:
-        current_date_model = self._create_date_model()
-        updated = False
-        for i, msg in enumerate(self.root):
-            if msg.role == OpenAIRole.SYSTEM and msg.content.startswith("current date"):
-                self.root[i].content = current_date_model
-                updated = True
-        
-        if not updated:
-            self.root.append(current_date_model)
-    
-    def add(self, msg: MessageModel) -> None:
-        self.root.append(msg)
-        
-
-class OpenAIRequestModel(BaseModel):
-    model: OpenAIModel = Field(..., examples="gpt-4")
-    messages: MessagesModel = Field(...)
-    user: Optional[str] = Field(None, examples=["Misha Kozin IU7-64B"], description="Имя участника диалога")
-    tools: Optional[ToolsModel] = Field(None)
-    tool_choice: Optional[str] = Field("auto", description="какую функцию вызывать")
-
-    def get_messages(self) -> list[dict[str, Any]]:
-        return [msg.model_dump() for msg in self.messages.root]
-
-    def get_tools(self) -> list[dict[str, Any]] | None:
-        if self.tools is None:
-            return None
-        return [tool.model_dump() for tool in self.tools.root]
+class ToolCallResult(BaseModel):
+    role: Literal[OpenAIRole.TOOL] = Field(
+    default=OpenAIRole.TOOL,
+    frozen=True,
+    description=f"В данном случае это поле всегда должно быть {OpenAIRole.TOOL.value}, чтобы указать, что это результат вызова функций"
+    )
+    tool_call_id: str = Field(
+        ...,
+        description="Уникальный идентификатор вызова",
+        examples=["call_12345xyz", "call_abc6789"]
+    )   
+    content: str = Field(..., description="Результат выполнения функции в текстовом виде (gpt сам будет его анализировать)")
 
 
 class FunctionCall(BaseModel):
@@ -105,11 +76,13 @@ class FunctionCall(BaseModel):
         description="Название вызываемой функции",
         examples=["get_weather", "calculate_distance"]
     )
-    arguments: dict[str, Any] = Field(
+    arguments: str = Field(
         ...,
         description="Аргументы функции в виде JSON-строки",
         examples=['{"latitude": 48.8566, "longitude": 2.3522}']
     )
+
+
 
 class ToolCall(BaseModel):
     """Вызов инструмента (function calling) в ответе API."""
@@ -128,6 +101,12 @@ class ToolCall(BaseModel):
         description="Данные о вызываемой функции"
     )
 
+    @staticmethod
+    def vallidate_from_gpt_resp(gpt_resp: ChatCompletionMessageToolCall) -> "ToolCall":
+        return ToolCall(id=gpt_resp.id, type=gpt_resp.type,
+                        function=FunctionCall(name=gpt_resp.function.name, arguments=gpt_resp.function.arguments))
+
+
 class ToolCalls(BaseModel):
     """Модель для сообщения с вызовами инструментов."""
     tool_calls: Optional[list[ToolCall]] = Field(
@@ -145,20 +124,63 @@ class ToolCalls(BaseModel):
         ]]
     )
 
+    @staticmethod
+    def vallidate_from_gpt_resp(gpt_resp_call_list: list[ChatCompletionMessageToolCall]) -> "ToolCalls":
+        tool_calls = list()
+        for call in gpt_resp_call_list:
+            tool_calls.append(ToolCall.vallidate_from_gpt_resp(call))
+        
+        return ToolCalls(tool_calls=tool_calls)
 
-class ToolCallResult(BaseModel):
-    role: Literal[OpenAIRole.TOOL] = Field(
-    default=OpenAIRole.TOOL,
+
+class ToolCallsHistory(ToolCalls):
+    role: Literal[OpenAIRole.ASSIST] = Field(
+    default=OpenAIRole.ASSIST,
     frozen=True,
-    description=f"В данном случае это поле всегда должно быть {OpenAIRole.TOOL.value}, чтобы указать, что это результат вызова функций"
+    description=f"В данном случае это поле всегда должно быть {OpenAIRole.ASSIST.value}, чтобы указать, что это вызовы, которые предложил сам gpt"
     )
-    tool_call_id: str = Field(
-        ...,
-        description="Уникальный идентификатор вызова",
-        examples=["call_12345xyz", "call_abc6789"]
-    )   
-    content: str = Field(..., examples=['{"teachers": [Ryzan, Kurov]}'], description="Результат выполнения функции в текстовом виде (gpt сам будет его анализировать)")
+    # опционально потому что когда гпт сообщает какие функции нужно вызвать content = null
+    content: Optional[str] = Field(None, description="Результат выполнения функции в текстовом виде (gpt сам будет его анализировать)")
 
 
-class ToolCallResults(RootModel):
-    root: list[ToolCallResult] = Field(...)
+class MessageModel(BaseModel):
+    role: OpenAIRole = Field(..., examples=["user"])
+    content: Optional[str] = Field(None, examples=["Какие у меня завтра пары?"], description="Содержимое сообщения")
+
+
+class MessagesModel(RootModel):
+    root: list[Union[MessageModel, ToolCallResult, ToolCallsHistory]] = Field(...)
+    
+    def _create_date_model(self) -> MessageModel:
+        return MessageModel(role=OpenAIRole.SYSTEM, content=f"current date in ISO 8601 FORMAT: {datetime.now().isoformat()}")
+
+    # обновляет (или добавляет, если отсутствует) контекст текущего времени
+    def _update_date(self) -> None:
+        current_date_model = self._create_date_model()
+        updated = False
+        for i, msg in enumerate(self.root):
+            if msg.role == OpenAIRole.SYSTEM and msg.content.startswith("current date"):
+                self.root[i] = current_date_model
+                updated = True
+        
+        if not updated:
+            self.root.append(current_date_model)
+    
+    def add(self, msg: Union[MessageModel, ToolCallResult, ToolCallsHistory]) -> None:
+        self.root.append(msg)
+        
+
+class OpenAIRequestModel(BaseModel):
+    model: OpenAIModel = Field(..., examples="gpt-4")
+    messages: MessagesModel = Field(...)
+    user: Optional[str] = Field(None, examples=["Misha Kozin IU7-64B"], description="Имя участника диалога")
+    tools: Optional[ToolsModel] = Field(None)
+    tool_choice: Optional[str] = Field("auto", description="какую функцию вызывать")
+
+    def get_messages(self) -> list[dict[str, Any]]:
+        return [msg.model_dump() for msg in self.messages.root]
+
+    def get_tools(self) -> list[dict[str, Any]] | None:
+        if self.tools is None:
+            return None
+        return [tool.model_dump() for tool in self.tools.root]

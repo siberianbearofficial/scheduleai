@@ -3,8 +3,9 @@ from pydantic import BaseModel
 from typing import Type
 
 from openai_api.schema import *
+from utils.logger import logger
 
-class OpenAIClient:
+class Client:
     def __init__(self, api_key: str, base_url: str | None = None):
         self._base_url = base_url
         self._api_key = api_key
@@ -16,6 +17,8 @@ class OpenAIClient:
         messages = request_model.get_messages()
         tools = request_model.get_tools()
         tool_choice = request_model.tool_choice
+
+        logger.log_json(request_model.model_dump())
 
         response = await self.client.chat.completions.create(
             model=model,
