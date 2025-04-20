@@ -16,7 +16,7 @@
       #value
       let-item
     >
-      <span class="name">{{ item.name }}</span>
+      <span class="name">{{ item }}</span>
     </ng-template>
     <ng-template tuiDataList>
       <tui-data-list *ngIf="filtered; else loading">
@@ -26,7 +26,7 @@
           type="button"
           [value]="item.name"
         >
-          <span class="name">{{ item.name }}</span>
+          <span class="name">{{ item }}</span>
         </button>
       </tui-data-list>
       <ng-template #loading>

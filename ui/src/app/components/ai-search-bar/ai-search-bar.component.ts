@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {TuiIcon, TuiTextfield} from '@taiga-ui/core';
 import {TuiTooltip} from '@taiga-ui/kit';
@@ -13,5 +13,12 @@ import {TuiTooltip} from '@taiga-ui/kit';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SearchBarComponent {
-  protected value = '';
+  searchQuery = '';
+  @Output() search = new EventEmitter<string>();
+
+  onSearch() {
+    if (this.searchQuery.trim()) {
+      this.search.emit(this.searchQuery);
+    }
+  }
 }

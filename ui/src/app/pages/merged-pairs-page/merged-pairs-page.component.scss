@@ -15,33 +15,36 @@
   padding: 0 5%;
 }
 
-.search-container {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  gap: 20px;
-  padding: 3%;
+.back {
+  align-self: start;
+  margin-left: 5%;
+  background-color: transparent;
 }
 
-.search-bar {
+.schedule-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  align-items: start;
+  flex-direction: row;
 }
 
-.teachers {
+.schedule {
   flex: 1 1 auto;
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 карточки в ряд */
-  //gap: 16px; /* промежуток между карточками */
+  grid-template-columns: repeat(3, 1fr); /* 4 карточки в ряд */
+  gap: 16px; /* промежуток между карточками */
+  padding: 0 2%;
 }
 
-.teacher-card {
-  display: flex;
-  flex-direction: column;
-  //background-color: rebeccapurple;
-  //width: 200px;
+.teacher-info {
+  width: 30%;
+  height: 30%;
+  padding-right: 2%;
+}
+
+.teacher-avatar {
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .footer {

@@ -1,29 +1,21 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {TuiSheetDialogService} from '@taiga-ui/addon-mobile';
+import {TuiSheetDialog, TuiSheetDialogOptions} from '@taiga-ui/addon-mobile';
 import {TuiButton} from '@taiga-ui/core';
-import {Subject, switchMap} from 'rxjs';
 
 @Component({
   standalone: true,
   selector: 'app-footer',
   exportAs: "app-footer",
-  imports: [TuiButton],
+  imports: [TuiButton, TuiSheetDialog],
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class FooterComponent {
-  protected readonly stream$ = new Subject<void>();
+  protected open = false;
 
-  constructor() {
-    const service = inject(TuiSheetDialogService);
-
-    this.stream$
-      .pipe(
-        switchMap(() => service.open('bombardiro crocodilo', {label: 'About'})),
-        takeUntilDestroyed(),
-      )
-      .subscribe();
-  }
+  protected readonly options: Partial<TuiSheetDialogOptions> = {
+    label: 'ScheduleAI',
+    closeable: true,
+  };
 }

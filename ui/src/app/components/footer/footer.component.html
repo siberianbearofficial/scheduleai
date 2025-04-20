@@ -1,7 +1,37 @@
 <button class="info"
-  iconStart="@tui.info"
-  tuiIconButton
-  type="button"
-  (click)="stream$.next()"
+        iconStart="@tui.info"
+        tuiIconButton
+        type="button"
+        (click)="open = true"
 >
+  Show
 </button>
+<ng-template
+  let-observer
+  [tuiSheetDialogOptions]="options"
+  [(tuiSheetDialog)]="open"
+>
+  <div class="container">
+  <a
+    appearance="secondary"
+    href="https://github.com/siberianbearofficial/scheduleai"
+    iconStart="https://raw.githubusercontent.com/MarsiBarsi/readme-icons/main/github.svg"
+    size="l"
+    tuiIconButton
+    class="tui-space_right-2"
+  >
+    GitHub
+  </a>
+  <a
+    appearance="secondary"
+    href="mailto:contact@aleksei-orlov.ru"
+    iconStart="@tui.mail"
+    size="l"
+    tuiIconButton
+    class="tui-space_right-2"
+  >
+    Contact
+  </a>
+  </div>
+  <p>sigma inc., 2025</p>
+</ng-template>

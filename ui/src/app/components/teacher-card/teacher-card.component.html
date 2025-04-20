@@ -7,17 +7,14 @@
   @if (teacher$ | async; as teacher) {
     <h1 class="card" tuiTitle>
       {{ teacher.fullName }}
-      <!-- Извините, кафедры в таком виде больше нету -->
-      <!--      <span tuiSubtitle> {{ teacher.department }} </span>-->
+      <span tuiSubtitle> {{ teacher.departments }} </span>
     </h1>
 
     <aside tuiAccessories>
-      <!--      И аватарки тоже  -->
-
-      <!--      <tui-avatar-->
-      <!--        appearance="primary"-->
-      <!--        src='{{ teacher.avatarUrl }}'-->
-      <!--      />-->
+      <tui-avatar
+        appearance="primary"
+        src='{{ teacher.avatarUrl }}'
+      />
     </aside>
   }
 </button>

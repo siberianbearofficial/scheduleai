@@ -4,12 +4,40 @@
       <app-logo></app-logo>
     </div>
   </div>
-  <div class="search-container">
-    <div class="teachers">
-        @for (pair of mergedPairs$ | async; track pair.startTime) {
-          <div>{{ pair.discipline }}</div>
-        }
+  <button class="back"
+    tuiButton
+    type="button"
+    icon="tuiIconChevronLeft"
+    (click)="goBack()"
+  >
+    < Назад
+  </button>
+  <div class="schedule-container">
+    <div class="schedule">
+      @for (pair of mergedPairs$ | async; track pair) {
+        <div class="pair-card">
+          <app-pair [pair]="pair"></app-pair>
+        </div>
+      }
     </div>
+      @if (teacher$ | async; as teacher) {
+        <div class="teacher-info">
+            <div
+              tuiAppearance="floating"
+              tuiCardLarge
+            >
+              <header tuiHeader>
+                <h2 tuiTitle>{{ teacher.fullName }}</h2>
+              </header>
+
+              <img class="teacher-avatar" src="{{ teacher.avatarUrl }}" alt="no data">
+
+              <footer>
+                Преподает на кафедрах: {{ teacher.departments }}
+              </footer>
+            </div>
+        </div>
+      }
   </div>
   <div class="footer">
     <app-footer></app-footer>

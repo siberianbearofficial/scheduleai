@@ -4,9 +4,16 @@
       <app-logo></app-logo>
     </div>
   </div>
-  <div class="schedule-container">
-    <div class="schedule">
-
+  <div class="search-container">
+    <div class="search-bar">
+      <app-teacher-search-bar></app-teacher-search-bar>
+    </div>
+    <div class="teachers">
+        @for (teacher of teachers$ | async; track teacher.id) {
+          <div class="teacher-card" routerLink="/teacherSchedule/{{ teacher.id }}">
+            <app-teacher-card [teacherId]="teacher.id"></app-teacher-card>
+          </div>
+        }
     </div>
   </div>
   <div class="footer">

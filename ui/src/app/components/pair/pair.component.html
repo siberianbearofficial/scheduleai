@@ -1,6 +1,44 @@
-<tui-badge
-  appearance="positive"
-  tuiStatus
+<!--<tui-badge-->
+<!--  appearance="positive"-->
+<!--  tuiStatus-->
+<!--&gt;-->
+<!--  {{ pair.act_type }}-->
+<!--</tui-badge>-->
+
+<button
+  tuiCardLarge
+  tuiHeader
+  tuiSurface="floating"
+  type="button"
 >
-  Удобно
-</tui-badge>
+  @if (pair) {
+    <h1 class="card" tuiTitle>
+      <div class="convenience">
+        {{ formatDate(pair.startTime) }}
+        @if (pair.waitTimeSec < 3600) {
+          <tui-badge
+          appearance="positive"
+          tuiStatus
+          >
+          Удобно
+          </tui-badge>
+        } @else if (pair.waitTimeSec >= 3600 && pair.waitTimeSec < 7200) {
+          <tui-badge
+            appearance="warning"
+            tuiStatus
+          >
+            Ждать <2 часов
+          </tui-badge>
+        } @else if (pair.waitTimeSec >= 7200) {
+          <tui-badge
+            appearance="negative"
+            tuiStatus
+          >
+            Ждать >2 часов
+          </tui-badge>
+        }
+      </div>
+      <span tuiSubtitle> {{ pair.discipline }}, {{ pair.actType }} </span>
+    </h1>
+  }
+</button>
