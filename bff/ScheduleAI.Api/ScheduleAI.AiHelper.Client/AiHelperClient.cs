@@ -33,7 +33,7 @@ public class AiHelperClient
     /// <param name="userMessage">Сообщение от пользователя. None если endpoint вызывается для передачи агенту результатов выполнения функций. Не может быть None одновременно с messages!</param>
     /// <param name="user">Можно передать имя пользователя</param>
     /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-    public async Task<AgentResponseModel> PostApiAgentRequest(AgentRequestModel agentRequest, string university, string group,
+    public async Task<AgentResponseModel> PostApiAgentRequest(AgentRequestModel? agentRequest, string university, string group,
         string? userMessage = null, string? user = null, CancellationToken? cancellationToken = null)
     {
         Dictionary<string, string?> query = [];
@@ -70,7 +70,7 @@ public class AiHelperClient
         return url + "?" + string.Join("&", queryParams.Select(p => $"{p.Key}={Uri.EscapeDataString(p.Value ?? "")}"));
     }
 
-    private async Task<T> PostAsync<T>(string url, object body, Dictionary<string, string?> query,
+    private async Task<T> PostAsync<T>(string url, object? body, Dictionary<string, string?> query,
         CancellationToken cancellationToken)
     {
         HttpResponseMessage response;
