@@ -8,5 +8,3 @@ services:
     environment:
       - APP_ENV=production
       - PYTHONUNBUFFERED=1
-    volumes:
-      - ./app:/app  # монтирование кода приложения (опционально)

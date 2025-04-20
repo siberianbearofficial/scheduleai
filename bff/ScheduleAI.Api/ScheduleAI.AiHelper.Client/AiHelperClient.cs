@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using AiHelper.Client.Models;
 using AiHelper.Client.Exceptions;
+using Newtonsoft.Json;
 
 namespace AiHelper.Client;
 
@@ -18,7 +19,7 @@ public class AiHelperClient
         _jsonOptions = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         };
     }
 
@@ -76,7 +77,9 @@ public class AiHelperClient
         HttpResponseMessage response;
         try
         {
-            response = await _httpClient.PostAsync(GenerateUrl(url, query), JsonContent.Create(body),
+            var content = JsonContent.Create(body, options: _jsonOptions);
+            Console.WriteLine(await content.ReadAsStringAsync());
+            response = await _httpClient.PostAsync(GenerateUrl(url, query), JsonContent.Create(body, options: _jsonOptions),
                 cancellationToken);
         }
         catch (HttpRequestException e)
@@ -102,7 +105,7 @@ public class AiHelperClient
             };
         }
 
-        var result = await response.Content.ReadFromJsonAsync<T>(_jsonOptions, cancellationToken);
+        var result = JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync(cancellationToken));
         if (result == null)
         {
             throw new AiHelperJsonException($"Failed to deserialize {typeof(T).Name}");

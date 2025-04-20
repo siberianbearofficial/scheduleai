@@ -11,30 +11,37 @@ public class AiHelperService(
     ITeachersService teachersService,
     IScheduleService scheduleService) : IAiHelperService
 {
-    private readonly AiHelperClient _client = new("http://localhost:5000");
+    private readonly AiHelperClient _client = new(Environment.GetEnvironmentVariable("AI_HELPER_URL") ??
+                                                  throw new Exception("AI_HELPER_URL environment variable is not set"));
 
     public async Task<string> AskHelper(string prompt, Guid universityId, string groupId)
     {
-        var group = await groupsService.GetGroupByIdAsync(universityId, groupId);
-        var resp = await _client.PostApiAgentRequest(null, universityId.ToString(), group.Name, prompt);
+        // var group = await groupsService.GetGroupByIdAsync(universityId, groupId);
+        var resp = await _client.PostApiAgentRequest(null, universityId.ToString(), groupId, prompt);
         while (true)
         {
             var lastMessage = resp.Messages.Last();
-            if (lastMessage.ToolCalls == null)
+            if (lastMessage.ToolCalls == null || lastMessage.ToolCalls.Length == 0)
                 return lastMessage.Content ?? throw new Exception("Empty response");
-            var request = resp.Messages;
+            var request = resp.Messages.ToList();
             foreach (var toolCall in lastMessage.ToolCalls)
             {
-                request = (await _client.PostApiAgentAddFunctionResults(new FunctionResultsModel
+                request.Add(new MessageModel()
                 {
-                    Messages = resp.Messages,
-                    FunctionResult = await CallFunc(toolCall, universityId, groupId)
-                }, toolCallId: toolCall.Id)).Messages;
+                    Role = "tool",
+                    Content = await CallFunc(toolCall, universityId, groupId),
+                    ToolCallId = toolCall.Id,
+                });
+                // request = (await _client.PostApiAgentAddFunctionResults(new FunctionResultsModel
+                // {
+                //     Messages = resp.Messages,
+                //     FunctionResult = await CallFunc(toolCall, universityId, groupId)
+                // }, toolCallId: toolCall.Id)).Messages;
             }
 
             resp = await _client.PostApiAgentRequest(new AgentRequestModel
             {
-                Messages = request,
+                Messages = request.ToArray(),
             }, universityId.ToString(), groupId);
         }
     }
@@ -42,6 +49,7 @@ public class AiHelperService(
     private async Task<string> CallFunc(ToolCall toolCall, Guid universityId, string groupId)
     {
         object? res;
+        return "None";
         switch (toolCall.Function.Name)
         {
             case "get_group_schedule":

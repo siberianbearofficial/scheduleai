@@ -5,7 +5,8 @@ namespace Bmstu;
 
 public class BmstuUniversity : IUniversity
 {
-    private readonly BmstuScheduleClient _client = new("https://bmstu-schedule-api.nachert.art/");
+    private readonly BmstuScheduleClient _client = new(Environment.GetEnvironmentVariable("BMSTU_SCHEDULE_API_URL") ??
+                                                       "https://bmstu-schedule-api.nachert.art/");
 
     public string Name => "МГТУ им. Баумана";
 
