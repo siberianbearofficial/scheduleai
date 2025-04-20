@@ -4,20 +4,30 @@ import {BehaviorSubject, map, Observable} from 'rxjs';
 import {signalState} from '@ngrx/signals';
 import {TeacherEntity} from '../entities/teacher-entity';
 
+interface TeacherStore {
+  teachers: TeacherEntity[];
+  selectedTeacher: TeacherEntity | null;
+}
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class TeacherService {
-  private readonly teachers$$ = signalState<TeacherEntity[]>([
-    {
-      id: 'test',
-      fullName: 'Ryaxan',
-      departments: [],
-    },
-  ]);
+  private readonly teachers$$ = signalState<TeacherStore>({
+    teachers: [
+      {
+        id: 'test',
+        fullName: 'Ryaxan',
+        departments: [],
+      },
+    ],
+    selectedTeacher: null
+  });
 
-  readonly teachers$ = toObservable(this.teachers$$);
+  readonly teachers$ = toObservable(this.teachers$$).pipe(
+    map(store => store.teachers)
+  );
 
   teacherById(teacherId: string): Observable<TeacherEntity | undefined> {
     return this.teachers$.pipe(
@@ -25,8 +35,8 @@ export class TeacherService {
     );
   }
 
-  private readonly selectedTeacher$$ = new BehaviorSubject<TeacherEntity | null>(null);
-
-  readonly selectedTeacher$ = this.selectedTeacher$$.pipe();
+  readonly selectedTeacher$ = toObservable(this.teachers$$).pipe(
+    map(store => store.selectedTeacher)
+  );
 }
 
