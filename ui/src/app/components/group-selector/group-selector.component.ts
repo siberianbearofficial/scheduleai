@@ -32,7 +32,7 @@ import {GroupsService} from '../../services/groups.service';
   providers: [TeacherService],
 })
 export default class GroupSelectorComponent {
-  protected readonly service = inject(GroupsService);
+  protected readonly service = inject(TeacherService);
 
   protected search: string | null = '';
 
