@@ -1,8 +1,10 @@
-import {Injectable} from '@angular/core';
-import {signalState} from '@ngrx/signals';
+import {inject, Injectable} from '@angular/core';
+import {patchState, signalState} from '@ngrx/signals';
 import {GroupEntity} from '../entities/group-entity';
 import {toObservable} from '@angular/core/rxjs-interop';
-import {BehaviorSubject, filter, map, Observable} from 'rxjs';
+import { EMPTY, map, Observable, switchMap, tap} from 'rxjs';
+import {BffClient, Group} from '../bff-client/bff-client';
+import {UniversitiesService} from './universities.service';
 
 interface GroupStore {
   readonly groups: GroupEntity[];
@@ -14,33 +16,11 @@ interface GroupStore {
 })
 export class GroupsService {
 
+  private readonly bffClient: BffClient = inject(BffClient);
+  private readonly universityService: UniversitiesService = inject(UniversitiesService);
+
   private readonly groups$$ = signalState<GroupStore>({
-    groups: [
-      {
-        id: "1",
-        name: "ИУ7-11Б",
-      },
-      {
-        id: "2",
-        name: "ИУ7-12Б",
-      },
-      {
-        id: "3",
-        name: "ИУ7-31Б",
-      },
-      {
-        id: "4",
-        name: "ИУ7-33Б",
-      },
-      {
-        id: "5",
-        name: "ИУ7-52Б",
-      },
-      {
-        id: "6",
-        name: "ИУ7-56Б",
-      },
-    ],
+    groups: [],
     selectedGroup: null,
   })
 
@@ -52,9 +32,35 @@ export class GroupsService {
     map(store => store.selectedGroup),
   )
 
-  findGroups(query: string | null): Observable<readonly GroupEntity[] | null> {
-    return this.groups$.pipe(
-      map(groups => groups.filter(group => group.name == query)),
+  private loadGroups(universityId: string): Observable<undefined> {
+    console.log(`Loading ${universityId}`)
+    return this.bffClient.groups(universityId).pipe(
+      tap(resp => console.log(resp.detail)),
+      map(resp => resp.data?.map(groupToEntity)),
+      tap(groups => patchState(this.groups$$, {groups})),
+      switchMap(() => EMPTY),
     )
   }
+
+  readonly loadGroupsOnUniversityChange$: Observable<undefined> = this.universityService.selectedUniversity$.pipe(
+    switchMap(selected => {
+      console.log(selected);
+      if (selected !== null)
+        return this.loadGroups(selected.id)
+      return EMPTY;
+    }),
+    switchMap(() => EMPTY),
+  )
+
+  selectGroup(group: GroupEntity): void {
+    patchState(this.groups$$, {
+      selectedGroup: group
+    })
+  }
+
 }
+
+const groupToEntity = (group: Group): GroupEntity => ({
+  id: group.id ?? "",
+  name: group.name ?? "<Неизвестная группа>",
+});

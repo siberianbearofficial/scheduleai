@@ -4,6 +4,8 @@ import {ChangeDetectionStrategy} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {UniversitiesService} from './services/universities.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {merge} from 'rxjs';
+import {GroupsService} from './services/groups.service';
 
 @Component({
   selector: 'app-root',
@@ -16,9 +18,13 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 export class AppComponent implements OnInit {
   private readonly destroyRef: DestroyRef = inject(DestroyRef);
   private readonly universitiesService: UniversitiesService = inject(UniversitiesService);
+  private readonly groupsService: GroupsService = inject(GroupsService);
 
   ngOnInit() {
-    this.universitiesService.loadUniversities().pipe(
+    merge(
+      this.universitiesService.loadUniversities(),
+      this.groupsService.loadGroupsOnUniversityChange$
+    ).pipe(
       takeUntilDestroyed(this.destroyRef),
     ).subscribe()
   }
