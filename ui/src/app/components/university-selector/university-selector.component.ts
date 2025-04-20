@@ -6,8 +6,8 @@ import {TuiDataList, TuiInitialsPipe, TuiLoader} from '@taiga-ui/core';
 import {TuiAvatar} from '@taiga-ui/kit';
 import {TuiComboBoxModule, TuiTextfieldControllerModule} from '@taiga-ui/legacy';
 
-import {databaseMockData} from '../../services/database.service';
 import {TeacherService} from '../../services/teachers.service';
+import {UniversitiesService} from '../../services/universities.service';
 
 @Component({
   standalone: true,
@@ -32,7 +32,7 @@ import {TeacherService} from '../../services/teachers.service';
   providers: [TeacherService],
 })
 export default class UniversitySelectorComponent {
-  protected readonly service = inject(TeacherService);
+  protected readonly service = inject(UniversitiesService);
 
   protected search: string | null = '';
 

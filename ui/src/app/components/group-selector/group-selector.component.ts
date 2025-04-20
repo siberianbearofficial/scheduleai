@@ -6,8 +6,8 @@ import {TuiDataList, TuiInitialsPipe, TuiLoader} from '@taiga-ui/core';
 import {TuiAvatar} from '@taiga-ui/kit';
 import {TuiComboBoxModule, TuiTextfieldControllerModule} from '@taiga-ui/legacy';
 
-import {databaseMockData} from '../../services/database.service';
 import {TeacherService} from '../../services/teachers.service';
+import {GroupsService} from '../../services/groups.service';
 
 @Component({
   standalone: true,
@@ -32,7 +32,7 @@ import {TeacherService} from '../../services/teachers.service';
   providers: [TeacherService],
 })
 export default class GroupSelectorComponent {
-  protected readonly service = inject(TeacherService);
+  protected readonly service = inject(GroupsService);
 
   protected search: string | null = '';
 
