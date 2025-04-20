@@ -1,0 +1,11 @@
+<tui-textfield iconStart="@tui-search">
+  <input
+    placeholder="Введите сообщение"
+    tuiTextfield
+    [invalid]="false"
+    [ngModel]="value"
+    (ngModelChange)="onInput($event)"
+    (keydown)="onKeydown($event)"
+    [disabled]="disabled"
+  />
+</tui-textfield>

@@ -1,0 +1,27 @@
+<div class="page">
+  <app-header></app-header>
+
+  <div class="chat">
+    @for (message of messages; track message.timestamp) {
+      <span class="container" [class.incoming]="message.sender === 'server'"
+            [class.outgoing]="message.sender === 'user'">
+        <span tuiMessage [appearance]="message.sender === 'user' ? 'accent' : ''">
+          <span class="multiline">{{ message.text }}</span>
+          <div class="message-time">{{ message.timestamp | date:'HH:mm' }}</div>
+        </span>
+      </span>
+    }
+  </div>
+
+  <div class="footer-container">
+    <div class="search-bar">
+      <app-search-bar
+        [(ngModel)]="newMessage"
+        (enterPressed)="sendMessage()">
+      </app-search-bar>
+    </div>
+    <div class="footer">
+      <app-footer></app-footer>
+    </div>
+  </div>
+</div>
