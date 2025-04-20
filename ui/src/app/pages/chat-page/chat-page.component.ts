@@ -6,6 +6,8 @@ import {HeaderComponent} from '../../components/header/header.component';
 import {DatePipe} from '@angular/common';
 import SimpleSearchBarComponent from '../../components/search-bar/search-bar.component'
 import {FormsModule} from '@angular/forms';
+import {ActivatedRoute, NavigationStart, Router} from '@angular/router';
+import {filter} from 'rxjs';
 
 interface Message {
   text: string;
@@ -34,6 +36,18 @@ export class ChatPageComponent {
   messages: Message[] = [];
   newMessage = '';
 
+  constructor(private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      if (params['message']) {
+        const userMessage = params['message'];
+        this.addMessage(userMessage, 'user');
+        this.addMessage(this.getServerResponse(userMessage), 'server');
+      }
+    });
+  }
+
   sendMessage() {
     if (!this.newMessage.trim()) return;
 
@@ -41,12 +55,8 @@ export class ChatPageComponent {
     this.addMessage(this.newMessage, 'user');
     const userMessage = this.newMessage;
     this.newMessage = '';
-
-    // Имитация ответа сервера
-    setTimeout(() => {
-      const response = this.getServerResponse(userMessage);
-      this.addMessage(response, 'server');
-    }, 1000);
+    const response = this.getServerResponse(userMessage);
+    this.addMessage(response, 'server');
   }
 
   private addMessage(text: string, sender: 'user' | 'server') {
