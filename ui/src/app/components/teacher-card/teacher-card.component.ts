@@ -1,11 +1,11 @@
 import {Component, inject, input, InputSignal} from '@angular/core';
-import {TeacherService} from '../../services/groups.service';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {switchMap} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
 import {TuiAppearance, TuiIcon, TuiSurface, TuiTitle} from '@taiga-ui/core';
 import {TuiAvatar} from '@taiga-ui/kit';
 import {TuiCardLarge, TuiCell, TuiHeader} from '@taiga-ui/layout';
+import {TeacherService} from '../../services/teachers.service';
 
 @Component({
   selector: 'app-teacher-card',
