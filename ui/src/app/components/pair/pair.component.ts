@@ -21,6 +21,7 @@ import 'moment/locale/ru';
     DatePipe
   ],
   templateUrl: './pair.component.html',
+  standalone: true,
   styleUrl: './pair.component.scss'
 })
 export class PairComponent {

@@ -6,8 +6,8 @@ import {ChatPageComponent} from './pages/chat-page/chat-page.component';
 
 export const routes: Routes = [
   { path: '', component: MainPageComponent },
-  { path: 'teacherSchedule', component: MergedPairsPageComponent},
-  { path: 'teacherSchedule/:teacherId', component: TeacherPageComponent},
+  { path: 'teacherSchedule', component: TeacherPageComponent},
+  { path: 'teacherSchedule/:teacherId', component: MergedPairsPageComponent},
   { path: 'chat', component: ChatPageComponent },
   { path: '**', redirectTo: '/', pathMatch: 'full' },
 ];

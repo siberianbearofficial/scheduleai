@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {toObservable} from '@angular/core/rxjs-interop';
-import {BehaviorSubject, map, Observable} from 'rxjs';
+import {BehaviorSubject, map, Observable, tap} from 'rxjs';
 import {signalState} from '@ngrx/signals';
 import {TeacherEntity} from '../entities/teacher-entity';
 
@@ -20,6 +20,7 @@ export class TeacherService {
         id: 'test',
         fullName: 'Ryaxan',
         departments: [],
+        avatarUrl: "https://i.imgur.com/tKuNxnA.jpeg"
       },
     ],
     selectedTeacher: null
@@ -30,8 +31,10 @@ export class TeacherService {
   );
 
   teacherById(teacherId: string): Observable<TeacherEntity | undefined> {
+    console.log("TeacherById")
     return this.teachers$.pipe(
       map(teachers => teachers.find(teachers => teachers.id == teacherId)),
+      tap(console.log),
     );
   }
 

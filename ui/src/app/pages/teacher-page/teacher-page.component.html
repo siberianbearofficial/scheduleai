@@ -4,40 +4,17 @@
       <app-logo></app-logo>
     </div>
   </div>
-  <button class="back"
-    tuiButton
-    type="button"
-    icon="tuiIconChevronLeft"
-    (click)="goBack()"
-  >
-    < Назад
-  </button>
-  <div class="schedule-container">
-    <div class="schedule">
-      @for (pair of mergedPairs$ | async; track pair) {
-        <div class="pair-card">
-          <app-pair [pair]="pair"></app-pair>
-        </div>
-      }
+  <div class="search-container">
+    <div class="search-bar">
+      <app-teacher-search-bar></app-teacher-search-bar>
     </div>
-      @if (teacher$ | async; as teacher) {
-        <div class="teacher-info">
-            <div
-              tuiAppearance="floating"
-              tuiCardLarge
-            >
-              <header tuiHeader>
-                <h2 tuiTitle>{{ teacher.fullName }}</h2>
-              </header>
-
-              <img class="teacher-avatar" src="{{ teacher.avatarUrl }}" alt="no data">
-
-              <footer>
-                Преподает на кафедре: {{ teacher.department }}
-              </footer>
-            </div>
-        </div>
-      }
+    <div class="teachers">
+        @for (teacher of teachers$ | async; track teacher.id) {
+          <div class="teacher-card" routerLink="/teacherSchedule/{{ teacher.id }}">
+            <app-teacher-card [teacherId]="teacher.id"></app-teacher-card>
+          </div>
+        }
+    </div>
   </div>
   <div class="footer">
     <app-footer></app-footer>
