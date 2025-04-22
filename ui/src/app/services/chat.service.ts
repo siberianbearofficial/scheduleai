@@ -9,40 +9,40 @@ import {GroupsService} from './groups.service';
 import moment from 'moment';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class ChatService {
-  private readonly bffClient: BffClient = inject(BffClient);
-  private readonly universityService: UniversitiesService = inject(UniversitiesService);
-  private readonly groupsService: GroupsService = inject(GroupsService);
+    private readonly bffClient: BffClient = inject(BffClient);
+    private readonly universityService: UniversitiesService = inject(UniversitiesService);
+    private readonly groupsService: GroupsService = inject(GroupsService);
 
-  private readonly messages$$: MessageEntity[] = [];
+    private readonly messages$$: MessageEntity[] = [];
 
-  readonly messages$ = of(this.messages$$);
+    readonly messages$ = of(this.messages$$);
 
-  private addMessage(message: MessageEntity): void {
-    this.messages$$.push(message);
-  }
+    private addMessage(message: MessageEntity): void {
+        this.messages$$.push(message);
+    }
 
-  sendMessage(message: string): Observable<undefined> {
-    this.addMessage({
-      role: MessageRole.User,
-      content: message,
-      timestamp: moment(),
-    });
-    return combineLatest([this.universityService.selectedUniversity$, this.groupsService.selectedGroup$]).pipe(
-      switchMap(([university, group]) => this.bffClient.aiHelper(AiHelperRequestModel.fromJS({
-        university: university?.id,
-        group: group?.id,
-        prompt: message,
-      }))),
-      tap(resp => console.log(resp.detail)),
-      tap(resp => this.addMessage({
-        role: MessageRole.Assistant,
-        content: resp.data.answer ?? "",
-        timestamp: moment(),
-      })),
-      switchMap(() => EMPTY),
-    )
-  }
+    sendMessage(message: string): Observable<undefined> {
+        this.addMessage({
+            role: MessageRole.User,
+            content: message,
+            timestamp: moment(),
+        });
+        return combineLatest([this.universityService.selectedUniversity$, this.groupsService.selectedGroup$]).pipe(
+            switchMap(([university, group]) => this.bffClient.aiHelper(AiHelperRequestModel.fromJS({
+                universityId: university?.id,
+                groupId: group?.id,
+                prompt: message,
+            }))),
+            tap(resp => console.log(resp.detail)),
+            tap(resp => this.addMessage({
+                role: MessageRole.Assistant,
+                content: resp.data.answer ?? "",
+                timestamp: moment(),
+            })),
+            switchMap(() => EMPTY),
+        )
+    }
 }

@@ -39,9 +39,6 @@ export class ChatPageComponent implements OnInit {
 
   protected readonly messageInputControl = new FormControl('');
 
-  constructor() {
-  }
-
   protected readonly messages$ = this.chatService.messages$;
 
   ngOnInit() {
