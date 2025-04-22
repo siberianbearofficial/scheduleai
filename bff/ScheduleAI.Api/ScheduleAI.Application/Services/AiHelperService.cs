@@ -16,6 +16,15 @@ public class AiHelperService(
 
     public async Task<string> AskHelper(string prompt, Guid universityId, string groupId)
     {
+        return Random.Shared.Next(5) switch
+        {
+            0 => "Обработка запроса...",
+            1 => "Я получил ваше сообщение",
+            2 => $"Получено сообщение {prompt}",
+            3 => "Думаю...",
+            4 => "Здравствуйте. Я - ваш ИИ-помощник.",
+            _ => "Я не должен был сюда попасть..."
+        };
         // var group = await groupsService.GetGroupByIdAsync(universityId, groupId);
         var resp = await _client.PostApiAgentRequest(null, universityId.ToString(), groupId, prompt);
         while (true)
