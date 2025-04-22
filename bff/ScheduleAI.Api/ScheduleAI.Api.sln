@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bmstu", "Universities\Bmstu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScheduleAI.AiHelper.Client", "ScheduleAI.AiHelper.Client\ScheduleAI.AiHelper.Client.csproj", "{A8D2D5FE-AA9E-427D-84BC-C0E65BDD0ADD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bmstu.Mock", "Universities\Bmstu.Mock\Bmstu.Mock.csproj", "{017EE101-6570-4EE2-96E2-B8DFFE5B9266}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,8 +40,13 @@ Global
 		{A8D2D5FE-AA9E-427D-84BC-C0E65BDD0ADD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8D2D5FE-AA9E-427D-84BC-C0E65BDD0ADD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8D2D5FE-AA9E-427D-84BC-C0E65BDD0ADD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{017EE101-6570-4EE2-96E2-B8DFFE5B9266}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{017EE101-6570-4EE2-96E2-B8DFFE5B9266}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{017EE101-6570-4EE2-96E2-B8DFFE5B9266}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{017EE101-6570-4EE2-96E2-B8DFFE5B9266}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E53B2715-616F-442F-BC9D-8DAAD9136BFF} = {AEB2FE61-D0C8-4B21-88DF-2AD77C3437F0}
+		{017EE101-6570-4EE2-96E2-B8DFFE5B9266} = {AEB2FE61-D0C8-4B21-88DF-2AD77C3437F0}
 	EndGlobalSection
 EndGlobal

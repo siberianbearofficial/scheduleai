@@ -9,7 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\ScheduleAI.AiHelper.Client\ScheduleAI.AiHelper.Client.csproj" />
       <ProjectReference Include="..\ScheduleAI.Core\ScheduleAI.Core.csproj" />
-      <ProjectReference Include="..\Universities\Bmstu\Bmstu.csproj" />
+      <ProjectReference Include="..\Universities\Bmstu.Mock\Bmstu.Mock.csproj" />
     </ItemGroup>
 
 </Project>
