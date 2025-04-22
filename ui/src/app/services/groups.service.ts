@@ -34,7 +34,7 @@ export class GroupsService {
 
   private loadGroups(universityId: string): Observable<undefined> {
     console.log(`Loading ${universityId}`)
-    return this.bffClient.groups(universityId).pipe(
+    return this.bffClient.groups(universityId, "").pipe(
       tap(resp => console.log(resp.detail)),
       map(resp => resp.data?.map(groupToEntity)),
       tap(groups => patchState(this.groups$$, {groups})),

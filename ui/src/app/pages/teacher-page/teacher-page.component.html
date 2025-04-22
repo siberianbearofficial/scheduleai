@@ -6,14 +6,20 @@
   </div>
   <div class="search-container">
     <div class="search-bar">
-      <app-teacher-search-bar></app-teacher-search-bar>
+      <tui-textfield iconStart="@tui.search" class="search-teacher-field">
+        <input
+          placeholder="ФИО Преподователя"
+          tuiTextfield
+          [formControl]="searchControl"
+        />
+      </tui-textfield>
     </div>
     <div class="teachers">
-        @for (teacher of teachers$ | async; track teacher.id) {
-          <div class="teacher-card" routerLink="/teacherSchedule/{{ teacher.id }}">
-            <app-teacher-card [teacherId]="teacher.id"></app-teacher-card>
-          </div>
-        }
+      @for (teacher of filtered$ | async; track teacher.id) {
+        <div class="teacher-card" routerLink="/teacherSchedule/{{ teacher.id }}">
+          <app-teacher-card [teacherId]="teacher.id" (click)="selectTeacher(teacher)"></app-teacher-card>
+        </div>
+      }
     </div>
   </div>
   <div class="footer">
