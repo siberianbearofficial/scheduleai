@@ -1,6 +1,13 @@
 import {Moment} from 'moment';
 import {PairEntity} from './pair-entity';
 
+export enum MergedPairStatus {
+  beforePairs ,
+  afterPairs ,
+  inGap,
+  collision
+}
+
 export interface MergedPairEntity {
   startTime: Moment;
   endTime: Moment;
@@ -10,6 +17,6 @@ export interface MergedPairEntity {
 
   convenience: number;
   waitTimeSec: number;
-  status: 'beforePairs' | 'afterPairs' | 'inGap' | 'collision';
+  status: MergedPairStatus;
   collisions: PairEntity[];
 }
