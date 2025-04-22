@@ -31,7 +31,10 @@ public class AiHelperService(
         {
             var lastMessage = resp.Messages.Last();
             if (lastMessage.ToolCalls == null || lastMessage.ToolCalls.Length == 0)
-                return lastMessage.Content ?? throw new Exception("Empty response");
+            {
+                var gptResponse = JsonConvert.DeserializeObject<GptResponseContent>(lastMessage.Content ?? "{}");
+                return gptResponse?.Message ?? throw new Exception("Empty response");
+            }
             var request = resp.Messages.ToList();
             foreach (var toolCall in lastMessage.ToolCalls)
             {
@@ -109,5 +112,15 @@ public class AiHelperService(
         }
 
         return JsonConvert.SerializeObject(res);
+    }
+
+    private class GptResponseContent
+    {
+        [JsonProperty("message")] public string? Message { get; init; }
+
+        [JsonProperty("function_calling_needed")]
+        public bool? FunctionCallingNeeded { get; init; }
+
+        [JsonProperty("clarification_needed")] public bool? CalrificationNeeded { get; init; }
     }
 }
