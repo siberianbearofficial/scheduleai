@@ -32,8 +32,8 @@
     @if (pair.status == MergedPairStatus.collision) {
       <p>Придется пропустить:</p>
       <ul>
-        @for (collision of pair.collisions; track collision.start_time) {
-          <li>{{ collision.discipline }} ({{ collision.act_type }})</li>
+        @for (collision of pair.collisions; track collision.startTime) {
+          <li>{{ collision.discipline }} ({{ collision.actType }})</li>
         }
       </ul>
     } @else if (pair.status == MergedPairStatus.inGap) {

@@ -4,10 +4,11 @@ import {MergedPairEntity, MergedPairStatus} from '../entities/merged-pairs-entit
 import moment from 'moment';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {combineLatest, EMPTY, map, Observable, switchMap, tap} from 'rxjs';
-import {BffClient, MergedPair, MergedPairsRequestSchema} from '../bff-client/bff-client';
+import {BffClient, MergedPair, MergedPairsRequestSchema, Pair} from '../bff-client/bff-client';
 import {UniversitiesService} from './universities.service';
 import {GroupsService} from './groups.service';
 import {TeacherService} from './teachers.service';
+import {PairEntity} from '../entities/pair-entity';
 
 interface MergedPairsStore {
   mergedPairs: MergedPairEntity[];
@@ -91,7 +92,17 @@ const mergedPairToEntity = (pair: MergedPair): MergedPairEntity => ({
   convenience: pair.convenience,
   rooms: pair.rooms ?? [],
   status: parseMergedPairStatus(pair.status ?? 0),
-  collisions: [],
+  collisions: pair.collisions?.map(pairToEntity) ?? [],
   waitTimeSec: parseTimeSpan(pair.waitTime ?? "00:00:00")
+});
+
+const pairToEntity = (pair: Pair): PairEntity => ({
+  groups: pair.groups ?? [],
+  teachers: pair.teachers ?? [],
+  startTime: moment(pair.startTime),
+  endTime: moment(pair.endTime),
+  actType: pair.actType ?? "",
+  discipline: pair.discipline ?? "",
+  rooms: pair.rooms ?? [],
 });
 
