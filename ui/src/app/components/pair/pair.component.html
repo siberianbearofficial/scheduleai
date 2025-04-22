@@ -13,38 +13,43 @@
           [appearance]="getAppearance(pair)"
           tuiStatus
         >
-          @if (pair.status == MergedPairStatus.collision) {
+          @if (pair.status == MergedPairStatus.Collision) {
             <span>С пропуском пар</span>
-          } @else if (pair.status == MergedPairStatus.inGap || pair.waitTimeSec < 1800) {
+          } @else if (pair.status == MergedPairStatus.InGap || pair.waitTime.asMinutes() < 30) {
             Удобно
           } @else {
-            Ждать {{ Math.floor(pair.waitTimeSec / 3600) }}ч {{ pair.waitTimeSec / 60 % 60 }}м
+            Ждать
+            <app-duration-label [time]="pair.waitTime"></app-duration-label>
           }
         </tui-badge>
       </div>
-      <span tuiSubtitle> {{ pair.discipline }}, {{ pair.actType }} </span>
+      <span tuiSubtitle> {{ pair.discipline }}, {{ humanizeActType(pair.actType) }} </span>
     </h1>
   }
 </button>
 
 <ng-template #tooltip>
   @if (pair) {
-    @if (pair.status == MergedPairStatus.collision) {
+    @if (pair.status == MergedPairStatus.Collision) {
       <p>Придется пропустить:</p>
       <ul>
         @for (collision of pair.collisions; track collision.startTime) {
-          <li>{{ collision.discipline }} ({{ collision.actType }})</li>
+          <li>{{ collision.discipline }} ({{ humanizeActType(collision.actType) }})</li>
         }
       </ul>
-    } @else if (pair.status == MergedPairStatus.inGap) {
+    } @else if (pair.status == MergedPairStatus.InGap) {
       <p>Во время "окна"</p>
-    } @else if (pair.status == MergedPairStatus.beforePairs) {
+    } @else if (pair.status == MergedPairStatus.BeforePairs) {
       <p>Перед парами: после окончания ждать
-        <b>{{ Math.floor(pair.waitTimeSec / 3600) }}ч {{ pair.waitTimeSec / 60 % 60 }}м</b>
+        <b>
+          <app-duration-label [time]="pair.waitTime"></app-duration-label>
+        </b>
       </p>
     } @else {
       <p>После пар: ждать
-        <b>{{ Math.floor(pair.waitTimeSec / 3600) }}ч {{ pair.waitTimeSec / 60 % 60 }}м</b>
+        <b>
+          <app-duration-label [time]="pair.waitTime"></app-duration-label>
+        </b>
       </p>
     }
   }

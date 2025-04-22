@@ -1,11 +1,11 @@
 import {Moment} from 'moment/moment';
 
 export interface PairEntity {
-  groups: string[];
-  teachers: string[];
-  startTime: Moment;
-  endTime: Moment;
-  actType: string;
-  discipline: string;
-  rooms: string[];
+  readonly groups: string[];
+  readonly teachers: string[];
+  readonly startTime: Moment;
+  readonly endTime: Moment;
+  readonly actType: string;
+  readonly discipline: string;
+  readonly rooms: string[];
 }

@@ -1,10 +1,16 @@
 import {inject, Injectable} from '@angular/core';
 import {patchState, signalState} from '@ngrx/signals';
 import {MergedPairEntity, MergedPairStatus} from '../entities/merged-pairs-entity';
-import moment from 'moment';
+import moment, {duration} from 'moment';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {combineLatest, EMPTY, map, Observable, switchMap, tap} from 'rxjs';
-import {BffClient, MergedPair, MergedPairsRequestSchema, Pair} from '../bff-client/bff-client';
+import {
+  BffClient,
+  MergedPair,
+  MergedPairsRequestSchema,
+  MergedPairStatus as BffMergedPairStatus,
+  Pair
+} from '../bff-client/bff-client';
 import {UniversitiesService} from './universities.service';
 import {GroupsService} from './groups.service';
 import {TeacherService} from './teachers.service';
@@ -64,25 +70,12 @@ export class MergedPairsService {
   )
 }
 
-const parseTimeSpan = (timeString: string): number => {
-  const [hours, minutes, seconds] = timeString.split(':').map(Number);
-  return (hours * 3600 + minutes * 60 + seconds);
-}
-
-const parseMergedPairStatus = (status: number): MergedPairStatus => {
-  switch (status) {
-    case 0:
-      return MergedPairStatus.beforePairs;
-    case 1:
-      return MergedPairStatus.afterPairs;
-    case 2:
-      return MergedPairStatus.inGap;
-    case 3:
-      return MergedPairStatus.collision;
-    default:
-      return MergedPairStatus.beforePairs;
-  }
-}
+const mergedStatusMap: Record<BffMergedPairStatus, MergedPairStatus> = {
+  0: MergedPairStatus.BeforePairs,
+  1: MergedPairStatus.AfterPairs,
+  2: MergedPairStatus.InGap,
+  3: MergedPairStatus.Collision
+} as const;
 
 const mergedPairToEntity = (pair: MergedPair): MergedPairEntity => ({
   startTime: moment(pair.startTime),
@@ -91,9 +84,9 @@ const mergedPairToEntity = (pair: MergedPair): MergedPairEntity => ({
   discipline: pair.discipline ?? "",
   convenience: pair.convenience,
   rooms: pair.rooms ?? [],
-  status: parseMergedPairStatus(pair.status ?? 0),
+  status: mergedStatusMap[pair.status ?? BffMergedPairStatus._3],
   collisions: pair.collisions?.map(pairToEntity) ?? [],
-  waitTimeSec: parseTimeSpan(pair.waitTime ?? "00:00:00")
+  waitTime: duration(pair.waitTime ?? "00:00:00")
 });
 
 const pairToEntity = (pair: Pair): PairEntity => ({

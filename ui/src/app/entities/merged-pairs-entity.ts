@@ -1,22 +1,21 @@
-import {Moment} from 'moment';
+import {Duration, Moment} from 'moment';
 import {PairEntity} from './pair-entity';
 
 export enum MergedPairStatus {
-  beforePairs ,
-  afterPairs ,
-  inGap,
-  collision
+  BeforePairs ,
+  AfterPairs ,
+  InGap,
+  Collision
 }
 
 export interface MergedPairEntity {
-  startTime: Moment;
-  endTime: Moment;
-  actType: string;
-  discipline: string;
-  rooms: string[];
-
-  convenience: number;
-  waitTimeSec: number;
-  status: MergedPairStatus;
-  collisions: PairEntity[];
+  readonly startTime: Moment;
+  readonly endTime: Moment;
+  readonly actType: string;
+  readonly discipline: string;
+  readonly rooms: string[];
+  readonly convenience: number;
+  readonly waitTime: Duration;
+  readonly status: MergedPairStatus;
+  readonly collisions: PairEntity[];
 }

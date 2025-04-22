@@ -6,6 +6,8 @@ import {TuiCardLarge, TuiHeader} from '@taiga-ui/layout';
 import {TuiHint, TuiSurface, TuiTitle} from '@taiga-ui/core';
 import * as moment from 'moment';
 import 'moment/locale/ru';
+import {DurationLabelComponent} from '../duration-label/duration-label.component';
+import {MergedPairStatus as BffMergedPairStatus} from '../../bff-client/bff-client';
 
 @Component({
   selector: 'app-pair',
@@ -19,7 +21,8 @@ import 'moment/locale/ru';
     TuiSurface,
     TuiTitle,
     DatePipe,
-    TuiHint
+    TuiHint,
+    DurationLabelComponent
   ],
   templateUrl: './pair.component.html',
   standalone: true,
@@ -39,7 +42,7 @@ export class PairComponent {
   }
 
   getAppearance(pair: MergedPairEntity): string {
-    if (pair.status == MergedPairStatus.collision)
+    if (pair.status == MergedPairStatus.Collision)
       return "negative";
     if (pair.convenience >= 0.8)
       return "positive";
@@ -49,5 +52,14 @@ export class PairComponent {
   }
 
   protected readonly MergedPairStatus = MergedPairStatus;
-  protected readonly Math = Math;
+
+  protected humanizeActType(actType: string): string {
+    return actTypeMap[actType] || actType;
+  }
+}
+
+const actTypeMap: Record<string, string> = {
+  "lecture": "Лекция",
+  "seminar": "Семинар",
+  "lab": "Лабораторная",
 }
