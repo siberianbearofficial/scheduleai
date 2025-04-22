@@ -88,13 +88,17 @@ internal class Parser
             7 => DayOfWeek.Sunday,
             _ => DayOfWeek.Monday,
         };
-        var daysDelta = DateTime.Today.DayOfWeek - pairDay;
-        if (daysDelta < 0)
+        var daysDelta = pairDay - DateTime.Today.DayOfWeek;
+        if (daysDelta < 1)
             daysDelta += 7;
         return new BmstuPair
         {
             ActType = pair.Discipline?.ActType,
-            Discipline = pair.Discipline?.ShortName ?? pair.Discipline?.FullName ?? pair.Discipline?.Abbr,
+            Discipline = string.IsNullOrEmpty(pair.Discipline?.ShortName)
+                ? string.IsNullOrEmpty(pair.Discipline?.FullName)
+                    ? pair.Discipline?.Abbr
+                    : pair.Discipline.FullName
+                : pair.Discipline.ShortName,
             Rooms = pair.Audiences.Select(e => e.Name ?? "").Where(e => !string.IsNullOrEmpty(e)).ToArray(),
             StartTime = new DateTime(DateOnly.FromDateTime(DateTime.Today).AddDays(daysDelta),
                 TimeOnly.Parse(pair.StartTime)),
