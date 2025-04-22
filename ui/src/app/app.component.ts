@@ -6,6 +6,7 @@ import {UniversitiesService} from './services/universities.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {merge, Observable} from 'rxjs';
 import {GroupsService} from './services/groups.service';
+import {TeacherService} from './services/teachers.service';
 
 @Component({
   selector: 'app-root',
@@ -19,6 +20,7 @@ export class AppComponent implements OnInit {
   private readonly destroyRef: DestroyRef = inject(DestroyRef);
   private readonly universitiesService: UniversitiesService = inject(UniversitiesService);
   private readonly groupsService: GroupsService = inject(GroupsService);
+  private readonly teacherService: TeacherService = inject(TeacherService);
 
   ngOnInit() {
     this.mainObservables().pipe(
@@ -29,7 +31,8 @@ export class AppComponent implements OnInit {
   private mainObservables(): Observable<undefined> {
     return merge(
       this.universitiesService.loadUniversities(),
-      this.groupsService.loadGroupsOnUniversityChange$
+      this.groupsService.loadGroupsOnUniversityChange$,
+      this.teacherService.loadTeachersOnUniversityChange$,
     )
   }
 }

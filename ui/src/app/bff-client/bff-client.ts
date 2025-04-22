@@ -92,7 +92,7 @@ export class BffClient {
    * @param search (optional)
    * @return OK
    */
-  groups(universityId: string, search: string | undefined = undefined): Observable<GroupArrayResponseSchema> {
+  groups(universityId: string, search: string | undefined): Observable<GroupArrayResponseSchema> {
     let url_ = this.baseUrl + "/api/v1/groups?";
     if (universityId === undefined || universityId === null)
       throw new Error("The parameter 'universityId' must be defined and cannot be null.");
@@ -217,7 +217,7 @@ export class BffClient {
    * @param search (optional)
    * @return OK
    */
-  teachers(universityId: string, search: string | undefined): Observable<TeacherResponseSchema> {
+  teachers(universityId: string, search: string | undefined): Observable<TeacherArrayResponseSchema> {
     let url_ = this.baseUrl + "/api/v1/teachers?";
     if (universityId === undefined || universityId === null)
       throw new Error("The parameter 'universityId' must be defined and cannot be null.");
@@ -244,14 +244,14 @@ export class BffClient {
         try {
           return this.processTeachers(response_ as any);
         } catch (e) {
-          return _observableThrow(e) as any as Observable<TeacherResponseSchema>;
+          return _observableThrow(e) as any as Observable<TeacherArrayResponseSchema>;
         }
       } else
-        return _observableThrow(response_) as any as Observable<TeacherResponseSchema>;
+        return _observableThrow(response_) as any as Observable<TeacherArrayResponseSchema>;
     }));
   }
 
-  protected processTeachers(response: HttpResponseBase): Observable<TeacherResponseSchema> {
+  protected processTeachers(response: HttpResponseBase): Observable<TeacherArrayResponseSchema> {
     const status = response.status;
     const responseBlob =
       response instanceof HttpResponse ? response.body :
@@ -267,7 +267,7 @@ export class BffClient {
       return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
         let result200: any = null;
         let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-        result200 = TeacherResponseSchema.fromJS(resultData200);
+        result200 = TeacherArrayResponseSchema.fromJS(resultData200);
         return _observableOf(result200);
       }));
     } else if (status !== 200 && status !== 204) {
@@ -275,7 +275,7 @@ export class BffClient {
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
       }));
     }
-    return _observableOf<TeacherResponseSchema>(null as any);
+    return _observableOf<TeacherArrayResponseSchema>(null as any);
   }
 
   /**
@@ -739,7 +739,7 @@ export interface IMergedPairsRequestSchema {
 
 export class Pair implements IPair {
   teachers?: string[] | undefined;
-  groupId!: string | undefined;
+  groups!: string[] | undefined;
   startTime!: Date;
   endTime!: Date;
   rooms?: string[] | undefined;
@@ -762,7 +762,11 @@ export class Pair implements IPair {
         for (let item of _data["teachers"])
           this.teachers!.push(item);
       }
-      this.groupId = _data["groupId"];
+      if (Array.isArray(_data["groups"])) {
+        this.groups = [] as any;
+        for (let item of _data["groups"])
+          this.groups!.push(item);
+      }
       this.startTime = _data["startTime"] ? new Date(_data["startTime"].toString()) : <any>undefined;
       this.endTime = _data["endTime"] ? new Date(_data["endTime"].toString()) : <any>undefined;
       if (Array.isArray(_data["rooms"])) {
@@ -789,7 +793,11 @@ export class Pair implements IPair {
       for (let item of this.teachers)
         data["teachers"].push(item);
     }
-    data["groupId"] = this.groupId;
+    if (Array.isArray(this.groups)) {
+      data["groups"] = [];
+      for (let item of this.groups)
+        data["groups"].push(item);
+    }
     data["startTime"] = this.startTime ? this.startTime.toISOString() : <any>undefined;
     data["endTime"] = this.endTime ? this.endTime.toISOString() : <any>undefined;
     if (Array.isArray(this.rooms)) {
@@ -805,7 +813,7 @@ export class Pair implements IPair {
 
 export interface IPair {
   teachers?: string[] | undefined;
-  groupId: string | undefined;
+  groups: string[] | undefined;
   startTime: Date;
   endTime: Date;
   rooms?: string[] | undefined;
@@ -865,46 +873,51 @@ export interface ITeacher {
   departments?: string[] | undefined;
 }
 
-export class TeacherResponseSchema implements ITeacherResponseSchema {
-  data!: Teacher;
+export class TeacherArrayResponseSchema implements ITeacherArrayResponseSchema {
+  data!: Teacher[] | undefined;
   detail?: string | undefined;
 
-  constructor(data?: ITeacherResponseSchema) {
+  constructor(data?: ITeacherArrayResponseSchema) {
     if (data) {
       for (var property in data) {
         if (data.hasOwnProperty(property))
           (<any>this)[property] = (<any>data)[property];
       }
     }
-    if (!data) {
-      this.data = new Teacher();
-    }
   }
 
   init(_data?: any) {
     if (_data) {
-      this.data = _data["data"] ? Teacher.fromJS(_data["data"]) : new Teacher();
+      if (Array.isArray(_data["data"])) {
+        this.data = [] as any;
+        for (let item of _data["data"])
+          this.data!.push(Teacher.fromJS(item));
+      }
       this.detail = _data["detail"];
     }
   }
 
-  static fromJS(data: any): TeacherResponseSchema {
+  static fromJS(data: any): TeacherArrayResponseSchema {
     data = typeof data === 'object' ? data : {};
-    let result = new TeacherResponseSchema();
+    let result = new TeacherArrayResponseSchema();
     result.init(data);
     return result;
   }
 
   toJSON(data?: any) {
     data = typeof data === 'object' ? data : {};
-    data["data"] = this.data ? this.data.toJSON() : <any>undefined;
+    if (Array.isArray(this.data)) {
+      data["data"] = [];
+      for (let item of this.data)
+        data["data"].push(item.toJSON());
+    }
     data["detail"] = this.detail;
     return data;
   }
 }
 
-export interface ITeacherResponseSchema {
-  data: Teacher;
+export interface ITeacherArrayResponseSchema {
+  data: Teacher[] | undefined;
   detail?: string | undefined;
 }
 
