@@ -1,9 +1,9 @@
-import {AsyncPipe, NgForOf, NgIf} from '@angular/common';
+import {AsyncPipe} from '@angular/common';
 import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {TuiLet} from '@taiga-ui/cdk';
-import {TuiDataList, TuiInitialsPipe, TuiLoader} from '@taiga-ui/core';
-import {TuiAvatar, TuiDataListWrapperComponent, TuiFilterByInputPipe, TuiStringifyContentPipe} from '@taiga-ui/kit';
+import {TuiDataList} from '@taiga-ui/core';
+import {TuiDataListWrapperComponent, TuiFilterByInputPipe, TuiStringifyContentPipe} from '@taiga-ui/kit';
 import {TuiComboBoxModule, TuiTextfieldControllerModule} from '@taiga-ui/legacy';
 
 import {UniversitiesService} from '../../services/universities.service';
@@ -17,15 +17,10 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
   selector: 'app-university-selector',
   imports: [
     AsyncPipe,
-    NgForOf,
-    NgIf,
     ReactiveFormsModule,
-    TuiAvatar,
     TuiComboBoxModule,
     TuiDataList,
-    TuiInitialsPipe,
     TuiLet,
-    TuiLoader,
     TuiTextfieldControllerModule,
     TuiDataListWrapperComponent,
     TuiStringifyContentPipe,

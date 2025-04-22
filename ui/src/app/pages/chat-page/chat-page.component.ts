@@ -1,13 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {TuiMessage} from '@taiga-ui/kit';
-import {LogoComponent} from '../../components/logo/logo.component';
 import FooterComponent from '../../components/footer/footer.component';
 import {HeaderComponent} from '../../components/header/header.component';
 import {DatePipe} from '@angular/common';
 import SimpleSearchBarComponent from '../../components/search-bar/search-bar.component'
 import {FormsModule} from '@angular/forms';
-import {ActivatedRoute, NavigationStart, Router} from '@angular/router';
-import {filter} from 'rxjs';
+import {ActivatedRoute} from '@angular/router';
 
 interface Message {
   text: string;
@@ -22,7 +20,6 @@ interface Message {
   imports: [
     TuiMessage,
     FormsModule,
-    LogoComponent,
     FooterComponent,
     HeaderComponent,
     DatePipe,

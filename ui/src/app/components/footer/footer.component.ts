@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {TuiSheetDialog, TuiSheetDialogOptions} from '@taiga-ui/addon-mobile';
 import {TuiButton} from '@taiga-ui/core';
 

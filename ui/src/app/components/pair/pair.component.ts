@@ -1,26 +1,21 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {TuiAvatar, TuiBadge, TuiStatus} from '@taiga-ui/kit'
+import {TuiBadge, TuiStatus} from '@taiga-ui/kit'
 import {MergedPairEntity, MergedPairStatus} from '../../entities/merged-pairs-entity';
-import {AsyncPipe, DatePipe} from '@angular/common';
 import {TuiCardLarge, TuiHeader} from '@taiga-ui/layout';
 import {TuiHint, TuiSurface, TuiTitle} from '@taiga-ui/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import 'moment/locale/ru';
 import {DurationLabelComponent} from '../duration-label/duration-label.component';
-import {MergedPairStatus as BffMergedPairStatus} from '../../bff-client/bff-client';
 
 @Component({
   selector: 'app-pair',
   imports: [
     TuiBadge,
     TuiStatus,
-    AsyncPipe,
-    TuiAvatar,
     TuiCardLarge,
     TuiHeader,
     TuiSurface,
     TuiTitle,
-    DatePipe,
     TuiHint,
     DurationLabelComponent
   ],

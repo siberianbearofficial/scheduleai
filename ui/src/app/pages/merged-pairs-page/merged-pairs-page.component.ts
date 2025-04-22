@@ -1,10 +1,8 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
-import {TeacherCardComponent} from '../../components/teacher-card/teacher-card.component';
 import {AsyncPipe} from '@angular/common';
 import {LogoComponent} from '../../components/logo/logo.component';
 import FooterComponent from '../../components/footer/footer.component';
-import TeacherSearchBarComponent from '../../components/teacher-search-bar/teacher-search-bar.component';
-import {ActivatedRoute, Route, Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {MergedPairsService} from '../../services/merged-pairs.service';
 import {BehaviorSubject, EMPTY, Observable, switchMap} from 'rxjs';
 import {TeacherService} from '../../services/teachers.service';
@@ -18,12 +16,9 @@ import {MergedPairEntity} from '../../entities/merged-pairs-entity';
   selector: 'app-merged-pairs-page',
   standalone: true,
   imports: [
-    TeacherCardComponent,
     AsyncPipe,
     LogoComponent,
     FooterComponent,
-    TeacherSearchBarComponent,
-    RouterLink,
     PairComponent,
     TuiHeader,
     TuiAppearance,
