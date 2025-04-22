@@ -49,7 +49,7 @@ public class AiHelperService(
     private async Task<string> CallFunc(ToolCall toolCall, Guid universityId, string groupId)
     {
         object? res;
-        return "None";
+        // return "None";
         switch (toolCall.Function.Name)
         {
             case "get_group_schedule":
@@ -100,7 +100,7 @@ public class AiHelperService(
                         getMergedScheduleParams.Date.ToDateTime(new TimeOnly(23, 59, 59)).Date);
                 break;
             default:
-                res = null;
+                res = "None";
                 break;
         }
 
