@@ -5,18 +5,12 @@ import FooterComponent from '../../components/footer/footer.component';
 import {HeaderComponent} from '../../components/header/header.component';
 import {AsyncPipe, DatePipe} from '@angular/common';
 import SimpleSearchBarComponent from '../../components/search-bar/search-bar.component'
-import {FormsModule} from '@angular/forms';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
-import moment, {Moment} from 'moment';
 import {ChatService} from '../../services/chat.service';
 import {take} from 'rxjs';
 import {MessageRole} from '../../entities/message-entity';
-
-interface Message {
-  text: string;
-  sender: 'user' | 'server';
-  timestamp: Moment;
-}
+import {TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
 
 @Component({
   standalone: true,
@@ -30,7 +24,10 @@ interface Message {
     HeaderComponent,
     DatePipe,
     SimpleSearchBarComponent,
-    AsyncPipe
+    AsyncPipe,
+    TuiTextfieldComponent,
+    TuiTextfieldDirective,
+    ReactiveFormsModule
   ],
   templateUrl: './chat-page.component.html',
   styleUrl: './chat-page.component.less',
@@ -38,24 +35,35 @@ interface Message {
 })
 export class ChatPageComponent implements OnInit {
   private readonly chatService: ChatService = inject(ChatService);
-  newMessage = '';
   private readonly route: ActivatedRoute = inject(ActivatedRoute);
 
-  constructor() {}
+  protected readonly messageInputControl = new FormControl('');
+
+  constructor() {
+  }
 
   protected readonly messages$ = this.chatService.messages$;
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       if (params['message']) {
-        this.chatService.sendMessage(params['message']).pipe(
-          take(1),
-        ).subscribe();
+        this.sendMessage(params['message']);
       }
     });
   }
 
-
   protected readonly MessageRole = MessageRole;
+
+  private sendMessage(message: string): void {
+    this.chatService.sendMessage(message).pipe(
+      take(1),
+    ).subscribe();
+  }
+
+  protected onSubmit() {
+    if (this.messageInputControl.value)
+      this.sendMessage(this.messageInputControl.value)
+    this.messageInputControl.setValue("");
+  }
 }
 
