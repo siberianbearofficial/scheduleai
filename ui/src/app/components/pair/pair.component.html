@@ -13,12 +13,12 @@
           [appearance]="getAppearance(pair)"
           tuiStatus
         >
-          @if (pair.status == "collision") {
+          @if (pair.status == MergedPairStatus.collision) {
             <span>С пропуском пар</span>
-          } @else if (pair.status == "inGap" || pair.waitTimeSec < 1800) {
+          } @else if (pair.status == MergedPairStatus.inGap || pair.waitTimeSec < 1800) {
             Удобно
           } @else {
-            Ждать {{ pair.waitTimeSec / 3600 }}ч {{pair.waitTimeSec / 60 % 60 }}м
+            Ждать {{ Math.floor(pair.waitTimeSec / 3600) }}ч {{ pair.waitTimeSec / 60 % 60 }}м
           }
         </tui-badge>
       </div>
@@ -29,22 +29,22 @@
 
 <ng-template #tooltip>
   @if (pair) {
-    @if (pair.status == "collision") {
+    @if (pair.status == MergedPairStatus.collision) {
       <p>Придется пропустить:</p>
       <ul>
         @for (collision of pair.collisions; track collision.start_time) {
           <li>{{ collision.discipline }} ({{ collision.act_type }})</li>
         }
       </ul>
-    } @else if (pair.status == "inGap") {
+    } @else if (pair.status == MergedPairStatus.inGap) {
       <p>Во время "окна"</p>
-    } @else if (pair.status == "beforePairs") {
+    } @else if (pair.status == MergedPairStatus.beforePairs) {
       <p>Перед парами: после окончания ждать
-        <b>{{ pair.waitTimeSec / 3600 }}ч {{pair.waitTimeSec / 60 % 60 }}м</b>
+        <b>{{ Math.floor(pair.waitTimeSec / 3600) }}ч {{ pair.waitTimeSec / 60 % 60 }}м</b>
       </p>
     } @else {
       <p>После пар: ждать
-        <b>{{ pair.waitTimeSec / 3600 }}ч {{pair.waitTimeSec / 60 % 60 }}м</b>
+        <b>{{ Math.floor(pair.waitTimeSec / 3600) }}ч {{ pair.waitTimeSec / 60 % 60 }}м</b>
       </p>
     }
   }

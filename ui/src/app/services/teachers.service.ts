@@ -20,14 +20,7 @@ export class TeacherService {
   private readonly universityService: UniversitiesService = inject(UniversitiesService);
 
   private readonly teachers$$ = signalState<TeacherStore>({
-    teachers: [
-      {
-        id: 'test',
-        fullName: 'Ryaxan',
-        departments: [],
-        avatarUrl: "https://i.imgur.com/tKuNxnA.jpeg"
-      },
-    ],
+    teachers: [],
     selectedTeacher: null
   });
 
@@ -36,10 +29,8 @@ export class TeacherService {
   );
 
   teacherById(teacherId: string): Observable<TeacherEntity | undefined> {
-    console.log("TeacherById")
     return this.teachers$.pipe(
       map(teachers => teachers.find(teachers => teachers.id == teacherId)),
-      tap(console.log),
     );
   }
 
@@ -58,7 +49,6 @@ export class TeacherService {
 
   readonly loadTeachersOnUniversityChange$: Observable<undefined> = this.universityService.selectedUniversity$.pipe(
     switchMap(selected => {
-      console.log(selected);
       if (selected !== null)
         return this.loadTeachers(selected.id)
       return EMPTY;
