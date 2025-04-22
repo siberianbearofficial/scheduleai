@@ -15,8 +15,14 @@
 
   <div class="footer-container">
     <div class="search-bar">
-      <app-search-bar>
-      </app-search-bar>
+      <tui-textfield class="message-input-field">
+        <input
+          placeholder="Введите сообщение"
+          tuiTextfield
+          [formControl]="messageInputControl"
+          (keydown.enter)="onSubmit()"
+        />
+      </tui-textfield>
     </div>
     <div class="footer">
       <app-footer></app-footer>
