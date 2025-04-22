@@ -16,17 +16,17 @@ public class AiHelperService(
 
     public async Task<string> AskHelper(string prompt, Guid universityId, string groupId)
     {
-        return Random.Shared.Next(5) switch
-        {
-            0 => "Обработка запроса...",
-            1 => "Я получил ваше сообщение",
-            2 => $"Получено сообщение {prompt}",
-            3 => "Думаю...",
-            4 => "Здравствуйте. Я - ваш ИИ-помощник.",
-            _ => "Я не должен был сюда попасть..."
-        };
-        // var group = await groupsService.GetGroupByIdAsync(universityId, groupId);
-        var resp = await _client.PostApiAgentRequest(null, universityId.ToString(), groupId, prompt);
+        // return Random.Shared.Next(5) switch
+        // {
+        //     0 => "Обработка запроса...",
+        //     1 => "Я получил ваше сообщение",
+        //     2 => $"Получено сообщение {prompt}",
+        //     3 => "Думаю...",
+        //     4 => "Здравствуйте. Я - ваш ИИ-помощник.",
+        //     _ => "Я не должен был сюда попасть..."
+        // };
+        var group = await groupsService.GetGroupByIdAsync(universityId, groupId);
+        var resp = await _client.PostApiAgentRequest(null, universityId.ToString(), group.Name, prompt);
         while (true)
         {
             var lastMessage = resp.Messages.Last();
@@ -41,11 +41,6 @@ public class AiHelperService(
                     Content = await CallFunc(toolCall, universityId, groupId),
                     ToolCallId = toolCall.Id,
                 });
-                // request = (await _client.PostApiAgentAddFunctionResults(new FunctionResultsModel
-                // {
-                //     Messages = resp.Messages,
-                //     FunctionResult = await CallFunc(toolCall, universityId, groupId)
-                // }, toolCallId: toolCall.Id)).Messages;
             }
 
             resp = await _client.PostApiAgentRequest(new AgentRequestModel
