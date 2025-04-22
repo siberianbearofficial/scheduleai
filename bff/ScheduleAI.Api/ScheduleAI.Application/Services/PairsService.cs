@@ -83,8 +83,8 @@ public class PairsService(IUniversityService universityService) : IScheduleServi
         {
             TeacherPair = e,
             StudentCollisions = studentPairs
-                .Where(p => e.StartTime < p.StartTime && p.StartTime < e.EndTime ||
-                            e.StartTime < p.EndTime && p.EndTime < e.EndTime)
+                .Where(p => e.StartTime <= p.StartTime && p.StartTime <= e.EndTime ||
+                            e.StartTime <= p.EndTime && p.EndTime <= e.EndTime)
         });
 
         foreach (var collision in pairCollisions)
