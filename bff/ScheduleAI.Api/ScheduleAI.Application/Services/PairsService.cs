@@ -78,13 +78,13 @@ public class PairsService(IUniversityService universityService) : IScheduleServi
                 waitTime: teacherPair.StartTime - lessonsEnd));
         }
 
-        var otherPairs = teacherPairs.Where(e => e.StartTime > lessonsStart || e.EndTime < lessonsEnd);
+        var otherPairs = teacherPairs.Where(e => e.EndTime > lessonsStart && e.StartTime < lessonsEnd);
         var pairCollisions = otherPairs.Select(e => new
         {
             TeacherPair = e,
             StudentCollisions = studentPairs
-                .Where(p => e.StartTime < p.StartTime && p.StartTime < e.EndTime ||
-                            e.StartTime < p.EndTime && p.EndTime < e.EndTime)
+                .Where(p => e.StartTime <= p.StartTime && p.StartTime <= e.EndTime ||
+                            e.StartTime <= p.EndTime && p.EndTime <= e.EndTime)
         });
 
         foreach (var collision in pairCollisions)

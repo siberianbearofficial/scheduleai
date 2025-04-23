@@ -11,7 +11,7 @@ namespace ScheduleAI.Api.Controllers;
 public class TeachersController(ITeachersService teachersService) : Controller
 {
     [HttpGet]
-    public async Task<ActionResult<ResponseSchema<Teacher>>> GetTeachers([FromQuery] [Required] Guid universityId,
+    public async Task<ActionResult<ResponseSchema<Teacher[]>>> GetTeachers([FromQuery] [Required] Guid universityId,
         [FromQuery] string? search = null)
     {
         Teacher[] teachers;
@@ -22,7 +22,7 @@ public class TeachersController(ITeachersService teachersService) : Controller
 
         return Ok(new ResponseSchema<Teacher[]>()
         {
-            Detail = "groups was selected",
+            Detail = "Teachers was selected",
             Data = teachers
         });
     }

@@ -16,14 +16,29 @@ builder.Services.AddScoped<IAiHelperService, AiHelperService>();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:4200",
+                "https://scheduleai-ui.netlify.app")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// if (app.Environment.IsDevelopment())
+// {
+//     app.UseSwagger();
+//     app.UseSwaggerUI();
+// }
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseCors();
 
 app.UseHttpsRedirection();
 app.MapControllers();
