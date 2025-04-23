@@ -6,9 +6,9 @@
   [tuiHint]="tooltip"
 >
   @if (pair) {
-    <h1 class="card" tuiTitle>
+    <div class="card-container">
       <div class="convenience">
-        {{ formatDate(pair.startTime) }}
+        <h1 tuiTitle class="pair-time">{{ formatDate(pair.startTime) }}</h1>
         <tui-badge
           [appearance]="getAppearance(pair)"
           tuiStatus
@@ -18,13 +18,16 @@
           } @else if (pair.status == MergedPairStatus.InGap || pair.waitTime.asMinutes() < 30) {
             Удобно
           } @else {
-            Ждать
-            <app-duration-label [time]="pair.waitTime"></app-duration-label>
+            Ждать {{ pair.waitTime | durationLabel }}
           }
         </tui-badge>
       </div>
       <span tuiSubtitle> {{ pair.discipline }}, {{ humanizeActType(pair.actType) }} </span>
-    </h1>
+      <div class="card-bottom-container">
+        <span tuiSubtitle class="pair-groups-label">Группы неизвестны</span>
+        <span tuiSubtitle>{{ pair.rooms.join(", ") }}</span>
+      </div>
+    </div>
   }
 </button>
 
@@ -41,15 +44,11 @@
       <p>Во время "окна"</p>
     } @else if (pair.status == MergedPairStatus.BeforePairs) {
       <p>Перед парами: после окончания ждать
-        <b>
-          <app-duration-label [time]="pair.waitTime"></app-duration-label>
-        </b>
+        <b>{{ pair.waitTime | durationLabel }}</b>
       </p>
     } @else {
       <p>После пар: ждать
-        <b>
-          <app-duration-label [time]="pair.waitTime"></app-duration-label>
-        </b>
+        <b>{{ pair.waitTime | durationLabel }}</b>
       </p>
     }
   }

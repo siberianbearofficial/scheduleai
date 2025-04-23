@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {TuiBadge, TuiStatus} from '@taiga-ui/kit'
 import {MergedPairEntity, MergedPairStatus} from '../../entities/merged-pairs-entity';
-import {TuiCardLarge, TuiHeader} from '@taiga-ui/layout';
+import {TuiCardLarge, TuiCardMedium, TuiHeader} from '@taiga-ui/layout';
 import {TuiHint, TuiSurface, TuiTitle} from '@taiga-ui/core';
 import moment from 'moment';
 import 'moment/locale/ru';
-import {DurationLabelComponent} from '../duration-label/duration-label.component';
+import {DurationLabelPipe} from '../../pipes/duration-label.pipe';
 
 @Component({
   selector: 'app-pair',
@@ -17,7 +17,8 @@ import {DurationLabelComponent} from '../duration-label/duration-label.component
     TuiSurface,
     TuiTitle,
     TuiHint,
-    DurationLabelComponent
+    DurationLabelPipe,
+    TuiCardMedium
   ],
   templateUrl: './pair.component.html',
   standalone: true,
@@ -57,4 +58,4 @@ const actTypeMap: Record<string, string> = {
   "lecture": "Лекция",
   "seminar": "Семинар",
   "lab": "Лабораторная",
-}
+} as const;
