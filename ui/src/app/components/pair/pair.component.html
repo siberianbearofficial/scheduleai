@@ -6,45 +6,49 @@
   [tuiHint]="tooltip"
 >
   @if (pair) {
-    <h1 class="card" tuiTitle>
+    <div class="card-container">
       <div class="convenience">
-        {{ formatDate(pair.startTime) }}
+        <h1 tuiTitle class="pair-time">{{ formatDate(pair.startTime) }}</h1>
         <tui-badge
           [appearance]="getAppearance(pair)"
           tuiStatus
         >
-          @if (pair.status == "collision") {
+          @if (pair.status == MergedPairStatus.Collision) {
             <span>С пропуском пар</span>
-          } @else if (pair.status == "inGap" || pair.waitTimeSec < 1800) {
+          } @else if (pair.status == MergedPairStatus.InGap || pair.waitTime.asMinutes() < 30) {
             Удобно
           } @else {
-            Ждать {{ pair.waitTimeSec / 3600 }}ч {{pair.waitTimeSec / 60 % 60 }}м
+            Ждать {{ pair.waitTime | durationLabel }}
           }
         </tui-badge>
       </div>
-      <span tuiSubtitle> {{ pair.discipline }}, {{ pair.actType }} </span>
-    </h1>
+      <span tuiSubtitle> {{ pair.discipline }}, {{ humanizeActType(pair.actType) }} </span>
+      <div class="card-bottom-container">
+        <span tuiSubtitle class="pair-groups-label">Группы неизвестны</span>
+        <span tuiSubtitle>{{ pair.rooms.join(", ") }}</span>
+      </div>
+    </div>
   }
 </button>
 
 <ng-template #tooltip>
   @if (pair) {
-    @if (pair.status == "collision") {
+    @if (pair.status == MergedPairStatus.Collision) {
       <p>Придется пропустить:</p>
       <ul>
-        @for (collision of pair.collisions; track collision.start_time) {
-          <li>{{ collision.discipline }} ({{ collision.act_type }})</li>
+        @for (collision of pair.collisions; track collision.startTime) {
+          <li>{{ collision.discipline }} ({{ humanizeActType(collision.actType) }})</li>
         }
       </ul>
-    } @else if (pair.status == "inGap") {
+    } @else if (pair.status == MergedPairStatus.InGap) {
       <p>Во время "окна"</p>
-    } @else if (pair.status == "beforePairs") {
+    } @else if (pair.status == MergedPairStatus.BeforePairs) {
       <p>Перед парами: после окончания ждать
-        <b>{{ pair.waitTimeSec / 3600 }}ч {{pair.waitTimeSec / 60 % 60 }}м</b>
+        <b>{{ pair.waitTime | durationLabel }}</b>
       </p>
     } @else {
       <p>После пар: ждать
-        <b>{{ pair.waitTimeSec / 3600 }}ч {{pair.waitTimeSec / 60 % 60 }}м</b>
+        <b>{{ pair.waitTime | durationLabel }}</b>
       </p>
     }
   }

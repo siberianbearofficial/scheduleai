@@ -14,7 +14,7 @@
   </button>
   <div class="schedule-container">
     <div class="schedule">
-      @for (pair of mergedPairs$ | async; track pair) {
+      @for (pair of mergedPairs$ | async; track pair.startTime) {
         <div class="pair-card">
           <app-pair [pair]="pair"></app-pair>
         </div>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {LogoComponent} from '../logo/logo.component';
 import {RouterLink} from "@angular/router";
 
@@ -11,7 +11,8 @@ import {RouterLink} from "@angular/router";
   ],
   templateUrl: './header.component.html',
   standalone: true,
-  styleUrl: './header.component.scss'
+  styleUrl: './header.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
 

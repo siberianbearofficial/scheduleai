@@ -1,26 +1,24 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {TuiAvatar, TuiBadge, TuiStatus} from '@taiga-ui/kit'
-import {MergedPairEntity} from '../../entities/merged-pairs-entity';
-import {AsyncPipe, DatePipe} from '@angular/common';
-import {TuiCardLarge, TuiHeader} from '@taiga-ui/layout';
+import {TuiBadge, TuiStatus} from '@taiga-ui/kit'
+import {MergedPairEntity, MergedPairStatus} from '../../entities/merged-pairs-entity';
+import {TuiCardLarge, TuiCardMedium, TuiHeader} from '@taiga-ui/layout';
 import {TuiHint, TuiSurface, TuiTitle} from '@taiga-ui/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import 'moment/locale/ru';
-import {PairEntity} from '../../entities/pair-entity';
+import {DurationLabelPipe} from '../../pipes/duration-label.pipe';
 
 @Component({
   selector: 'app-pair',
   imports: [
     TuiBadge,
     TuiStatus,
-    AsyncPipe,
-    TuiAvatar,
     TuiCardLarge,
     TuiHeader,
     TuiSurface,
     TuiTitle,
-    DatePipe,
-    TuiHint
+    TuiHint,
+    DurationLabelPipe,
+    TuiCardMedium
   ],
   templateUrl: './pair.component.html',
   standalone: true,
@@ -40,7 +38,7 @@ export class PairComponent {
   }
 
   getAppearance(pair: MergedPairEntity): string {
-    if (pair.status == "collision")
+    if (pair.status == MergedPairStatus.Collision)
       return "negative";
     if (pair.convenience >= 0.8)
       return "positive";
@@ -48,4 +46,16 @@ export class PairComponent {
       return "primary";
     return "warning";
   }
+
+  protected readonly MergedPairStatus = MergedPairStatus;
+
+  protected humanizeActType(actType: string): string {
+    return actTypeMap[actType] || actType;
+  }
 }
+
+const actTypeMap: Record<string, string> = {
+  "lecture": "Лекция",
+  "seminar": "Семинар",
+  "lab": "Лабораторная",
+} as const;

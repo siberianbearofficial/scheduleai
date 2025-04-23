@@ -1,279 +1,101 @@
-import {Injectable} from '@angular/core';
-import {signalState} from '@ngrx/signals';
-import {MergedPairEntity} from '../entities/merged-pairs-entity';
-import moment from 'moment';
+import {inject, Injectable} from '@angular/core';
+import {patchState, signalState} from '@ngrx/signals';
+import {MergedPairEntity, MergedPairStatus} from '../entities/merged-pairs-entity';
+import moment, {duration} from 'moment';
 import {toObservable} from '@angular/core/rxjs-interop';
+import {combineLatest, EMPTY, map, Observable, switchMap, tap} from 'rxjs';
+import {
+  BffClient,
+  MergedPair,
+  MergedPairsRequestSchema,
+  MergedPairStatus as BffMergedPairStatus,
+  Pair
+} from '../bff-client/bff-client';
+import {UniversitiesService} from './universities.service';
+import {GroupsService} from './groups.service';
+import {TeacherService} from './teachers.service';
+import {PairEntity} from '../entities/pair-entity';
+
+interface MergedPairsStore {
+  mergedPairs: MergedPairEntity[];
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class MergedPairsService {
+  private readonly bffClient: BffClient = inject(BffClient);
+  private readonly universityService: UniversitiesService = inject(UniversitiesService);
+  private readonly groupsService: GroupsService = inject(GroupsService);
+  private readonly teacherService: TeacherService = inject(TeacherService);
 
-  constructor() {
+
+  private readonly mergedPairs$$ = signalState<MergedPairsStore>({
+    mergedPairs: [],
+  })
+
+  readonly mergedPairs$: Observable<MergedPairEntity[]> = toObservable(this.mergedPairs$$.mergedPairs).pipe(
+    tap(console.log),
+  );
+
+  private loadMergedPairs(universityId: string, groupId: string, teacherId: string): Observable<undefined> {
+    return this.bffClient.mergedPairs(MergedPairsRequestSchema.fromJS({
+      universityId: universityId,
+      groupId: groupId,
+      teacherId: teacherId,
+      startTime: moment().toDate(),
+      endTime: moment().add(7, 'days').toDate(),
+    })).pipe(
+      tap(resp => console.log(resp.detail)),
+      map(resp => resp.data?.map(mergedPairToEntity)),
+      tap(mergedPairs => patchState(this.mergedPairs$$, {
+        mergedPairs: mergedPairs ?? []
+      })),
+      switchMap(() => EMPTY),
+    )
   }
 
-  private readonly mergedPairs$$ = signalState<MergedPairEntity[]>([
-    {
-      startTime: moment('2023-09-01T09:00:00'),
-      endTime: moment('2023-09-01T10:30:00'),
-      actType: 'Лекция',
-      discipline: 'Математический анализ',
-      rooms: ['А-101'],
-      convenience: 0.3,
-      waitTimeSec: 18000,
-      status: 'beforePairs',
-      collisions: [],
-    },
-    {
-      startTime: moment('2023-09-01T10:45:00'),
-      endTime: moment('2023-09-01T12:15:00'),
-      actType: 'Практика',
-      discipline: 'Программирование',
-      rooms: ['Б-205', 'Б-206'],
-      convenience: 7,
-      waitTimeSec: 9000,
-      status: 'inGap',
-      collisions: [],
-    },
-    {
-      startTime: moment('2023-09-01T12:30:00'),
-      endTime: moment('2023-09-01T14:00:00'),
-      actType: 'Лабораторная',
-      discipline: 'Физика',
-      rooms: ['Л-301'],
-      convenience: 6,
-      waitTimeSec: 0,
-      status: 'collision',
-      collisions: [
-        {
-          group_id: 'Группа 1',
-          teachers: ['Иванов И.И.'],
-          start_time: moment('2023-09-01T12:30:00'),
-          end_time: moment('2023-09-01T14:00:00'),
-          act_type: 'Семинар',
-          discipline: 'Химия',
-          rooms: ['Л-301'],
-        },
-      ],
-    },
-    {
-      startTime: moment('2023-09-01T14:15:00'),
-      endTime: moment('2023-09-01T15:45:00'),
-      actType: 'Семинар',
-      discipline: 'История',
-      rooms: ['А-102'],
-      convenience: 9,
-      waitTimeSec: 0,
-      status: 'afterPairs',
-      collisions: [],
-    },
-    {
-      startTime: moment('2023-09-02T09:00:00'),
-      endTime: moment('2023-09-02T10:30:00'),
-      actType: 'Лекция',
-      discipline: 'Линейная алгебра',
-      rooms: ['А-201'],
-      convenience: 8,
-      waitTimeSec: 0,
-      status: 'beforePairs',
-      collisions: [],
-    },
-    {
-      startTime: moment('2023-09-02T11:00:00'),
-      endTime: moment('2023-09-02T12:30:00'),
-      actType: 'Практика',
-      discipline: 'Иностранный язык',
-      rooms: ['Б-105'],
-      convenience: 7,
-      waitTimeSec: 1800,
-      status: 'inGap',
-      collisions: [],
-    },
-    {
-      startTime: moment('2023-09-02T13:00:00'),
-      endTime: moment('2023-09-02T14:30:00'),
-      actType: 'Лабораторная',
-      discipline: 'Информатика',
-      rooms: ['Л-201', 'Л-202'],
-      convenience: 5,
-      waitTimeSec: 0,
-      status: 'collision',
-      collisions: [
-        {
-          group_id: 'Группа 2',
-          teachers: ['Петров П.П.', 'Сидоров С.С.'],
-          start_time: moment('2023-09-02T13:00:00'),
-          end_time: moment('2023-09-02T14:30:00'),
-          act_type: 'Практика',
-          discipline: 'Экономика',
-          rooms: ['Л-201'],
-        },
-      ],
-    },
-    {
-      startTime: moment('2023-09-03T10:00:00'),
-      endTime: moment('2023-09-03T11:30:00'),
-      actType: 'Лекция',
-      discipline: 'Теория вероятностей',
-      rooms: ['А-301'],
-      convenience: 8,
-      waitTimeSec: 0,
-      status: 'beforePairs',
-      collisions: [],
-    },
-    {
-      startTime: moment('2023-09-03T12:00:00'),
-      endTime: moment('2023-09-03T13:30:00'),
-      actType: 'Семинар',
-      discipline: 'Философия',
-      rooms: ['Б-301'],
-      convenience: 6,
-      waitTimeSec: 1800,
-      status: 'inGap',
-      collisions: [],
-    },
-    {
-      startTime: moment('2023-09-03T14:00:00'),
-      endTime: moment('2023-09-03T15:30:00'),
-      actType: 'Практика',
-      discipline: 'Базы данных',
-      rooms: ['Л-101'],
-      convenience: 7,
-      waitTimeSec: 0,
-      status: 'afterPairs',
-      collisions: [],
-    },
-    {
-      startTime: moment('2023-09-04T08:30:00'),
-      endTime: moment('2023-09-04T10:00:00'),
-      actType: 'Лекция',
-      discipline: 'Дискретная математика',
-      rooms: ['А-202'],
-      convenience: 9,
-      waitTimeSec: 0,
-      status: 'beforePairs',
-      collisions: [],
-    },
-    {
-      startTime: moment('2023-09-04T10:15:00'),
-      endTime: moment('2023-09-04T11:45:00'),
-      actType: 'Лабораторная',
-      discipline: 'Электротехника',
-      rooms: ['Л-302'],
-      convenience: 5,
-      waitTimeSec: 900,
-      status: 'collision',
-      collisions: [
-        {
-          group_id: 'Группа 3',
-          teachers: ['Кузнецов К.К.'],
-          start_time: moment('2023-09-04T10:15:00'),
-          end_time: moment('2023-09-04T11:45:00'),
-          act_type: 'Практика',
-          discipline: 'Механика',
-          rooms: ['Л-302'],
-        },
-      ],
-    },
-    {
-      startTime: moment('2023-09-04T12:00:00'),
-      endTime: moment('2023-09-04T13:30:00'),
-      actType: 'Семинар',
-      discipline: 'Политология',
-      rooms: ['Б-102'],
-      convenience: 7,
-      waitTimeSec: 0,
-      status: 'inGap',
-      collisions: [],
-    },
-    {
-      startTime: moment('2023-09-05T09:30:00'),
-      endTime: moment('2023-09-05T11:00:00'),
-      actType: 'Лекция',
-      discipline: 'Теория алгоритмов',
-      rooms: ['А-103'],
-      convenience: 8,
-      waitTimeSec: 0,
-      status: 'beforePairs',
-      collisions: [],
-    },
-    {
-      startTime: moment('2023-09-05T11:15:00'),
-      endTime: moment('2023-09-05T12:45:00'),
-      actType: 'Практика',
-      discipline: 'Сетевые технологии',
-      rooms: ['Б-203'],
-      convenience: 6,
-      waitTimeSec: 900,
-      status: 'inGap',
-      collisions: [],
-    },
-    {
-      startTime: moment('2023-09-05T13:00:00'),
-      endTime: moment('2023-09-05T14:30:00'),
-      actType: 'Лабораторная',
-      discipline: 'Биохимия',
-      rooms: ['Л-401'],
-      convenience: 7,
-      waitTimeSec: 0,
-      status: 'afterPairs',
-      collisions: [],
-    },
-    {
-      startTime: moment('2023-09-06T08:00:00'),
-      endTime: moment('2023-09-06T09:30:00'),
-      actType: 'Лекция',
-      discipline: 'Квантовая физика',
-      rooms: ['А-302'],
-      convenience: 9,
-      waitTimeSec: 0,
-      status: 'beforePairs',
-      collisions: [],
-    },
-    {
-      startTime: moment('2023-09-06T10:00:00'),
-      endTime: moment('2023-09-06T11:30:00'),
-      actType: 'Семинар',
-      discipline: 'Социология',
-      rooms: ['Б-401'],
-      convenience: 6,
-      waitTimeSec: 1800,
-      status: 'collision',
-      collisions: [
-        {
-          group_id: 'Группа 4',
-          teachers: ['Смирнова С.С.'],
-          start_time: moment('2023-09-06T10:00:00'),
-          end_time: moment('2023-09-06T11:30:00'),
-          act_type: 'Практика',
-          discipline: 'Психология',
-          rooms: ['Б-401'],
-        },
-      ],
-    },
-    {
-      startTime: moment('2023-09-06T12:00:00'),
-      endTime: moment('2023-09-06T13:30:00'),
-      actType: 'Практика',
-      discipline: 'Машинное обучение',
-      rooms: ['Л-201'],
-      convenience: 1,
-      waitTimeSec: 0,
-      status: 'inGap',
-      collisions: [],
-    },
-    {
-      startTime: moment('2023-09-06T14:00:00'),
-      endTime: moment('2023-09-06T15:30:00'),
-      actType: 'Лабораторная',
-      discipline: 'Робототехника',
-      rooms: ['Л-301'],
-      convenience: 1,
-      waitTimeSec: 0,
-      status: 'afterPairs',
-      collisions: [],
-    },
-  ])
-
-  readonly mergedPairs$ = toObservable(this.mergedPairs$$);
+  readonly loadMergedPairsOnUniversityChange$: Observable<undefined> = combineLatest([
+    this.universityService.selectedUniversity$,
+    this.groupsService.selectedGroup$,
+    this.teacherService.selectedTeacher$
+  ]).pipe(
+    switchMap(([university, group, teacher]) => {
+      console.log(`University: ${university}, Group: ${group}, Teacher: ${teacher}`)
+      if (university !== null && group !== null && teacher !== null)
+        return this.loadMergedPairs(university.id, group.id, teacher.id)
+      return EMPTY;
+    }),
+    switchMap(() => EMPTY),
+  )
 }
+
+const mergedStatusMap: Record<BffMergedPairStatus, MergedPairStatus> = {
+  0: MergedPairStatus.BeforePairs,
+  1: MergedPairStatus.AfterPairs,
+  2: MergedPairStatus.InGap,
+  3: MergedPairStatus.Collision
+} as const;
+
+const mergedPairToEntity = (pair: MergedPair): MergedPairEntity => ({
+  startTime: moment(pair.startTime),
+  endTime: moment(pair.endTime),
+  actType: pair.actType ?? "",
+  discipline: pair.discipline ?? "",
+  convenience: pair.convenience,
+  rooms: pair.rooms ?? [],
+  status: mergedStatusMap[pair.status ?? BffMergedPairStatus._3],
+  collisions: pair.collisions?.map(pairToEntity) ?? [],
+  waitTime: duration(pair.waitTime ?? "00:00:00")
+});
+
+const pairToEntity = (pair: Pair): PairEntity => ({
+  groups: pair.groups ?? [],
+  teachers: pair.teachers ?? [],
+  startTime: moment(pair.startTime),
+  endTime: moment(pair.endTime),
+  actType: pair.actType ?? "",
+  discipline: pair.discipline ?? "",
+  rooms: pair.rooms ?? [],
+});
+
