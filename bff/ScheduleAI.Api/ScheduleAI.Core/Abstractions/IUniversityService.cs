@@ -5,6 +5,6 @@ namespace ScheduleAI.Core.Abstractions;
 
 public interface IUniversityService
 {
-    public IUniversity GetUniversity(Guid universityId);
-    public IEnumerable<University> GetAllUniversities();
+    public IUniversity GetUniversity(string universityId);
+    public IEnumerable<IUniversity> GetAllUniversities();
 }

@@ -6,19 +6,19 @@ namespace ScheduleAI.Application.Services;
 
 public class TeachersService(IUniversityService universityService) : ITeachersService
 {
-    public async Task<IEnumerable<Teacher>> GetTeachersAsync(Guid universityId, string name)
+    public async Task<IEnumerable<Teacher>> GetTeachersAsync(string universityId, string name)
     {
         var university = universityService.GetUniversity(universityId);
         return (await university.FindTeachers(name)).Select(UniversityTeacherToTeacher);
     }
 
-    public async Task<IEnumerable<Teacher>> GetTeachersAsync(Guid universityId)
+    public async Task<IEnumerable<Teacher>> GetTeachersAsync(string universityId)
     {
         var university = universityService.GetUniversity(universityId);
         return (await university.GetTeachers()).Select(UniversityTeacherToTeacher);
     }
 
-    public async Task<Teacher> GetTeacherByIdAsync(Guid universityId, string teacherId)
+    public async Task<Teacher> GetTeacherByIdAsync(string universityId, string teacherId)
     {
         var university = universityService.GetUniversity(universityId);
         return UniversityTeacherToTeacher(await university.GetTeacherById(teacherId));
@@ -33,7 +33,7 @@ public class TeachersService(IUniversityService universityService) : ITeachersSe
         };
     }
 
-    public async Task<IEnumerable<Teacher>> GetTeachersByGroupAsync(Guid universityId, string groupId)
+    public async Task<IEnumerable<Teacher>> GetTeachersByGroupAsync(string universityId, string groupId)
     {
         var university = universityService.GetUniversity(universityId);
         return (await university.GetTeachersByGroup(groupId)).Select(UniversityTeacherToTeacher);

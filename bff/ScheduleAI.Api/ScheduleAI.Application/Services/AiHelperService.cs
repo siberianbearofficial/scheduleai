@@ -14,17 +14,8 @@ public class AiHelperService(
     private readonly AiHelperClient _client = new(Environment.GetEnvironmentVariable("AI_HELPER_URL") ??
                                                   throw new Exception("AI_HELPER_URL environment variable is not set"));
 
-    public async Task<string> AskHelper(string prompt, Guid universityId, string groupId)
+    public async Task<string> AskHelper(string prompt, string universityId, string groupId)
     {
-        // return Random.Shared.Next(5) switch
-        // {
-        //     0 => "Обработка запроса...",
-        //     1 => "Я получил ваше сообщение",
-        //     2 => $"Получено сообщение {prompt}",
-        //     3 => "Думаю...",
-        //     4 => "Здравствуйте. Я - ваш ИИ-помощник.",
-        //     _ => "Я не должен был сюда попасть..."
-        // };
         var group = await groupsService.GetGroupByIdAsync(universityId, groupId);
         var resp = await _client.PostApiAgentRequest(null, universityId.ToString(), group.Name, prompt);
         while (true)
@@ -53,7 +44,7 @@ public class AiHelperService(
         }
     }
 
-    private async Task<string> CallFunc(ToolCall toolCall, Guid universityId, string groupId)
+    private async Task<string> CallFunc(ToolCall toolCall, string universityId, string groupId)
     {
         object? res;
         // return "None";

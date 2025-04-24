@@ -11,7 +11,7 @@ namespace ScheduleAI.Api.Controllers;
 public class GroupsController(IGroupsService groupsService) : Controller
 {
     [HttpGet]
-    public async Task<ActionResult<ResponseSchema<Group[]>>> GetGroups([FromQuery] [Required] Guid universityId,
+    public async Task<ActionResult<ResponseSchema<Group[]>>> GetGroups([FromQuery] [Required] string universityId,
         [FromQuery] string? search = null)
     {
         Group[] groups;
