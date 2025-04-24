@@ -2,23 +2,12 @@
   <app-header></app-header>
 
   <div class="chat">
-    @for (message of messages; track message.timestamp) {
-<!--      @if (message.sender == 'server') {-->
-<!--        <span class="container incoming">-->
-<!--          <span-->
-<!--            appearance="accent"-->
-<!--            tuiMessage-->
-<!--          >-->
-<!--          <span class="multiline">{{ message.text }}</span>-->
-<!--          <div class="message-time">{{ message.timestamp | date:'HH:mm' }}</div>-->
-<!--        </span>-->
-<!--        </span>-->
-<!--      }-->
-      <span class="container" [class.incoming]="message.sender === 'server'"
-            [class.outgoing]="message.sender === 'user'">
-        <span tuiMessage [appearance]="message.sender === 'user' ? 'user' : 'server'" class="msg">
-          <span class="multiline">{{ message.text }}</span>
-          <div class="message-time">{{ message.timestamp | date:'HH:mm' }}</div>
+    @for (message of messages$ | async; track message.timestamp) {
+      <span class="container" [class.incoming]="message.role == MessageRole.Assistant"
+            [class.outgoing]="message.role == MessageRole.User">
+        <span tuiMessage [appearance]="message.role == MessageRole.User ? 'user' : 'server'" class="msg">
+          <span class="multiline">{{ message.content }}</span>
+          <div class="message-time">{{ message.timestamp.format('HH:mm') }}</div>
         </span>
       </span>
     }
@@ -26,10 +15,14 @@
 
   <div class="footer-container">
     <div class="search-bar">
-      <app-search-bar
-        [(ngModel)]="newMessage"
-        (enterPressed)="sendMessage()">
-      </app-search-bar>
+      <tui-textfield class="message-input-field">
+        <input
+          placeholder="Введите сообщение"
+          tuiTextfield
+          [formControl]="messageInputControl"
+          (keydown.enter)="onSubmit()"
+        />
+      </tui-textfield>
     </div>
     <div class="footer">
       <app-footer></app-footer>
