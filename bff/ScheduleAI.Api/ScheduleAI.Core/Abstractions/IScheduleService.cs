@@ -10,6 +10,6 @@ public interface IScheduleService
     public Task<IEnumerable<Pair>> GetTeacherScheduleAsync(string universityId, string teacherId, DateTime startDate,
         DateTime endDate);
 
-    public Task<IEnumerable<MergedPair>> GetMergedScheduleAsync(string universityId, string groupId, string teacherId,
+    public Task<IEnumerable<Pair>> GetMergedScheduleAsync(string universityId, string groupId, string teacherId,
         DateTime startDate, DateTime endDate);
 }
