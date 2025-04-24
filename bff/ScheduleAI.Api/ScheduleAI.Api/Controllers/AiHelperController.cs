@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ScheduleAI.Api.Schemas;
 using ScheduleAI.Core.Abstractions;
+using ScheduleAI.Core.Models;
 
 namespace ScheduleAI.Api.Controllers;
 
@@ -17,10 +18,7 @@ public class AiHelperController(IAiHelperService aiHelperService) : Controller
         return Ok(new ResponseSchema<AiHelperResponseModel>
         {
             Detail = "Answer from AiHelper",
-            Data = new AiHelperResponseModel()
-            {
-                Answer = answer,
-            }
+            Data = answer,
         });
     }
 }
