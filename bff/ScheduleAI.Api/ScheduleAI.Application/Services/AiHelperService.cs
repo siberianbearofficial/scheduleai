@@ -24,7 +24,11 @@ public class AiHelperService(
             var lastMessage = resp.Messages.Last();
             if (lastMessage.ToolCalls == null || lastMessage.ToolCalls.Length == 0)
             {
-                var gptResponse = JsonConvert.DeserializeObject<GptResponseContent>(lastMessage.Content ?? "{}");
+                Console.WriteLine(lastMessage.Content);
+                var gptResponseSource = lastMessage.Content ?? "{}";
+                if (gptResponseSource.StartsWith("```json"))
+                    gptResponseSource = gptResponseSource.Remove(0, "```json".Length).Trim('`');
+                var gptResponse = JsonConvert.DeserializeObject<GptResponseContent>(gptResponseSource);
                 return new AiHelperResponseModel
                 {
                     Text = gptResponse?.Message ?? throw new Exception("Empty response"),
@@ -45,7 +49,7 @@ public class AiHelperService(
             resp = await _client.PostApiAgentRequest(new AgentRequestModel
             {
                 Messages = request.ToArray(),
-            }, universityId.ToString(), groupId);
+            }, universityId, groupId);
         }
     }
 
