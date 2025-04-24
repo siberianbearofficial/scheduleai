@@ -13,7 +13,8 @@ public class PairsService(IUniversityService universityService) : IScheduleServi
         return (await university.GetGroupSchedule(groupId, startDate, endDate)).Select(UniversityPairToPair);
     }
 
-    public async Task<IEnumerable<Pair>> GetTeacherScheduleAsync(string universityId, string teacherId, DateTime startDate,
+    public async Task<IEnumerable<Pair>> GetTeacherScheduleAsync(string universityId, string teacherId,
+        DateTime startDate,
         DateTime endDate)
     {
         var university = universityService.GetUniversity(universityId);
@@ -34,7 +35,7 @@ public class PairsService(IUniversityService universityService) : IScheduleServi
         };
     }
 
-    public async Task<IEnumerable<MergedPair>> GetMergedScheduleAsync(string universityId, string groupId,
+    public async Task<IEnumerable<Pair>> GetMergedScheduleAsync(string universityId, string groupId,
         string teacherId,
         DateTime startDate, DateTime endDate)
     {
@@ -43,12 +44,18 @@ public class PairsService(IUniversityService universityService) : IScheduleServi
         var teacherPairs = (await GetTeacherScheduleAsync(universityId, teacherId, startDate, endDate))
             .GroupBy(e => e.StartTime.Date);
 
-        var mergedPairs = new List<MergedPair>();
-        foreach (var pairsOfDate in studentPairs
-                     .Join(teacherPairs, e => e.Key, e => e.Key,
-                         (st, tch) => new { Date = st.Key, StudentPairs = st, TeacherPairs = tch }))
+        var mergedPairs = new List<Pair>();
+        foreach (var pairsOfDate in teacherPairs
+                     .GroupJoin(studentPairs, e => e.Key, e => e.Key,
+                         (tch, st) => new { Date = tch.Key, st, tch })
+                     .SelectMany(e => e.st.DefaultIfEmpty(),
+                         (x, st) => new
+                         {
+                             StudentPairs = st,
+                             TeacherPairs = x.tch,
+                         }))
         {
-            foreach (var mergedPair in MergePairs(pairsOfDate.StudentPairs.ToArray(),
+            foreach (var mergedPair in MergePairs(pairsOfDate.StudentPairs?.ToArray() ?? [],
                          pairsOfDate.TeacherPairs.ToArray()))
             {
                 mergedPairs.Add(mergedPair);
@@ -58,10 +65,15 @@ public class PairsService(IUniversityService universityService) : IScheduleServi
         return mergedPairs;
     }
 
-    private List<MergedPair> MergePairs(Pair[] studentPairs,
+    private List<Pair> MergePairs(Pair[] studentPairs,
         Pair[] teacherPairs)
     {
-        var result = new List<MergedPair>();
+        if (!studentPairs.Any())
+        {
+            return teacherPairs.Select(p => MergedPairFromTeacherPair(p, MergedPairStatus.NoPairs)).ToList();
+        }
+
+        var result = new List<Pair>();
 
         var lessonsStart = studentPairs.Select(e => e.StartTime).Min();
         var lessonsEnd = studentPairs.Select(e => e.EndTime).Max();
@@ -83,15 +95,22 @@ public class PairsService(IUniversityService universityService) : IScheduleServi
         {
             TeacherPair = e,
             StudentCollisions = studentPairs
-                .Where(p => e.StartTime < p.StartTime && p.StartTime < e.EndTime ||
-                            e.StartTime < p.EndTime && p.EndTime < e.EndTime)
+                .Where(p => e.StartTime <= p.StartTime && p.StartTime <= e.EndTime ||
+                            e.StartTime <= p.EndTime && p.EndTime <= e.EndTime)
         });
 
         foreach (var collision in pairCollisions)
         {
             result.Add(MergedPairFromTeacherPair(collision.TeacherPair,
-                collision.StudentCollisions.Any() ? MergedPairStatus.Collision : MergedPairStatus.InGap,
-                collisions: collision.StudentCollisions));
+                collision.StudentCollisions.FirstOrDefault(p =>
+                    p.StartTime == collision.TeacherPair.StartTime &&
+                    p.Teachers.Intersect(collision.TeacherPair.Teachers).Any()) != null
+                    ? MergedPairStatus.This
+                    : collision.StudentCollisions.Any()
+                        ? MergedPairStatus.Collision
+                        : MergedPairStatus.InGap,
+                collisions:
+                collision.StudentCollisions));
         }
 
         return result;
@@ -99,7 +118,7 @@ public class PairsService(IUniversityService universityService) : IScheduleServi
 
     private static TimeSpan MaxWaitTime { get; } = TimeSpan.FromHours(8);
 
-    private MergedPair MergedPairFromTeacherPair(Pair pair, MergedPairStatus status,
+    private Pair MergedPairFromTeacherPair(Pair pair, MergedPairStatus status,
         IEnumerable<Pair>? collisions = null, TimeSpan? waitTime = null)
     {
         collisions = collisions?.ToArray();
@@ -108,20 +127,26 @@ public class PairsService(IUniversityService universityService) : IScheduleServi
             MergedPairStatus.BeforePairs => 1 - waitTime / MaxWaitTime,
             MergedPairStatus.AfterPairs => 1 - waitTime / MaxWaitTime,
             MergedPairStatus.InGap => 1,
-            MergedPairStatus.Collision => collisions?.Count() > 1 ? 0 : 0.5,
+            MergedPairStatus.Collision => collisions?.Count() > 1 ? 0 : 0.4,
+            MergedPairStatus.NoPairs => 0.6,
+            MergedPairStatus.This => 1,
             _ => 0
         } ?? 0;
-        return new MergedPair()
+        return new Pair
         {
             ActType = pair.ActType,
             Discipline = pair.Discipline,
             StartTime = pair.StartTime,
             EndTime = pair.EndTime,
             Rooms = pair.Rooms,
-            Status = status,
-            Collisions = collisions?.ToArray() ?? [],
-            WaitTime = waitTime,
-            Convenience = convenience
+            Groups = pair.Groups,
+            Convenience = new PairConvenience
+            {
+                Status = status,
+                Collisions = collisions?.ToArray() ?? [],
+                WaitTime = waitTime,
+                Coefficient = convenience
+            }
         };
     }
 }

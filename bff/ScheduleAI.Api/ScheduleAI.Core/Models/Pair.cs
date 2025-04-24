@@ -9,4 +9,5 @@ public class Pair
     public string[] Rooms { get; init; } = [];
     public string? Discipline { get; init; }
     public string? ActType { get; init; }
+    public PairConvenience? Convenience { get; init; }
 }

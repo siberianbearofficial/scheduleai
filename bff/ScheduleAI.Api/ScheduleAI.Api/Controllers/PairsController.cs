@@ -11,12 +11,12 @@ namespace ScheduleAI.Api.Controllers;
 public class PairsController(IScheduleService scheduleService) : Controller
 {
     [HttpPost]
-    public async Task<ActionResult<ResponseSchema<MergedPair[]>>> MergedPairs(
+    public async Task<ActionResult<ResponseSchema<Pair[]>>> MergedPairs(
         [FromBody] [Required] MergedPairsRequestSchema request)
     {
         var mergedPairs = await scheduleService.GetMergedScheduleAsync(request.UniversityId, request.GroupId,
             request.TeacherId, request.StartTime, request.EndTime);
-        return Ok(new ResponseSchema<MergedPair[]>
+        return Ok(new ResponseSchema<Pair[]>
         {
             Detail = "Pairs was merged",
             Data = mergedPairs.ToArray()
