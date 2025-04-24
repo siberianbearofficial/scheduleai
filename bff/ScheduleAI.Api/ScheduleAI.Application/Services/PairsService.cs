@@ -6,14 +6,14 @@ namespace ScheduleAI.Application.Services;
 
 public class PairsService(IUniversityService universityService) : IScheduleService
 {
-    public async Task<IEnumerable<Pair>> GetGroupScheduleAsync(Guid universityId, string groupId, DateTime startDate,
+    public async Task<IEnumerable<Pair>> GetGroupScheduleAsync(string universityId, string groupId, DateTime startDate,
         DateTime endDate)
     {
         var university = universityService.GetUniversity(universityId);
         return (await university.GetGroupSchedule(groupId, startDate, endDate)).Select(UniversityPairToPair);
     }
 
-    public async Task<IEnumerable<Pair>> GetTeacherScheduleAsync(Guid universityId, string teacherId, DateTime startDate,
+    public async Task<IEnumerable<Pair>> GetTeacherScheduleAsync(string universityId, string teacherId, DateTime startDate,
         DateTime endDate)
     {
         var university = universityService.GetUniversity(universityId);
@@ -34,7 +34,7 @@ public class PairsService(IUniversityService universityService) : IScheduleServi
         };
     }
 
-    public async Task<IEnumerable<MergedPair>> GetMergedScheduleAsync(Guid universityId, string groupId,
+    public async Task<IEnumerable<MergedPair>> GetMergedScheduleAsync(string universityId, string groupId,
         string teacherId,
         DateTime startDate, DateTime endDate)
     {

@@ -11,7 +11,7 @@ namespace ScheduleAI.Api.Controllers;
 public class TeachersController(ITeachersService teachersService) : Controller
 {
     [HttpGet]
-    public async Task<ActionResult<ResponseSchema<Teacher[]>>> GetTeachers([FromQuery] [Required] Guid universityId,
+    public async Task<ActionResult<ResponseSchema<Teacher[]>>> GetTeachers([FromQuery] [Required] string universityId,
         [FromQuery] string? search = null)
     {
         Teacher[] teachers;

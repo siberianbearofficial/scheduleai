@@ -3,6 +3,7 @@
 public interface IUniversity
 {
     public string Name { get; }
+    public string Id { get; }
 
     public Task<IEnumerable<IUniversityGroup>> GetGroups();
 

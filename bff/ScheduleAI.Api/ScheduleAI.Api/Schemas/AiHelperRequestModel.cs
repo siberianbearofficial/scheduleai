@@ -2,7 +2,7 @@
 
 public class AiHelperRequestModel
 {
-    public required Guid UniversityId { get; init; }
+    public required string UniversityId { get; init; }
     public required string GroupId { get; init; }
     public required string Prompt { get; init; }
 }

@@ -4,7 +4,7 @@ namespace ScheduleAI.Core.Abstractions;
 
 public interface IGroupsService
 {
-    public Task<Group> GetGroupByIdAsync(Guid universityId, string groupId);
-    public Task<IEnumerable<Group>> GetGroupsAsync(Guid universityId);
-    public Task<IEnumerable<Group>> GetGroupsAsync(Guid universityId, string abbr);
+    public Task<Group> GetGroupByIdAsync(string universityId, string groupId);
+    public Task<IEnumerable<Group>> GetGroupsAsync(string universityId);
+    public Task<IEnumerable<Group>> GetGroupsAsync(string universityId, string abbr);
 }
