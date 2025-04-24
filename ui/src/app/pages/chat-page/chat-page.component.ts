@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {TuiMessage} from '@taiga-ui/kit';
 import {LogoComponent} from '../../components/logo/logo.component';
 import FooterComponent from '../../components/footer/footer.component';
@@ -8,9 +8,10 @@ import SimpleSearchBarComponent from '../../components/search-bar/search-bar.com
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
 import {ChatService} from '../../services/chat.service';
-import {take} from 'rxjs';
+import {first, take} from 'rxjs';
 import {MessageRole} from '../../entities/message-entity';
 import {TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   standalone: true,
@@ -36,6 +37,7 @@ import {TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
 export class ChatPageComponent implements OnInit {
   private readonly chatService: ChatService = inject(ChatService);
   private readonly route: ActivatedRoute = inject(ActivatedRoute);
+  private readonly destroyRef: DestroyRef = inject(DestroyRef);
 
   protected readonly messageInputControl = new FormControl('');
 
@@ -53,7 +55,8 @@ export class ChatPageComponent implements OnInit {
 
   private sendMessage(message: string): void {
     this.chatService.sendMessage(message).pipe(
-      take(1),
+      first(),
+      takeUntilDestroyed(this.destroyRef),
     ).subscribe();
   }
 

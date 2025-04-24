@@ -8,6 +8,10 @@ import {UniversitiesService} from './universities.service';
 import {GroupsService} from './groups.service';
 import moment from 'moment';
 
+interface MessagesStore {
+  messages: MessageEntity[];
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -16,12 +20,17 @@ export class ChatService {
     private readonly universityService: UniversitiesService = inject(UniversitiesService);
     private readonly groupsService: GroupsService = inject(GroupsService);
 
-    private readonly messages$$: MessageEntity[] = [];
+    private readonly messages$$ = signalState<MessagesStore>({
+      messages: []
+    });
 
-    readonly messages$ = of(this.messages$$);
+    readonly messages$ = toObservable(this.messages$$.messages);
 
-    private addMessage(message: MessageEntity): void {
-        this.messages$$.push(message);
+    private addMessage(message: MessageEntity) {
+        patchState(this.messages$$, store => {
+          store.messages.push(message);
+          return store;
+        })
     }
 
     sendMessage(message: string): Observable<undefined> {
