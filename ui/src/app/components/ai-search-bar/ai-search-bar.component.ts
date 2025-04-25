@@ -24,7 +24,6 @@ export default class SearchBarComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   @Output() search = new EventEmitter<string>();
-  @Output() showTeacher = new EventEmitter<TeacherEntity>();
 
   protected readonly control = new FormControl<string>("");
 
