@@ -1,24 +1,55 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {TuiIcon, TuiTextfield} from '@taiga-ui/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, EventEmitter, inject, OnInit, Output} from '@angular/core';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {TuiDropdown, TuiIcon, TuiTextfield} from '@taiga-ui/core';
 import {TuiTooltip} from '@taiga-ui/kit';
+import {TeacherEntity} from '../../entities/teacher-entity';
+import {TeacherService} from '../../services/teachers.service';
+import {combineLatest, map, Observable, tap} from 'rxjs';
+import {AsyncPipe} from '@angular/common';
+import {RouterLink} from '@angular/router';
+import {TeacherCardComponent} from '../teacher-card/teacher-card.component';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   standalone: true,
   exportAs: "search-bar",
   selector: "app-ai-search-bar",
-  imports: [FormsModule, TuiIcon, TuiTextfield, TuiTooltip],
+  imports: [FormsModule, TuiIcon, TuiTextfield, TuiTooltip, TuiDropdown, ReactiveFormsModule, AsyncPipe, RouterLink, TeacherCardComponent],
   templateUrl: './ai-search-bar.component.html',
   styleUrls: ['./ai-search-bar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class SearchBarComponent {
-  searchQuery = '';
+export default class SearchBarComponent implements OnInit {
+  private readonly teacherService = inject(TeacherService);
+  private readonly destroyRef = inject(DestroyRef);
+
   @Output() search = new EventEmitter<string>();
+  @Output() showTeacher = new EventEmitter<TeacherEntity>();
+
+  protected readonly control = new FormControl<string>("");
+
+  protected dropdownOpened = false;
+
+  protected filtered: TeacherEntity[] = []
+
+  ngOnInit() {
+    combineLatest([this.control.valueChanges, this.teacherService.teachers$]).pipe(
+      tap(([search]) => this.dropdownOpened = search !== null && search.length >= 2),
+      tap(([search, teachers]) =>
+        this.filtered = teachers.filter(e =>
+          e.fullName.toLowerCase().includes(search?.toLowerCase() ?? "")).slice(0, 6)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe();
+  }
 
   onSearch() {
-    if (this.searchQuery.trim()) {
-      this.search.emit(this.searchQuery);
+    const query = this.control.value;
+    if (query?.trim()) {
+      this.search.emit(query);
     }
+  }
+
+  protected selectTeacher(teacher: TeacherEntity) {
+    this.teacherService.selectTeacher(teacher);
   }
 }
