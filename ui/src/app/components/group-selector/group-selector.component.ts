@@ -7,7 +7,7 @@ import {TuiDataListWrapperComponent, TuiFilterByInputPipe, TuiStringifyContentPi
 import {TuiComboBoxModule, TuiTextfieldControllerModule} from '@taiga-ui/legacy';
 
 import {GroupsService} from '../../services/groups.service';
-import {BehaviorSubject, combineLatest, map, Observable, tap} from 'rxjs';
+import {BehaviorSubject, combineLatest, distinctUntilChanged, map, Observable, tap} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {GroupEntity} from '../../entities/group-entity';
 import {UniversityEntity} from '../../entities/university-entity';
@@ -47,7 +47,13 @@ export default class GroupSelectorComponent implements OnInit {
   protected readonly control = new FormControl();
 
   ngOnInit() {
+    this.service.selectedGroup$.pipe(
+      distinctUntilChanged(),
+      tap(u => this.control.setValue(u)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe();
     this.control.valueChanges.pipe(
+      distinctUntilChanged(),
       tap(u => this.service.selectGroup(u)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe();

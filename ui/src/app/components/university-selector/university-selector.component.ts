@@ -7,7 +7,7 @@ import {TuiDataListWrapperComponent, TuiFilterByInputPipe, TuiStringifyContentPi
 import {TuiComboBoxModule, TuiTextfieldControllerModule} from '@taiga-ui/legacy';
 
 import {UniversitiesService} from '../../services/universities.service';
-import {BehaviorSubject, combineLatest, map, Observable, tap} from 'rxjs';
+import {BehaviorSubject, combineLatest, distinctUntilChanged, map, Observable, tap} from 'rxjs';
 import {UniversityEntity} from '../../entities/university-entity';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
@@ -44,10 +44,12 @@ export default class UniversitySelectorComponent implements OnInit {
 
   ngOnInit() {
     this.service.selectedUniversity$.pipe(
+      distinctUntilChanged(),
       tap(u => this.control.setValue(u)),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe();
     this.control.valueChanges.pipe(
+      distinctUntilChanged(),
       tap(u => this.service.selectUniversity(u)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe();

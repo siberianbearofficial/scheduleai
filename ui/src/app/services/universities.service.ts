@@ -60,7 +60,7 @@ export class UniversitiesService {
 
   readonly saveSelectedUniversity$: Observable<undefined> = toObservable(this.universities$$).pipe(
     tap(store => {
-      if (store.loadingUniversitiesStatus == LoadingStatus.Completed) {
+      if (store.loadingSelectedStatus != LoadingStatus.NotStarted) {
         if (store.selectedUniversity === null) {
           localStorage.removeItem(selectedUniversityKey);
         } else {

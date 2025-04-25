@@ -33,6 +33,7 @@ export class AppComponent implements OnInit {
       this.universitiesService.loadUniversities(),
       this.universitiesService.saveSelectedUniversity$,
       this.groupsService.loadGroupsOnUniversityChange$,
+      this.groupsService.saveSelectedGroup$,
       this.teacherService.loadTeachersOnUniversityChange$,
     )
   }
