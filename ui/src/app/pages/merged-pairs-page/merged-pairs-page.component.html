@@ -5,10 +5,10 @@
     </div>
   </div>
   <button class="back"
-    tuiButton
-    type="button"
-    icon="tuiIconChevronLeft"
-    (click)="goBack()"
+          tuiButton
+          type="button"
+          icon="tuiIconChevronLeft"
+          routerLink="/"
   >
     < Назад
   </button>
@@ -20,24 +20,24 @@
         </div>
       }
     </div>
-      @if (teacher$ | async; as teacher) {
-        <div class="teacher-info">
-            <div
-              tuiAppearance="floating"
-              tuiCardLarge
-            >
-              <header tuiHeader>
-                <h2 tuiTitle>{{ teacher.fullName }}</h2>
-              </header>
+    @if (teacher$ | async; as teacher) {
+      <div class="teacher-info">
+        <div
+          tuiAppearance="floating"
+          tuiCardLarge
+        >
+          <header tuiHeader>
+            <h2 tuiTitle>{{ teacher.fullName }}</h2>
+          </header>
 
-              <img class="teacher-avatar" src="{{ teacher.avatarUrl }}" alt="no data">
+          <img class="teacher-avatar" src="{{ teacher.avatarUrl }}" alt="no data">
 
-              <footer>
-                Преподает на кафедрах: {{ teacher.departments }}
-              </footer>
-            </div>
+          <footer>
+            Преподает на кафедрах: {{ teacher.departments }}
+          </footer>
         </div>
-      }
+      </div>
+    }
   </div>
   <div class="footer">
     <app-footer></app-footer>
