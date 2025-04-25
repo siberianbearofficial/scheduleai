@@ -2,8 +2,21 @@
   <input
     placeholder="Кого хотите найти сегодня?"
     tuiTextfield
-    [(ngModel)]="searchQuery"
+    [formControl]="control"
+    [tuiDropdown]="dropdownContent"
+    [tuiDropdownManual]="dropdownOpened"
+    tuiDropdownDirection="bottom"
     (keyup.enter)="onSearch()"
   />
-  <tui-icon tuiTooltip="Найдите нужного вам преподователя, просто спросив об этом нашего бота" />
+  <tui-icon tuiTooltip="Найдите нужного вам преподователя, просто спросив об этом нашего бота"/>
 </tui-textfield>
+
+<ng-template #dropdownContent>
+  <div class="dropdown">
+    @for (teacher of filtered; track teacher.id) {
+        <div class="teacher-card" routerLink="/teacherSchedule/{{ teacher.id }}">
+          <app-teacher-card [teacherId]="teacher.id" (click)="selectTeacher(teacher)"></app-teacher-card>
+        </div>
+      }
+  </div>
+</ng-template>

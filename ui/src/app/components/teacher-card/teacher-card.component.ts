@@ -20,7 +20,7 @@ import {TeacherService} from '../../services/teachers.service';
   ],
   templateUrl: './teacher-card.component.html',
   standalone: true,
-  styleUrl: './teacher-card.component.less',
+  styleUrl: './teacher-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
