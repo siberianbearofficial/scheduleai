@@ -43,6 +43,10 @@ export default class UniversitySelectorComponent implements OnInit {
   )
 
   ngOnInit() {
+    this.service.selectedUniversity$.pipe(
+      tap(u => this.control.setValue(u)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe();
     this.control.valueChanges.pipe(
       tap(u => this.service.selectUniversity(u)),
       takeUntilDestroyed(this.destroyRef)
