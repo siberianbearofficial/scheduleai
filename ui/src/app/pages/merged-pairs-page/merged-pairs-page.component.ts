@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@a
 import {AsyncPipe} from '@angular/common';
 import {LogoComponent} from '../../components/logo/logo.component';
 import FooterComponent from '../../components/footer/footer.component';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {MergedPairsService} from '../../services/merged-pairs.service';
 import {BehaviorSubject, EMPTY, Observable, switchMap} from 'rxjs';
 import {TeacherService} from '../../services/teachers.service';
@@ -24,7 +24,8 @@ import {PairEntity} from '../../entities/pair-entity';
     TuiAppearance,
     TuiCardLarge,
     TuiTitle,
-    TuiButton
+    TuiButton,
+    RouterLink
   ],
   templateUrl: './merged-pairs-page.component.html',
   styleUrl: './merged-pairs-page.component.scss',
@@ -46,9 +47,5 @@ export class MergedPairsPageComponent implements OnInit {
     this.mergedPairsService.loadMergedPairsOnUniversityChange$.pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe();
-  }
-
-  goBack(): void {
-    this.router.navigate(['/teacherSchedule']);
   }
 }
