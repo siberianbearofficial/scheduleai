@@ -3,18 +3,16 @@
   tuiHeader
   tuiSurface="floating"
   type="button"
+  class="teacher-card"
 >
   @if (teacher$ | async; as teacher) {
-    <h1 class="card" tuiTitle>
-      {{ teacher.fullName }}
-      <span tuiSubtitle> {{ teacher.departments }} </span>
-    </h1>
-
-    <aside tuiAccessories>
+    <div class="teacher-card-container">
       <tui-avatar
         appearance="primary"
         src='{{ teacher.avatarUrl }}'
       />
-    </aside>
+      {{ teacher.fullName }}
+      <span> {{ teacher.departments }} </span>
+    </div>
   }
 </button>
