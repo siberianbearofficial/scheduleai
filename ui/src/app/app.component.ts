@@ -31,7 +31,9 @@ export class AppComponent implements OnInit {
   private mainObservables(): Observable<undefined> {
     return merge(
       this.universitiesService.loadUniversities(),
+      this.universitiesService.saveSelectedUniversity$,
       this.groupsService.loadGroupsOnUniversityChange$,
+      this.groupsService.saveSelectedGroup$,
       this.teacherService.loadTeachersOnUniversityChange$,
     )
   }
