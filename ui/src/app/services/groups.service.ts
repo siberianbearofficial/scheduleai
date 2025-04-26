@@ -6,23 +6,22 @@ import {EMPTY, map, Observable, switchMap, tap} from 'rxjs';
 import {BffClient, Group} from '../bff-client/bff-client';
 import {UniversitiesService} from './universities.service';
 import {LoadingStatus} from '../entities/LoadingStatus';
+import {StorageService} from './storage.service';
 
 interface GroupStore {
   readonly groups: GroupEntity[];
   readonly selectedGroup: GroupEntity | null;
-  loadingGroupsStatus: LoadingStatus;
+  readonly loadingGroupsStatus: LoadingStatus;
   loadingSelectedStatus: LoadingStatus;
 }
-
-const selectedGroupKey = "scheduleai-selectedGroup";
 
 @Injectable({
   providedIn: 'root'
 })
 export class GroupsService {
-
   private readonly bffClient: BffClient = inject(BffClient);
   private readonly universityService: UniversitiesService = inject(UniversitiesService);
+  private readonly storageService: StorageService = inject(StorageService)
 
   private readonly groups$$ = signalState<GroupStore>({
     groups: [],
@@ -44,20 +43,12 @@ export class GroupsService {
     return this.bffClient.groups(universityId, "").pipe(
       tap(resp => console.log(resp.detail)),
       map(resp => resp.data?.map(groupToEntity)),
-      tap(groups => patchState(this.groups$$, {groups})),
-      tap(() => patchState(this.groups$$, {loadingGroupsStatus: LoadingStatus.Completed})),
-      tap(groups => {
-        const selectedGroupId = localStorage.getItem(selectedGroupKey);
-        groups = groups?.filter(u => u.id === selectedGroupId);
-        if (groups == undefined || groups.length != 1) {
-          patchState(this.groups$$, {selectedGroup: null, loadingSelectedStatus: LoadingStatus.Failed})
-        } else {
-          patchState(this.groups$$, {
-            selectedGroup: groups[0],
-            loadingSelectedStatus: LoadingStatus.Completed
-          });
-        }
-      }),
+      tap(groups => patchState(this.groups$$, {
+        groups,
+        loadingGroupsStatus: LoadingStatus.Completed,
+        selectedGroup: this.storageService.getGroup(groups ?? []),
+        loadingSelectedStatus: LoadingStatus.Completed,
+      })),
       switchMap(() => EMPTY),
     )
   }
@@ -75,11 +66,7 @@ export class GroupsService {
   readonly saveSelectedGroup$: Observable<undefined> = toObservable(this.groups$$).pipe(
     tap(store => {
       if (store.loadingSelectedStatus != LoadingStatus.NotStarted) {
-        if (store.selectedGroup === null) {
-          localStorage.removeItem(selectedGroupKey);
-        } else {
-          localStorage.setItem(selectedGroupKey, store.selectedGroup.id);
-        }
+        this.storageService.setGroup(store.selectedGroup)
       }
     }),
     switchMap(() => EMPTY),

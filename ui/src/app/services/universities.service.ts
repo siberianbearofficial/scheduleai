@@ -5,22 +5,21 @@ import {EMPTY, map, Observable, switchMap, tap} from 'rxjs';
 import {UniversityEntity} from '../entities/university-entity';
 import {BffClient, University} from '../bff-client/bff-client';
 import {LoadingStatus} from '../entities/LoadingStatus';
+import {StorageService} from './storage.service';
 
 interface UniversityStore {
-  universities: UniversityEntity[];
-  selectedUniversity: UniversityEntity | null;
-  loadingUniversitiesStatus: LoadingStatus;
-  loadingSelectedStatus: LoadingStatus;
+  readonly universities: UniversityEntity[];
+  readonly selectedUniversity: UniversityEntity | null;
+  readonly loadingUniversitiesStatus: LoadingStatus;
+  readonly loadingSelectedStatus: LoadingStatus;
 }
-
-const selectedUniversityKey = "scheduleai-selectedUniversity";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UniversitiesService {
-
   private readonly bffClient: BffClient = inject(BffClient);
+  private readonly storageService: StorageService = inject(StorageService);
 
   private readonly universities$$ = signalState<UniversityStore>({
     universities: [],
@@ -40,20 +39,10 @@ export class UniversitiesService {
       map(resp => resp.data?.map(universityToEntity)),
       tap(universities => patchState(this.universities$$, {
         universities,
+        loadingUniversitiesStatus: LoadingStatus.Completed,
+        selectedUniversity: this.storageService.getUniversity(universities ?? []),
+        loadingSelectedStatus: LoadingStatus.Completed,
       })),
-      tap(() => patchState(this.universities$$, {loadingUniversitiesStatus: LoadingStatus.Completed}),),
-      tap(universities => {
-        const selectedUniversityId = localStorage.getItem(selectedUniversityKey);
-        universities = universities?.filter(u => u.id === selectedUniversityId);
-        if (universities == undefined || universities.length != 1) {
-          patchState(this.universities$$, {selectedUniversity: null, loadingSelectedStatus: LoadingStatus.Failed})
-        } else {
-          patchState(this.universities$$, {
-            selectedUniversity: universities[0],
-            loadingSelectedStatus: LoadingStatus.Completed
-          });
-        }
-      }),
       switchMap(() => EMPTY)
     )
   }
@@ -61,11 +50,7 @@ export class UniversitiesService {
   readonly saveSelectedUniversity$: Observable<undefined> = toObservable(this.universities$$).pipe(
     tap(store => {
       if (store.loadingSelectedStatus != LoadingStatus.NotStarted) {
-        if (store.selectedUniversity === null) {
-          localStorage.removeItem(selectedUniversityKey);
-        } else {
-          localStorage.setItem(selectedUniversityKey, store.selectedUniversity.id);
-        }
+        this.storageService.setUniversity(store.selectedUniversity);
       }
     }),
     switchMap(() => EMPTY),
