@@ -47,7 +47,7 @@ internal class Parser
                                 bmstuTeacher = new BmstuTeacher
                                 {
                                     Id = teacher.Id.ToString() ?? throw new NullReferenceException(),
-                                    FullName = $"{teacher.FirstName} {teacher.MiddleName} {teacher.LastName}",
+                                    FullName = $"{teacher.LastName} {teacher.FirstName} {teacher.MiddleName}",
                                 };
                                 Console.WriteLine($"Adding teacher {bmstuTeacher.FullName}");
                                 Teachers.Add(bmstuTeacher);
