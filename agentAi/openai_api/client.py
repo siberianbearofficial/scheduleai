@@ -5,6 +5,7 @@ from typing import Type
 from openai_api.schema import *
 from utils.logger import logger
 
+
 class Client:
     def __init__(self, api_key: str, base_url: str | None = None):
         self._base_url = base_url

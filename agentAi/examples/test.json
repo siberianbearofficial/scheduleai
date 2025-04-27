@@ -1,0 +1,3 @@
+{
+      "content": "{\n  \"function_calling_needed\": false,\n  \"clarification_needed\": false,\n  \"message\": \"Вы можете встретиться с <b>Куровым Андреем Владимировичем</b> сегодня: <ul><li><b>с 10:30 до 12:05</b>, лекция <i>«Базы данных»</i>, аудитория <b>101а</b></li></ul>\",\n  \"schedule\": [\n    {\n      \"Teachers\": [\n        \"Куров Андрей Владимирович\"\n      ],\n      \"Groups\": [\n        \"Группа 101\",\n        \"Группа 102\"\n      ],\n      \"StartTime\": \"2025-04-27T10:30:00\",\n      \"EndTime\": \"2025-04-27T12:05:00\",\n      \"Rooms\": [\n        \"101а\"\n      ],\n      \"Discipline\": \"Базы данных\",\n      \"ActType\": \"Лекция\",\n      \"Convenience\": {\n        \"someField\": \"Примечание для удобства\"\n      }\n    }\n  ]\n}"
+}

@@ -1,4 +1,7 @@
 from pydantic import BaseModel, Field
+from typing import Type, Any, Optional
+import json
+
 from openai_api.schema import *
 
 
@@ -24,11 +27,14 @@ class MergedPair(BaseModel):
 
 
 class ResponseFormat(BaseModel):
-    function_calling_needed: bool = Field(..., description="Требуется вызов одной или нескольких предоствленных функций или нет.")
-    clarification_needed: bool  = Field(..., description="Нужны уточнения у пользователя (true если требуется любая информация от пользователя, чтобы вызвать функцию; true если нужно уточнить у пользователя что именно он хочет узнать)." \
-    "Не может быть True одновременно с function_calling_needed, то есть если нужны уточнения у пользователя вызов функций запрещен.")
-    message: str = Field(..., description="Ответ в произвольном текстовом формате.")
-    schedule: Optional[list[MergedPair]] = Field(None, description="Задавать, только если конечное расписание (ответ для пользователя) было получено из get_merged_schedule. Ответ из get_merged_schedule полностью соответствует этой json-схеме")
+    function_calling_needed: bool = Field(...)
+    clarification_needed: bool = Field(...)
+    message: str = Field(...)
+    schedule: Optional[dict[str, Any]] = Field(None)
 
 
-
+def save_schema_to_json(model: Type[BaseModel], file_path: str) -> None:
+    """Сохраняет схему модели в JSON файл."""
+    schema = model.model_json_schema()
+    with open(file_path, 'w', encoding='utf-8') as f:
+        json.dump(schema, f, ensure_ascii=False, indent=4)

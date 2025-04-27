@@ -1,0 +1,58 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "Teachers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "Groups": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "StartTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "EndTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Rooms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "Discipline": {
+          "type": "string",
+          "nullable": true
+        },
+        "ActType": {
+          "type": "string",
+          "nullable": true
+        },
+        "Convenience": {
+          "type": "object",
+          "properties": {
+            "someField": {
+              "type": "string"
+            }
+          },
+          "nullable": true
+        }
+      },
+      "required": ["Groups", "StartTime", "EndTime"]
+    }
+  }
+  
