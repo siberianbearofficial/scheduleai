@@ -48,7 +48,7 @@ export class ChatService {
             tap(resp => console.log(resp.detail)),
             tap(resp => this.addMessage({
                 role: MessageRole.Assistant,
-                content: resp.data.answer ?? "",
+                content: resp.data.text ?? "",
                 timestamp: moment(),
             })),
             switchMap(() => EMPTY),

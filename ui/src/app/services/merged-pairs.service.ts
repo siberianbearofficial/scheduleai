@@ -1,12 +1,10 @@
 import {inject, Injectable} from '@angular/core';
 import {patchState, signalState} from '@ngrx/signals';
-import {MergedPairEntity, MergedPairStatus} from '../entities/merged-pairs-entity';
 import moment, {duration} from 'moment';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {combineLatest, EMPTY, map, Observable, switchMap, tap} from 'rxjs';
 import {
   BffClient,
-  MergedPair,
   MergedPairsRequestSchema,
   MergedPairStatus as BffMergedPairStatus,
   Pair
@@ -14,10 +12,10 @@ import {
 import {UniversitiesService} from './universities.service';
 import {GroupsService} from './groups.service';
 import {TeacherService} from './teachers.service';
-import {PairEntity} from '../entities/pair-entity';
+import {MergedPairStatus, PairEntity} from '../entities/pair-entity';
 
 interface MergedPairsStore {
-  mergedPairs: MergedPairEntity[];
+  mergedPairs: PairEntity[];
 }
 
 @Injectable({
@@ -34,7 +32,7 @@ export class MergedPairsService {
     mergedPairs: [],
   })
 
-  readonly mergedPairs$: Observable<MergedPairEntity[]> = toObservable(this.mergedPairs$$.mergedPairs).pipe(
+  readonly mergedPairs$: Observable<PairEntity[]> = toObservable(this.mergedPairs$$.mergedPairs).pipe(
     tap(console.log),
   );
 
@@ -47,7 +45,7 @@ export class MergedPairsService {
       endTime: moment().add(7, 'days').toDate(),
     })).pipe(
       tap(resp => console.log(resp.detail)),
-      map(resp => resp.data?.map(mergedPairToEntity)),
+      map(resp => resp.data?.map(pairToEntity)),
       tap(mergedPairs => patchState(this.mergedPairs$$, {
         mergedPairs: mergedPairs ?? []
       })),
@@ -71,31 +69,27 @@ export class MergedPairsService {
 }
 
 const mergedStatusMap: Record<BffMergedPairStatus, MergedPairStatus> = {
-  0: MergedPairStatus.BeforePairs,
-  1: MergedPairStatus.AfterPairs,
-  2: MergedPairStatus.InGap,
-  3: MergedPairStatus.Collision
+  [BffMergedPairStatus._0]: MergedPairStatus.BeforePairs,
+  [BffMergedPairStatus._1]: MergedPairStatus.AfterPairs,
+  [BffMergedPairStatus._2]: MergedPairStatus.InGap,
+  [BffMergedPairStatus._3]: MergedPairStatus.Collision,
+  [BffMergedPairStatus._4]: MergedPairStatus.This,
+  [BffMergedPairStatus._5]: MergedPairStatus.NoPairs,
 } as const;
 
-const mergedPairToEntity = (pair: MergedPair): MergedPairEntity => ({
+const pairToEntity = (pair: Pair): PairEntity => ({
   startTime: moment(pair.startTime),
   endTime: moment(pair.endTime),
   actType: pair.actType ?? "",
   discipline: pair.discipline ?? "",
-  convenience: pair.convenience,
   rooms: pair.rooms ?? [],
-  status: mergedStatusMap[pair.status ?? BffMergedPairStatus._3],
-  collisions: pair.collisions?.map(pairToEntity) ?? [],
-  waitTime: duration(pair.waitTime ?? "00:00:00")
-});
-
-const pairToEntity = (pair: Pair): PairEntity => ({
   groups: pair.groups ?? [],
   teachers: pair.teachers ?? [],
-  startTime: moment(pair.startTime),
-  endTime: moment(pair.endTime),
-  actType: pair.actType ?? "",
-  discipline: pair.discipline ?? "",
-  rooms: pair.rooms ?? [],
+  convenience: pair.convenience === null ? null : {
+    coefficient: pair.convenience?.coefficient ?? 0,
+    status: mergedStatusMap[pair.convenience?.status ?? BffMergedPairStatus._3],
+    collisions: pair.convenience?.collisions?.map(pairToEntity) ?? [],
+    waitTime: duration(pair.convenience?.waitTime ?? "00:00:00"),
+  }
 });
 
