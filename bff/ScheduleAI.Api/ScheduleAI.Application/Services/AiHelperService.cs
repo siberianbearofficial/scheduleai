@@ -24,17 +24,9 @@ public class AiHelperService(
             var lastMessage = resp.Messages.Last();
             if (lastMessage.ToolCalls == null || lastMessage.ToolCalls.Length == 0)
             {
-                Console.WriteLine(lastMessage.Content);
-                var gptResponseSource = lastMessage.Content ?? "{}";
-                if (gptResponseSource.StartsWith("```json"))
-                    gptResponseSource = gptResponseSource.Remove(0, "```json".Length).Trim('`');
-                var gptResponse = JsonConvert.DeserializeObject<GptResponseContent>(gptResponseSource);
-                return new AiHelperResponseModel
-                {
-                    Text = gptResponse?.Message ?? throw new Exception("Empty response"),
-                    Pairs = gptResponse.Pairs,
-                };
+                return ConvertResponse(lastMessage);
             }
+
             var request = resp.Messages.ToList();
             foreach (var toolCall in lastMessage.ToolCalls)
             {
@@ -114,10 +106,23 @@ public class AiHelperService(
         return JsonConvert.SerializeObject(res);
     }
 
+    private static AiHelperResponseModel ConvertResponse(MessageModel lastMessage)
+    {
+        var gptResponseSource = lastMessage.Content ?? "{}";
+        if (gptResponseSource.StartsWith("```json"))
+            gptResponseSource = gptResponseSource.Remove(0, "```json".Length).Trim('`');
+        var gptResponse = JsonConvert.DeserializeObject<GptResponseContent>(gptResponseSource);
+        return new AiHelperResponseModel
+        {
+            Text = gptResponse?.Message ?? throw new Exception("Empty response"),
+            Pairs = gptResponse.Pairs,
+        };
+    }
+
     private class GptResponseContent
     {
         [JsonProperty("message")] public string? Message { get; init; }
-        
+
         [JsonProperty("schedule")] public Pair[]? Pairs { get; init; }
 
         [JsonProperty("function_calling_needed")]
