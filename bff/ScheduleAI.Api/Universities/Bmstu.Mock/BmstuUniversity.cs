@@ -5,6 +5,7 @@ namespace Bmstu.Mock;
 public class BmstuUniversity : IUniversity
 {
     public string Name => "МГТУ им. Баумана";
+    public string Id => "Bmstu";
 
     private readonly Parser _parser = new();
 

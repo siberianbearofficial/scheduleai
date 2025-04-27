@@ -7,5 +7,7 @@ public enum MergedPairStatus
     [JsonPropertyName("beforePairs")] BeforePairs,
     [JsonPropertyName("afterPairs")] AfterPairs,
     [JsonPropertyName("inGap")] InGap,
-    [JsonPropertyName("collision")] Collision
+    [JsonPropertyName("collision")] Collision,
+    [JsonPropertyName("this")] This,
+    [JsonPropertyName("noPairs")] NoPairs,
 }

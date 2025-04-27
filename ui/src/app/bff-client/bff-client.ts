@@ -156,7 +156,7 @@ export class BffClient {
   /**
    * @return OK
    */
-  mergedPairs(body: MergedPairsRequestSchema): Observable<MergedPairArrayResponseSchema> {
+  mergedPairs(body: MergedPairsRequestSchema): Observable<PairArrayResponseSchema> {
     let url_ = this.baseUrl + "/api/v1/mergedPairs";
     url_ = url_.replace(/[?&]$/, "");
 
@@ -179,14 +179,14 @@ export class BffClient {
         try {
           return this.processMergedPairs(response_ as any);
         } catch (e) {
-          return _observableThrow(e) as any as Observable<MergedPairArrayResponseSchema>;
+          return _observableThrow(e) as any as Observable<PairArrayResponseSchema>;
         }
       } else
-        return _observableThrow(response_) as any as Observable<MergedPairArrayResponseSchema>;
+        return _observableThrow(response_) as any as Observable<PairArrayResponseSchema>;
     }));
   }
 
-  protected processMergedPairs(response: HttpResponseBase): Observable<MergedPairArrayResponseSchema> {
+  protected processMergedPairs(response: HttpResponseBase): Observable<PairArrayResponseSchema> {
     const status = response.status;
     const responseBlob =
       response instanceof HttpResponse ? response.body :
@@ -202,7 +202,7 @@ export class BffClient {
       return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
         let result200: any = null;
         let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-        result200 = MergedPairArrayResponseSchema.fromJS(resultData200);
+        result200 = PairArrayResponseSchema.fromJS(resultData200);
         return _observableOf(result200);
       }));
     } else if (status !== 200 && status !== 204) {
@@ -210,7 +210,7 @@ export class BffClient {
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
       }));
     }
-    return _observableOf<MergedPairArrayResponseSchema>(null as any);
+    return _observableOf<PairArrayResponseSchema>(null as any);
   }
 
   /**
@@ -281,7 +281,7 @@ export class BffClient {
   /**
    * @return OK
    */
-  universities(): Observable<UniversityArrayResponseSchema> {
+  universities(): Observable<IUniversityArrayResponseSchema> {
     let url_ = this.baseUrl + "/api/v1/universities";
     url_ = url_.replace(/[?&]$/, "");
 
@@ -300,14 +300,14 @@ export class BffClient {
         try {
           return this.processUniversities(response_ as any);
         } catch (e) {
-          return _observableThrow(e) as any as Observable<UniversityArrayResponseSchema>;
+          return _observableThrow(e) as any as Observable<IUniversityArrayResponseSchema>;
         }
       } else
-        return _observableThrow(response_) as any as Observable<UniversityArrayResponseSchema>;
+        return _observableThrow(response_) as any as Observable<IUniversityArrayResponseSchema>;
     }));
   }
 
-  protected processUniversities(response: HttpResponseBase): Observable<UniversityArrayResponseSchema> {
+  protected processUniversities(response: HttpResponseBase): Observable<IUniversityArrayResponseSchema> {
     const status = response.status;
     const responseBlob =
       response instanceof HttpResponse ? response.body :
@@ -323,7 +323,7 @@ export class BffClient {
       return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
         let result200: any = null;
         let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-        result200 = UniversityArrayResponseSchema.fromJS(resultData200);
+        result200 = IUniversityArrayResponseSchema.fromJS(resultData200);
         return _observableOf(result200);
       }));
     } else if (status !== 200 && status !== 204) {
@@ -331,12 +331,12 @@ export class BffClient {
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
       }));
     }
-    return _observableOf<UniversityArrayResponseSchema>(null as any);
+    return _observableOf<IUniversityArrayResponseSchema>(null as any);
   }
 }
 
 export class AiHelperRequestModel implements IAiHelperRequestModel {
-  universityId!: string;
+  universityId!: string | undefined;
   groupId!: string | undefined;
   prompt!: string | undefined;
 
@@ -374,13 +374,14 @@ export class AiHelperRequestModel implements IAiHelperRequestModel {
 }
 
 export interface IAiHelperRequestModel {
-  universityId: string;
+  universityId: string | undefined;
   groupId: string | undefined;
   prompt: string | undefined;
 }
 
 export class AiHelperResponseModel implements IAiHelperResponseModel {
-  answer!: string | undefined;
+  text!: string | undefined;
+  pairs?: Pair[] | undefined;
 
   constructor(data?: IAiHelperResponseModel) {
     if (data) {
@@ -393,7 +394,12 @@ export class AiHelperResponseModel implements IAiHelperResponseModel {
 
   init(_data?: any) {
     if (_data) {
-      this.answer = _data["answer"];
+      this.text = _data["text"];
+      if (Array.isArray(_data["pairs"])) {
+        this.pairs = [] as any;
+        for (let item of _data["pairs"])
+          this.pairs!.push(Pair.fromJS(item));
+      }
     }
   }
 
@@ -406,13 +412,19 @@ export class AiHelperResponseModel implements IAiHelperResponseModel {
 
   toJSON(data?: any) {
     data = typeof data === 'object' ? data : {};
-    data["answer"] = this.answer;
+    data["text"] = this.text;
+    if (Array.isArray(this.pairs)) {
+      data["pairs"] = [];
+      for (let item of this.pairs)
+        data["pairs"].push(item.toJSON());
+    }
     return data;
   }
 }
 
 export interface IAiHelperResponseModel {
-  answer: string | undefined;
+  text: string | undefined;
+  pairs?: Pair[] | undefined;
 }
 
 export class AiHelperResponseModelResponseSchema implements IAiHelperResponseModelResponseSchema {
@@ -546,18 +558,11 @@ export interface IGroupArrayResponseSchema {
   detail?: string | undefined;
 }
 
-export class MergedPair implements IMergedPair {
-  startTime!: Date;
-  endTime!: Date;
-  actType?: string | undefined;
-  discipline?: string | undefined;
-  rooms?: string[] | undefined;
-  convenience!: number;
-  collisions?: Pair[] | undefined;
-  waitTime?: string | undefined;
-  status?: MergedPairStatus;
+export class IUniversity implements IIUniversity {
+  readonly name?: string | undefined;
+  readonly id?: string | undefined;
 
-  constructor(data?: IMergedPair) {
+  constructor(data?: IIUniversity) {
     if (data) {
       for (var property in data) {
         if (data.hasOwnProperty(property))
@@ -568,73 +573,36 @@ export class MergedPair implements IMergedPair {
 
   init(_data?: any) {
     if (_data) {
-      this.startTime = _data["startTime"] ? new Date(_data["startTime"].toString()) : <any>undefined;
-      this.endTime = _data["endTime"] ? new Date(_data["endTime"].toString()) : <any>undefined;
-      this.actType = _data["actType"];
-      this.discipline = _data["discipline"];
-      if (Array.isArray(_data["rooms"])) {
-        this.rooms = [] as any;
-        for (let item of _data["rooms"])
-          this.rooms!.push(item);
-      }
-      this.convenience = _data["convenience"];
-      if (Array.isArray(_data["collisions"])) {
-        this.collisions = [] as any;
-        for (let item of _data["collisions"])
-          this.collisions!.push(Pair.fromJS(item));
-      }
-      this.waitTime = _data["waitTime"];
-      this.status = _data["status"];
+      (<any>this).name = _data["name"];
+      (<any>this).id = _data["id"];
     }
   }
 
-  static fromJS(data: any): MergedPair {
+  static fromJS(data: any): IUniversity {
     data = typeof data === 'object' ? data : {};
-    let result = new MergedPair();
+    let result = new IUniversity();
     result.init(data);
     return result;
   }
 
   toJSON(data?: any) {
     data = typeof data === 'object' ? data : {};
-    data["startTime"] = this.startTime ? this.startTime.toISOString() : <any>undefined;
-    data["endTime"] = this.endTime ? this.endTime.toISOString() : <any>undefined;
-    data["actType"] = this.actType;
-    data["discipline"] = this.discipline;
-    if (Array.isArray(this.rooms)) {
-      data["rooms"] = [];
-      for (let item of this.rooms)
-        data["rooms"].push(item);
-    }
-    data["convenience"] = this.convenience;
-    if (Array.isArray(this.collisions)) {
-      data["collisions"] = [];
-      for (let item of this.collisions)
-        data["collisions"].push(item.toJSON());
-    }
-    data["waitTime"] = this.waitTime;
-    data["status"] = this.status;
+    data["name"] = this.name;
+    data["id"] = this.id;
     return data;
   }
 }
 
-export interface IMergedPair {
-  startTime: Date;
-  endTime: Date;
-  actType?: string | undefined;
-  discipline?: string | undefined;
-  rooms?: string[] | undefined;
-  convenience: number;
-  collisions?: Pair[] | undefined;
-  waitTime?: string | undefined;
-  status?: MergedPairStatus;
+export interface IIUniversity {
+  name?: string | undefined;
+  id?: string | undefined;
 }
 
-export class MergedPairArrayResponseSchema implements IMergedPairArrayResponseSchema {
-  data!: MergedPair[] | undefined;
+export class IUniversityArrayResponseSchema implements IIUniversityArrayResponseSchema {
+  data!: IUniversity[] | undefined;
   detail?: string | undefined;
 
-  constructor(data?: IMergedPairArrayResponseSchema) {
+  constructor(data?: IIUniversityArrayResponseSchema) {
     if (data) {
       for (var property in data) {
         if (data.hasOwnProperty(property))
@@ -648,15 +616,15 @@ export class MergedPairArrayResponseSchema implements IMergedPairArrayResponseSc
       if (Array.isArray(_data["data"])) {
         this.data = [] as any;
         for (let item of _data["data"])
-          this.data!.push(MergedPair.fromJS(item));
+          this.data!.push(IUniversity.fromJS(item));
       }
       this.detail = _data["detail"];
     }
   }
 
-  static fromJS(data: any): MergedPairArrayResponseSchema {
+  static fromJS(data: any): IUniversityArrayResponseSchema {
     data = typeof data === 'object' ? data : {};
-    let result = new MergedPairArrayResponseSchema();
+    let result = new IUniversityArrayResponseSchema();
     result.init(data);
     return result;
   }
@@ -673,8 +641,8 @@ export class MergedPairArrayResponseSchema implements IMergedPairArrayResponseSc
   }
 }
 
-export interface IMergedPairArrayResponseSchema {
-  data: MergedPair[] | undefined;
+export interface IIUniversityArrayResponseSchema {
+  data: IUniversity[] | undefined;
   detail?: string | undefined;
 }
 
@@ -683,10 +651,12 @@ export enum MergedPairStatus {
   _1 = 1,
   _2 = 2,
   _3 = 3,
+  _4 = 4,
+  _5 = 5,
 }
 
 export class MergedPairsRequestSchema implements IMergedPairsRequestSchema {
-  universityId!: string;
+  universityId!: string | undefined;
   groupId!: string | undefined;
   teacherId!: string | undefined;
   startTime!: Date;
@@ -730,7 +700,7 @@ export class MergedPairsRequestSchema implements IMergedPairsRequestSchema {
 }
 
 export interface IMergedPairsRequestSchema {
-  universityId: string;
+  universityId: string | undefined;
   groupId: string | undefined;
   teacherId: string | undefined;
   startTime: Date;
@@ -745,6 +715,7 @@ export class Pair implements IPair {
   rooms?: string[] | undefined;
   discipline?: string | undefined;
   actType?: string | undefined;
+  convenience?: PairConvenience;
 
   constructor(data?: IPair) {
     if (data) {
@@ -776,6 +747,7 @@ export class Pair implements IPair {
       }
       this.discipline = _data["discipline"];
       this.actType = _data["actType"];
+      this.convenience = _data["convenience"] ? PairConvenience.fromJS(_data["convenience"]) : <any>undefined;
     }
   }
 
@@ -807,6 +779,7 @@ export class Pair implements IPair {
     }
     data["discipline"] = this.discipline;
     data["actType"] = this.actType;
+    data["convenience"] = this.convenience ? this.convenience.toJSON() : <any>undefined;
     return data;
   }
 }
@@ -819,6 +792,111 @@ export interface IPair {
   rooms?: string[] | undefined;
   discipline?: string | undefined;
   actType?: string | undefined;
+  convenience?: PairConvenience;
+}
+
+export class PairArrayResponseSchema implements IPairArrayResponseSchema {
+  data!: Pair[] | undefined;
+  detail?: string | undefined;
+
+  constructor(data?: IPairArrayResponseSchema) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      if (Array.isArray(_data["data"])) {
+        this.data = [] as any;
+        for (let item of _data["data"])
+          this.data!.push(Pair.fromJS(item));
+      }
+      this.detail = _data["detail"];
+    }
+  }
+
+  static fromJS(data: any): PairArrayResponseSchema {
+    data = typeof data === 'object' ? data : {};
+    let result = new PairArrayResponseSchema();
+    result.init(data);
+    return result;
+  }
+
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    if (Array.isArray(this.data)) {
+      data["data"] = [];
+      for (let item of this.data)
+        data["data"].push(item.toJSON());
+    }
+    data["detail"] = this.detail;
+    return data;
+  }
+}
+
+export interface IPairArrayResponseSchema {
+  data: Pair[] | undefined;
+  detail?: string | undefined;
+}
+
+export class PairConvenience implements IPairConvenience {
+  coefficient!: number;
+  collisions?: Pair[] | undefined;
+  waitTime?: string | undefined;
+  status?: MergedPairStatus;
+
+  constructor(data?: IPairConvenience) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      this.coefficient = _data["coefficient"];
+      if (Array.isArray(_data["collisions"])) {
+        this.collisions = [] as any;
+        for (let item of _data["collisions"])
+          this.collisions!.push(Pair.fromJS(item));
+      }
+      this.waitTime = _data["waitTime"];
+      this.status = _data["status"];
+    }
+  }
+
+  static fromJS(data: any): PairConvenience {
+    data = typeof data === 'object' ? data : {};
+    let result = new PairConvenience();
+    result.init(data);
+    return result;
+  }
+
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data["coefficient"] = this.coefficient;
+    if (Array.isArray(this.collisions)) {
+      data["collisions"] = [];
+      for (let item of this.collisions)
+        data["collisions"].push(item.toJSON());
+    }
+    data["waitTime"] = this.waitTime;
+    data["status"] = this.status;
+    return data;
+  }
+}
+
+export interface IPairConvenience {
+  coefficient: number;
+  collisions?: Pair[] | undefined;
+  waitTime?: string | undefined;
+  status?: MergedPairStatus;
 }
 
 export class Teacher implements ITeacher {
@@ -918,94 +996,6 @@ export class TeacherArrayResponseSchema implements ITeacherArrayResponseSchema {
 
 export interface ITeacherArrayResponseSchema {
   data: Teacher[] | undefined;
-  detail?: string | undefined;
-}
-
-export class University implements IUniversity {
-  id!: string;
-  name!: string | undefined;
-
-  constructor(data?: IUniversity) {
-    if (data) {
-      for (var property in data) {
-        if (data.hasOwnProperty(property))
-          (<any>this)[property] = (<any>data)[property];
-      }
-    }
-  }
-
-  init(_data?: any) {
-    if (_data) {
-      this.id = _data["id"];
-      this.name = _data["name"];
-    }
-  }
-
-  static fromJS(data: any): University {
-    data = typeof data === 'object' ? data : {};
-    let result = new University();
-    result.init(data);
-    return result;
-  }
-
-  toJSON(data?: any) {
-    data = typeof data === 'object' ? data : {};
-    data["id"] = this.id;
-    data["name"] = this.name;
-    return data;
-  }
-}
-
-export interface IUniversity {
-  id: string;
-  name: string | undefined;
-}
-
-export class UniversityArrayResponseSchema implements IUniversityArrayResponseSchema {
-  data!: University[] | undefined;
-  detail?: string | undefined;
-
-  constructor(data?: IUniversityArrayResponseSchema) {
-    if (data) {
-      for (var property in data) {
-        if (data.hasOwnProperty(property))
-          (<any>this)[property] = (<any>data)[property];
-      }
-    }
-  }
-
-  init(_data?: any) {
-    if (_data) {
-      if (Array.isArray(_data["data"])) {
-        this.data = [] as any;
-        for (let item of _data["data"])
-          this.data!.push(University.fromJS(item));
-      }
-      this.detail = _data["detail"];
-    }
-  }
-
-  static fromJS(data: any): UniversityArrayResponseSchema {
-    data = typeof data === 'object' ? data : {};
-    let result = new UniversityArrayResponseSchema();
-    result.init(data);
-    return result;
-  }
-
-  toJSON(data?: any) {
-    data = typeof data === 'object' ? data : {};
-    if (Array.isArray(this.data)) {
-      data["data"] = [];
-      for (let item of this.data)
-        data["data"].push(item.toJSON());
-    }
-    data["detail"] = this.detail;
-    return data;
-  }
-}
-
-export interface IUniversityArrayResponseSchema {
-  data: University[] | undefined;
   detail?: string | undefined;
 }
 

@@ -3,7 +3,7 @@ import {patchState, signalState} from '@ngrx/signals';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {EMPTY, map, Observable, switchMap, tap} from 'rxjs';
 import {UniversityEntity} from '../entities/university-entity';
-import {BffClient, University} from '../bff-client/bff-client';
+import {BffClient, IUniversity} from '../bff-client/bff-client';
 import {LoadingStatus} from '../entities/LoadingStatus';
 import {StorageService} from './storage.service';
 
@@ -63,7 +63,7 @@ export class UniversitiesService {
   }
 }
 
-const universityToEntity = (university: University): UniversityEntity => ({
-  id: university.id,
+const universityToEntity = (university: IUniversity): UniversityEntity => ({
+  id: university.id ?? "",
   name: university.name ?? "<Неизвестный университет>",
 });

@@ -7,7 +7,7 @@ namespace ScheduleAI.Application.Services;
 
 public class UniversityService : IUniversityService
 {
-    private readonly Dictionary<Guid, IUniversity> _universities = [];
+    private readonly Dictionary<string, IUniversity> _universities = [];
 
     public UniversityService()
     {
@@ -16,16 +16,16 @@ public class UniversityService : IUniversityService
 
     private void AddUniversity(IUniversity university)
     {
-        _universities.Add(Guid.NewGuid(), university);
+        _universities.Add(university.Id, university);
     }
 
-    public IUniversity GetUniversity(Guid universityId)
+    public IUniversity GetUniversity(string universityId)
     {
         return _universities[universityId];
     }
 
-    public IEnumerable<University> GetAllUniversities()
+    public IEnumerable<IUniversity> GetAllUniversities()
     {
-        return _universities.Select(e => new University() { Id = e.Key, Name = e.Value.Name });
+        return _universities.Values;
     }
 }

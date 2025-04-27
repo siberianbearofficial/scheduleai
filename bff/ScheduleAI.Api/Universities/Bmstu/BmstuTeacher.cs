@@ -15,7 +15,7 @@ public class BmstuTeacher : IUniversityTeacher
         return new BmstuTeacher()
         {
             Id = model.Id.ToString(),
-            FullName = $"{model.FirstName} {model.MiddleName} {model.LastName}".Trim(),
+            FullName = $"{model.LastName} {model.FirstName} {model.MiddleName}".Trim(),
             Departments = model.Departments,
         };
     }

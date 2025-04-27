@@ -3,6 +3,7 @@ using AiHelper.Client.Models;
 using AiHelper.Client.ToolParameters;
 using Newtonsoft.Json;
 using ScheduleAI.Core.Abstractions;
+using ScheduleAI.Core.Models;
 
 namespace ScheduleAI.Application.Services;
 
@@ -14,27 +15,18 @@ public class AiHelperService(
     private readonly AiHelperClient _client = new(Environment.GetEnvironmentVariable("AI_HELPER_URL") ??
                                                   throw new Exception("AI_HELPER_URL environment variable is not set"));
 
-    public async Task<string> AskHelper(string prompt, Guid universityId, string groupId)
+    public async Task<AiHelperResponseModel> AskHelper(string prompt, string universityId, string groupId)
     {
-        // return Random.Shared.Next(5) switch
-        // {
-        //     0 => "Обработка запроса...",
-        //     1 => "Я получил ваше сообщение",
-        //     2 => $"Получено сообщение {prompt}",
-        //     3 => "Думаю...",
-        //     4 => "Здравствуйте. Я - ваш ИИ-помощник.",
-        //     _ => "Я не должен был сюда попасть..."
-        // };
         var group = await groupsService.GetGroupByIdAsync(universityId, groupId);
-        var resp = await _client.PostApiAgentRequest(null, universityId.ToString(), group.Name, prompt);
+        var resp = await _client.PostApiAgentRequest(null, universityId, group.Name, prompt);
         while (true)
         {
             var lastMessage = resp.Messages.Last();
             if (lastMessage.ToolCalls == null || lastMessage.ToolCalls.Length == 0)
             {
-                var gptResponse = JsonConvert.DeserializeObject<GptResponseContent>(lastMessage.Content ?? "{}");
-                return gptResponse?.Message ?? throw new Exception("Empty response");
+                return ConvertResponse(lastMessage);
             }
+
             var request = resp.Messages.ToList();
             foreach (var toolCall in lastMessage.ToolCalls)
             {
@@ -49,11 +41,11 @@ public class AiHelperService(
             resp = await _client.PostApiAgentRequest(new AgentRequestModel
             {
                 Messages = request.ToArray(),
-            }, universityId.ToString(), groupId);
+            }, universityId, groupId);
         }
     }
 
-    private async Task<string> CallFunc(ToolCall toolCall, Guid universityId, string groupId)
+    private async Task<string> CallFunc(ToolCall toolCall, string universityId, string groupId)
     {
         object? res;
         // return "None";
@@ -114,9 +106,24 @@ public class AiHelperService(
         return JsonConvert.SerializeObject(res);
     }
 
+    private static AiHelperResponseModel ConvertResponse(MessageModel lastMessage)
+    {
+        var gptResponseSource = lastMessage.Content ?? "{}";
+        if (gptResponseSource.StartsWith("```json"))
+            gptResponseSource = gptResponseSource.Remove(0, "```json".Length).Trim('`');
+        var gptResponse = JsonConvert.DeserializeObject<GptResponseContent>(gptResponseSource);
+        return new AiHelperResponseModel
+        {
+            Text = gptResponse?.Message ?? throw new Exception("Empty response"),
+            Pairs = gptResponse.Pairs,
+        };
+    }
+
     private class GptResponseContent
     {
         [JsonProperty("message")] public string? Message { get; init; }
+
+        [JsonProperty("schedule")] public Pair[]? Pairs { get; init; }
 
         [JsonProperty("function_calling_needed")]
         public bool? FunctionCallingNeeded { get; init; }

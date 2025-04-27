@@ -9,6 +9,7 @@ public class BmstuUniversity : IUniversity
                                                        "https://bmstu-schedule-api.nachert.art/");
 
     public string Name => "МГТУ им. Баумана";
+    public string Id => "Bmstu";
 
     public async Task<IEnumerable<IUniversityGroup>> GetGroups()
     {

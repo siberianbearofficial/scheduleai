@@ -9,18 +9,20 @@
     <div class="card-container">
       <div class="convenience">
         <h1 tuiTitle class="pair-time">{{ formatDate(pair.startTime) }}</h1>
-        <tui-badge
-          [appearance]="getAppearance(pair)"
-          tuiStatus
-        >
-          @if (pair.status == MergedPairStatus.Collision) {
-            <span>С пропуском пар</span>
-          } @else if (pair.status == MergedPairStatus.InGap || pair.waitTime.asMinutes() < 30) {
-            Удобно
-          } @else {
-            Ждать {{ pair.waitTime | durationLabel }}
-          }
-        </tui-badge>
+        @if (pair.convenience) {
+          <tui-badge
+            [appearance]="getAppearance(pair)"
+            tuiStatus
+          >
+            @if (pair.convenience.status == MergedPairStatus.Collision) {
+              <span>С пропуском пар</span>
+            } @else if (pair.convenience.status == MergedPairStatus.InGap || pair.convenience.waitTime.asMinutes() < 30) {
+              Удобно
+            } @else {
+              Ждать {{ pair.convenience.waitTime | durationLabel }}
+            }
+          </tui-badge>
+        }
       </div>
       <span tuiSubtitle> {{ pair.discipline }}, {{ humanizeActType(pair.actType) }} </span>
       <div class="card-bottom-container">
@@ -32,23 +34,23 @@
 </button>
 
 <ng-template #tooltip>
-  @if (pair) {
-    @if (pair.status == MergedPairStatus.Collision) {
+  @if (pair.convenience) {
+    @if (pair.convenience.status == MergedPairStatus.Collision) {
       <p>Придется пропустить:</p>
       <ul>
-        @for (collision of pair.collisions; track collision.startTime) {
+        @for (collision of pair.convenience.collisions; track collision.startTime) {
           <li>{{ collision.discipline }} ({{ humanizeActType(collision.actType) }})</li>
         }
       </ul>
-    } @else if (pair.status == MergedPairStatus.InGap) {
+    } @else if (pair.convenience.status == MergedPairStatus.InGap) {
       <p>Во время "окна"</p>
-    } @else if (pair.status == MergedPairStatus.BeforePairs) {
+    } @else if (pair.convenience.status == MergedPairStatus.BeforePairs) {
       <p>Перед парами: после окончания ждать
-        <b>{{ pair.waitTime | durationLabel }}</b>
+        <b>{{ pair.convenience.waitTime | durationLabel }}</b>
       </p>
     } @else {
       <p>После пар: ждать
-        <b>{{ pair.waitTime | durationLabel }}</b>
+        <b>{{ pair.convenience.waitTime | durationLabel }}</b>
       </p>
     }
   }
