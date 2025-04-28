@@ -1,7 +1,11 @@
 from dotenv import load_dotenv
-import os
 
-load_dotenv(override=True, dotenv_path="./local.env")
+from utils.logger import logger
+
+try:
+    load_dotenv(override=True, dotenv_path="./local.env")
+except Exception as e:
+    logger.logger.debug(e)
 
 OPENAI_TOKEN_VAR = "OPENAI_TOKEN"
 DEEPSEEK_TOKEN_VAR = "DEEPSEEK_TOKEN"
