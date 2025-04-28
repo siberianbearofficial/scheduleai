@@ -24,6 +24,11 @@ builder.Services.AddCors(options =>
                 "https://scheduleai-ui.netlify.app")
             .AllowAnyHeader()
             .AllowAnyMethod();
+
+        policy.SetIsOriginAllowed(origin =>
+                origin.StartsWith("https://deploy-preview-") && origin.EndsWith("--scheduleai-ui.netlify.app"))
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 

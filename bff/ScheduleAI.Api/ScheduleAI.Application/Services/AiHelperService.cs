@@ -48,7 +48,6 @@ public class AiHelperService(
     private async Task<string> CallFunc(ToolCall toolCall, string universityId, string groupId)
     {
         object? res;
-        // return "None";
         switch (toolCall.Function.Name)
         {
             case "get_group_schedule":
