@@ -1,9 +1,11 @@
-﻿namespace ScheduleAI.Core.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace ScheduleAI.Core.Models;
 
 public class PairConvenience
 {
-    public required double Coefficient { get; init; }
-    public Pair[] Collisions { get; init; } = [];
-    public TimeSpan? WaitTime { get; init; }
-    public MergedPairStatus Status { get; init; }
+    [JsonPropertyName("coefficient")] public required double Coefficient { get; init; }
+    [JsonPropertyName("collisions")] public Pair[] Collisions { get; init; } = [];
+    [JsonPropertyName("waitTime")] public TimeSpan? WaitTime { get; init; }
+    [JsonPropertyName("status")] public MergedPairStatus Status { get; init; }
 }

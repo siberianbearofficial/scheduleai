@@ -77,8 +77,6 @@ public class AiHelperClient
         HttpResponseMessage response;
         try
         {
-            var content = JsonContent.Create(body, options: _jsonOptions);
-            Console.WriteLine(await content.ReadAsStringAsync());
             response = await _httpClient.PostAsync(GenerateUrl(url, query), JsonContent.Create(body, options: _jsonOptions),
                 cancellationToken);
         }
