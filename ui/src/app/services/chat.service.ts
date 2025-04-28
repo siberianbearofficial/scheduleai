@@ -6,7 +6,7 @@ import {toObservable} from '@angular/core/rxjs-interop';
 import {combineLatest, EMPTY, Observable, switchMap, tap} from 'rxjs';
 import {UniversitiesService} from './universities.service';
 import {GroupsService} from './groups.service';
-import moment, {duration} from 'moment';
+import moment from 'moment';
 import {pairToEntity} from './merged-pairs.service';
 
 interface MessagesStore {
