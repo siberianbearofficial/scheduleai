@@ -40,7 +40,6 @@ class ParametersModel(BaseModel):
     required: list[str] = Field(..., examples=["group", "date"], description="Обязательные параметры.")
 
 
-
 class ToolFunction(BaseModel):
     """Описание вызываемой функции"""
     name: str = Field(..., description="Название функции")
