@@ -4,12 +4,14 @@ from typing import Annotated, Optional, Any, TypedDict, Literal, Union
 from datetime import datetime
 from openai.types.chat import ChatCompletionMessageToolCall
 
+
 class OpenAIModel(str, Enum):
     TURBO = "gpt-3.5-turbo"
     GPT4 = "gpt-4.1"
     GPT4_TURBO = "gpt-4-turbo-preview"
     GPT_4O = "gpt-4o-2024-11-20"
     DEEPSEEK = "deepseek-chat"
+    DEEPSEEK_FAST = "deepseek-chat-fast"
 
 
 class OpenAIRole(str, Enum):

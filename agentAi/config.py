@@ -3,7 +3,7 @@ import os
 
 load_dotenv(override=True, dotenv_path="./local.env")
 
-TOKEN_VAR = "OPENAI_TOKEN"
+OPENAI_TOKEN_VAR = "OPENAI_TOKEN"
 DEEPSEEK_TOKEN_VAR = "DEEPSEEK_TOKEN"
 DEEPSEEK_URL_VAR = "DEEPSEEK_URL"
 LOG_LVL_VAR = "LOG_LVL"

@@ -1,58 +1,102 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "array",
-    "items": {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pair",
+  "description": "A schema representing a university class/pair",
+  "type": "object",
+  "required": [
+    "endTime",
+    "groups",
+    "startTime"
+  ],
+  "properties": {
+    "teachers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of teachers conducting the pair",
+      "nullable": true
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of groups attending the pair",
+      "nullable": true
+    },
+    "startTime": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Start time of the pair"
+    },
+    "endTime": {
+      "type": "string",
+      "format": "date-time",
+      "description": "End time of the pair"
+    },
+    "rooms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of rooms where the pair takes place",
+      "nullable": true
+    },
+    "discipline": {
+      "type": "string",
+      "description": "Name of the discipline/subject",
+      "nullable": true
+    },
+    "actType": {
+      "type": "string",
+      "description": "Type of the activity (lecture, lab, etc.)",
+      "nullable": true
+    },
+    "convenience": {
+      "$ref": "#/definitions/PairConvenience",
+      "description": "Convenience metrics for the pair"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "PairConvenience": {
       "type": "object",
+      "required": [
+        "coefficient"
+      ],
       "properties": {
-        "Teachers": {
+        "coefficient": {
+          "type": "number",
+          "format": "double",
+          "description": "Convenience coefficient"
+        },
+        "collisions": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#"
           },
-          "default": []
-        },
-        "Groups": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "minItems": 1,
-          "uniqueItems": true
-        },
-        "StartTime": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "EndTime": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "Rooms": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": []
-        },
-        "Discipline": {
-          "type": "string",
+          "description": "List of conflicting pairs",
           "nullable": true
         },
-        "ActType": {
+        "waitTime": {
           "type": "string",
+          "format": "date-span",
+          "description": "Waiting time between pairs",
           "nullable": true
         },
-        "Convenience": {
-          "type": "object",
-          "properties": {
-            "someField": {
-              "type": "string"
-            }
-          },
-          "nullable": true
+        "status": {
+          "$ref": "#/definitions/MergedPairStatus",
+          "description": "Status of the merged pair"
         }
       },
-      "required": ["Groups", "StartTime", "EndTime"]
+      "additionalProperties": false
+    },
+    "MergedPairStatus": {
+      "type": "integer",
+      "format": "int32",
+      "enum": [0, 1, 2, 3, 4, 5],
+      "description": "Status of the merged pair"
     }
   }
-  
+}

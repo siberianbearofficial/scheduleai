@@ -8,3 +8,6 @@ app = FastAPI(title="AIAgent")
 app.include_router(agent_router, prefix="/api/agent", tags=["agent"])
 
 app.exception_handler(Exception)(endpoints_exception_handler)
+
+# TODO: добавить тесты с заглушками для chatgpt и deepseek
+# TODO: сделать автодеплой на сервере, чтобы изменения из гита автоматически попадали на сервер

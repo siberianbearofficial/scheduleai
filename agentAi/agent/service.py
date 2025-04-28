@@ -2,14 +2,14 @@ from openai_api.client import Client as OpenAIClient
 from openai_api.schema import OpenAIRequestModel, OpenAIModel
 from bff_interaction.client import Client as DataClient
 from agent.schema import *
-from config import TOKEN_VAR
+from config import OPENAI_TOKEN_VAR, DEEPSEEK_TOKEN_VAR, DEEPSEEK_URL_VAR
 
 import os
 
 
 class AIAgentService:
     def __init__(self):
-        self.openai_client = OpenAIClient(api_key=os.getenv(TOKEN_VAR))
+        self.openai_client = OpenAIClient(api_key=os.getenv(OPENAI_TOKEN_VAR))
         self.data_client = DataClient()
     
     async def request(self, group: str, university: str, agent_request: Optional[AgentRequestModel], user_message: Optional[str], user: Optional[str]) -> AgentResponseModel:
