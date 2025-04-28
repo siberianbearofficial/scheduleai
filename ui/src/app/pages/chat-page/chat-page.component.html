@@ -3,13 +3,7 @@
 
   <div class="chat">
     @for (message of messages$ | async; track message.timestamp) {
-      <span class="container" [class.incoming]="message.role == MessageRole.Assistant"
-            [class.outgoing]="message.role == MessageRole.User">
-        <span tuiMessage [appearance]="message.role == MessageRole.User ? 'user' : 'server'" class="msg">
-          <span class="multiline">{{ message.content }}</span>
-          <div class="message-time">{{ message.timestamp.format('HH:mm') }}</div>
-        </span>
-      </span>
+      <app-message [message]="message"></app-message>
     }
   </div>
 

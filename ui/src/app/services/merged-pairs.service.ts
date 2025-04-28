@@ -77,7 +77,7 @@ const mergedStatusMap: Record<BffMergedPairStatus, MergedPairStatus> = {
   [BffMergedPairStatus._5]: MergedPairStatus.NoPairs,
 } as const;
 
-const pairToEntity = (pair: Pair): PairEntity => ({
+export const pairToEntity = (pair: Pair): PairEntity => ({
   startTime: moment(pair.startTime),
   endTime: moment(pair.endTime),
   actType: pair.actType ?? "",

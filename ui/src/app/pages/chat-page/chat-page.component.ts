@@ -12,6 +12,7 @@ import {first, take} from 'rxjs';
 import {MessageRole} from '../../entities/message-entity';
 import {TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {MessageComponent} from '../../components/message/message.component';
 
 @Component({
   standalone: true,
@@ -28,7 +29,8 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
     AsyncPipe,
     TuiTextfieldComponent,
     TuiTextfieldDirective,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MessageComponent
   ],
   templateUrl: './chat-page.component.html',
   styleUrl: './chat-page.component.less',
