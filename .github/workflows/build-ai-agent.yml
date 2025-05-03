@@ -2,7 +2,7 @@ name: Build AgentAI
 on:
   push:
     paths:
-      - agentAI/**
+      - agentAi/**
       - .github/workflows/build-ai-agent.yml
 
 env:
