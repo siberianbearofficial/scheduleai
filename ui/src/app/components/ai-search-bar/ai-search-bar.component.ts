@@ -1,10 +1,10 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, EventEmitter, inject, OnInit, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, EventEmitter, inject, Output} from '@angular/core';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TuiDropdown, TuiIcon, TuiTextfield} from '@taiga-ui/core';
 import {TuiTooltip} from '@taiga-ui/kit';
 import {TeacherEntity} from '../../entities/teacher-entity';
 import {TeacherService} from '../../services/teachers.service';
-import {combineLatest, map, Observable, tap, merge} from 'rxjs';
+import {combineLatest, map, tap} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
 import {RouterLink} from '@angular/router';
 import {TeacherCardComponent} from '../teacher-card/teacher-card.component';

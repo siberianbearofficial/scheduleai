@@ -1,16 +1,10 @@
-:host {
-  .teacher-card {
-    width: 100%;
-    padding: 0.5rem;
+.teacher-card {
+  width: 100%;
+  padding: 0.5rem;
 
-    .teacher-card-container {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
+  .$-container {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
   }
-
 }
-
-
-
