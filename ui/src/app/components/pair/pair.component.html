@@ -15,7 +15,11 @@
             tuiStatus
           >
             @if (pair.convenience.status == MergedPairStatus.Collision) {
-              <span>С пропуском пар</span>
+              С пропуском пар
+            } @else if (pair.convenience.status == MergedPairStatus.This) {
+              Ваша пара
+            } @else if (pair.convenience.status == MergedPairStatus.NoPairs) {
+              Нет пар
             } @else if (pair.convenience.status == MergedPairStatus.InGap || pair.convenience.waitTime.asMinutes() < 30) {
               Удобно
             } @else {
@@ -44,14 +48,20 @@
       </ul>
     } @else if (pair.convenience.status == MergedPairStatus.InGap) {
       <p>Во время "окна"</p>
+    } @else if (pair.convenience.status == MergedPairStatus.This) {
+      <p>Это ваша пара</p>
+    } @else if (pair.convenience.status == MergedPairStatus.NoPairs) {
+      <p>У вас нет пар в этот день</p>
     } @else if (pair.convenience.status == MergedPairStatus.BeforePairs) {
       <p>Перед парами: после окончания ждать
         <b>{{ pair.convenience.waitTime | durationLabel }}</b>
       </p>
-    } @else {
+    } @else if (pair.convenience.status == MergedPairStatus.AfterPairs) {
       <p>После пар: ждать
         <b>{{ pair.convenience.waitTime | durationLabel }}</b>
       </p>
+    } @else {
+      <p>???</p>
     }
   }
 </ng-template>
