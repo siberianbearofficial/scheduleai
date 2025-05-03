@@ -7,7 +7,7 @@ export enum MessageRole {
 }
 
 export interface MessageEntity {
-  readonly text: string;
+  readonly html: string;
   readonly role: MessageRole;
   readonly timestamp: Moment;
   readonly pairs: PairEntity[];

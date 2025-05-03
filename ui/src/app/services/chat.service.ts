@@ -37,7 +37,7 @@ export class ChatService {
   sendMessage(message: string): Observable<undefined> {
     this.addMessage({
       role: MessageRole.User,
-      text: message,
+      html: message,
       timestamp: moment(),
       pairs: [],
     });
@@ -50,7 +50,7 @@ export class ChatService {
       tap(resp => console.log(resp.detail)),
       tap(resp => this.addMessage({
         role: MessageRole.Assistant,
-        text: resp.data.text ?? "",
+        html: resp.data.text ?? "",
         timestamp: moment(),
         pairs: resp.data.pairs?.map(pairToEntity) ?? [],
       })),
