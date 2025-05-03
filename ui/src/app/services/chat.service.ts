@@ -10,7 +10,7 @@ import moment from 'moment';
 import {pairToEntity} from './merged-pairs.service';
 
 interface MessagesStore {
-  messages: MessageEntity[];
+  readonly messages: MessageEntity[];
 }
 
 @Injectable({
