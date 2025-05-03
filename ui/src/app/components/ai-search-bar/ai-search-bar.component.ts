@@ -34,22 +34,6 @@ export default class SearchBarComponent {
     map(([search, teachers]) => teachers.filter(e => e.fullName.includes(search ?? "")))
   );
 
-  protected readonly control = new FormControl<string>("");
-
-  protected dropdownOpened = false;
-
-  protected filtered: TeacherEntity[] = []
-
-  ngOnInit() {
-    combineLatest([this.control.valueChanges, this.teacherService.teachers$]).pipe(
-      tap(([search]) => this.dropdownOpened = search !== null && search.length >= 2),
-      tap(([search, teachers]) =>
-        this.filtered = teachers.filter(e =>
-          e.fullName.toLowerCase().includes(search?.toLowerCase() ?? "")).slice(0, 6)),
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe();
-  }
-
   onSearch() {
     const query = this.control.value;
     if (query?.trim()) {
