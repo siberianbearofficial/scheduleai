@@ -1,4 +1,5 @@
 import {Moment} from 'moment';
+import {PairEntity} from './pair-entity';
 
 export enum MessageRole {
   User,
@@ -6,7 +7,8 @@ export enum MessageRole {
 }
 
 export interface MessageEntity {
-  readonly content: string;
+  readonly html: string;
   readonly role: MessageRole;
   readonly timestamp: Moment;
+  readonly pairs: PairEntity[];
 }
