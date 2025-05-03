@@ -4,11 +4,11 @@
       <span class="multiline">{{ message.text }}</span>
     </div>
   </div>
-} @else {
+} @else if (message.role == MessageRole.Assistant) {
   <div class="assistant-message-container">
     <tui-icon icon="@tui.user" [style.font-size.rem]="3"></tui-icon>
     <div class="assistant-content-container">
-      <span [innerHtml]="message.text"></span>
+      <span [innerHtml]="message.text | dompurify"></span>
       <div class="assistant-cards-container">
         @for (pair of message.pairs; track message) {
           <app-pair [pair]="pair"></app-pair>
