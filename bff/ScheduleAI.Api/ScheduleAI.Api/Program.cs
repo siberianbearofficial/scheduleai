@@ -20,12 +20,8 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:4200",
-                "https://scheduleai-ui.netlify.app")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-
         policy.SetIsOriginAllowed(origin =>
+                origin == "http://localhost:4200" || origin == "https://scheduleai-ui.netlify.app" ||
                 origin.StartsWith("https://deploy-preview-") && origin.EndsWith("--scheduleai-ui.netlify.app"))
             .AllowAnyHeader()
             .AllowAnyMethod();
