@@ -15,7 +15,7 @@ import {TeacherService} from './teachers.service';
 import {MergedPairStatus, PairEntity} from '../entities/pair-entity';
 
 interface MergedPairsStore {
-  mergedPairs: PairEntity[];
+  readonly mergedPairs: PairEntity[];
 }
 
 @Injectable({
