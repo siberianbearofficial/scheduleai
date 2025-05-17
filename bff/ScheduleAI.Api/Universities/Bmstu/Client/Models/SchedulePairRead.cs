@@ -4,6 +4,7 @@ namespace BmstuSchedule.Client.Models;
 
 public class SchedulePairRead
 {
+    [JsonProperty("id")] public required int Id { get; init; }
     [JsonProperty("time_slot")] public required TimeSlot TimeSlot { get; init; }
     [JsonProperty("groups")] public required GroupBase[] Groups { get; init; }
     [JsonProperty("disciplines")] public required DisciplineBase[] Disciplines { get; init; }
