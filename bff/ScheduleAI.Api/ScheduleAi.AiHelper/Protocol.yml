@@ -133,20 +133,26 @@ schemas:
 
     - name: name
       type: string
-      
+  
   AiHelperRequest:
     - name: text
       type: string
-      
+
     - name: currentTime
       type: datetime
-      
+
     - name: group
       type: string
   
   AiHelperResponse:
     - name: text
       type: string
+      example: |
+        Вы можете встретиться с <b>Куровым Андреем Владимировичем</b>, сегодня:
+        <ul>
+          <li><b>с 12:05 до 13:05</b>, лекция <i>«Базы Данных»</i>, аудитория <b>102x</b></li>
+          <li><b>с 15:40 до 16:10</b>, семинар <i>«Компьютерная Графика»</i>, аудитория <b>304x</b></li>
+        </ul>
 
     - name: pairs
       type: Pair[]?
