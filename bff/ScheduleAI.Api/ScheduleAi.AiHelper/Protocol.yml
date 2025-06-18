@@ -65,7 +65,7 @@ tools:
   
   GetTeacherSchedule:
     params:
-      - name: teacher_id
+      - name: teacherId
         type: string
         example: "67836"
 
@@ -115,7 +115,7 @@ schemas:
       example: "[]"
 
     - name: waitTime
-      type: duration
+      type: duration?
 
     - name: status
       type: int
