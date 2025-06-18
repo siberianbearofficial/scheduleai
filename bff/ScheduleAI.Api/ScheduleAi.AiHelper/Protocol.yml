@@ -1,0 +1,142 @@
+﻿name: AiHelper
+
+endpoints:
+  Request:
+    input: string
+    output: AiHelperResponse
+    mode: json
+
+tools:
+  GetGroupSchedule:
+    params:
+      - name: group
+        type: string
+        example: ИУ7-64Б
+
+      - name: from
+        type: datetime
+        description: Дата, начиная с которой надо получить расписание
+
+      - name: to
+        type: datetime
+        description: Дата, до которой надо получить расписание
+    
+    result: Pair[]
+    description: Получить расписание группы по ее названию. null, если такой группы не существует
+
+  GetMergedSchedule:
+    params:
+      - name: group
+        type: string
+        example: "ИУ7-64Б"
+
+      - name: teacherId
+        type: string
+        example: "67836"
+
+      - name: from
+        type: datetime
+        description: Дата, начиная с которой надо получить расписание
+
+      - name: to
+        type: datetime
+        description: Дата, до которой надо получить расписание
+    
+    result: Pair[]
+    description: Получить объединенное расписание преподавателя и группы. null, если группы или преподавателя не существует
+
+  GetTeachersByGroup:
+    params:
+      - name: group
+        type: string
+        example: "ИУ7-64Б"
+    
+    result: Teacher[]
+    description: Найти всех преподавателей, преподающих что-либо в указанной группе
+
+  GetTeachersByName:
+    params:
+      - name: substring
+        type: string
+        example: "Иванов"
+    
+    result: Teacher[]
+    description: Найти преподавателей по подстроке в полном имени
+  
+  GetTeacherSchedule:
+    params:
+      - name: teacher_id
+        type: string
+        example: "67836"
+
+      - name: from
+        type: datetime
+        description: Дата, начиная с которой надо получить расписание
+
+      - name: to
+        type: datetime
+        description: Дата, до которой надо получить расписание
+    
+    result: Pair[]
+    description: Получить расписание преподавателя по его id. null, если преподавателя с таким id не существует
+
+schemas:
+  Pair:
+    - name: teachers
+      type: string[]
+
+    - name: groups
+      type: string[]
+
+    - name: startTime
+      type: datetime
+
+    - name: endTime
+      type: datetime
+
+    - name: rooms
+      type: string[]
+
+    - name: discipline
+      type: string
+
+    - name: actType
+      type: string?
+
+    - name: convenience
+      type: PairConvenience?
+  
+  PairConvenience:
+    - name: coefficient
+      type: float
+
+    - name: collisions
+      type: Pair[]
+      example: "[]"
+
+    - name: waitTime
+      type: duration
+
+    - name: status
+      type: int
+  
+  Teacher:
+    - name: id
+      type: string
+
+    - name: fullName
+      type: string
+  
+  Group:
+    - name: id
+      type: string
+
+    - name: name
+      type: string
+  
+  AiHelperResponse:
+    - name: text
+      type: string
+
+    - name: pairs
+      type: Pair[]?
