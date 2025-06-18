@@ -80,6 +80,29 @@ public class AiHelper : AiHelperClientBase
         };
     }
 
+    public static Pair PairFromAiModel(IAiHelperClient.Pair pair)
+    {
+        return new Pair
+        {
+            Discipline = pair.Discipline,
+            ActType = pair.ActType,
+            Teachers = pair.Teachers,
+            Groups = pair.Groups,
+            Rooms = pair.Rooms,
+            StartTime = pair.StartTime,
+            EndTime = pair.EndTime,
+            Convenience = pair.Convenience == null
+                ? null
+                : new PairConvenience
+                {
+                    Coefficient = pair.Convenience.Coefficient,
+                    Status = (MergedPairStatus)pair.Convenience.Status,
+                    WaitTime = pair.Convenience.WaitTime,
+                    Collisions = pair.Convenience.Collisions.Select(PairFromAiModel).ToArray()
+                },
+        };
+    }
+
     private static IAiHelperClient.Teacher TeacherToAiModel(Teacher teacher)
     {
         return new IAiHelperClient.Teacher

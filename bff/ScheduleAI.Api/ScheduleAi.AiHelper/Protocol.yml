@@ -2,7 +2,7 @@
 
 endpoints:
   Request:
-    input: string
+    input: AiHelperRequest
     output: AiHelperResponse
     mode: json
 
@@ -132,6 +132,16 @@ schemas:
       type: string
 
     - name: name
+      type: string
+      
+  AiHelperRequest:
+    - name: text
+      type: string
+      
+    - name: currentTime
+      type: datetime
+      
+    - name: group
       type: string
   
   AiHelperResponse:
