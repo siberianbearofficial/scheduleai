@@ -7,37 +7,43 @@ public class AiHelper : AiHelperClientBase
 {
     private readonly string _universityId;
     private readonly IScheduleService _scheduleService;
+    private readonly IGroupsService _groupsService;
     private readonly ITeachersService _teachersService;
 
     public AiHelper(
         string universityId,
         IScheduleService scheduleService,
+        IGroupsService groupsService,
         ITeachersService teachersService
     ) : base(new Uri("https://simple-openai-proxy.nachert.art"))
     {
         _universityId = universityId;
         _scheduleService = scheduleService;
         _teachersService = teachersService;
+        _groupsService = groupsService;
     }
 
-    protected override async Task<IAiHelperClient.Pair[]> GetGroupSchedule(string group, DateTime from, DateTime to)
+    protected override async Task<IAiHelperClient.Pair[]> GetGroupSchedule(string groupName, DateTime from, DateTime to)
     {
-        return (await _scheduleService.GetGroupScheduleAsync(_universityId, group, from, to))
+        var group = (await _groupsService.GetGroupsAsync(_universityId, groupName)).Single();
+        return (await _scheduleService.GetGroupScheduleAsync(_universityId, group.Id, from, to))
             .Select(PairToAiModel)
             .ToArray();
     }
 
-    protected override async Task<IAiHelperClient.Pair[]> GetMergedSchedule(string group, string teacherId,
+    protected override async Task<IAiHelperClient.Pair[]> GetMergedSchedule(string groupName, string teacherId,
         DateTime from, DateTime to)
     {
-        return (await _scheduleService.GetMergedScheduleAsync(_universityId, group, teacherId, from, to))
+        var group = (await _groupsService.GetGroupsAsync(_universityId, groupName)).Single();
+        return (await _scheduleService.GetMergedScheduleAsync(_universityId, group.Id, teacherId, from, to))
             .Select(PairToAiModel)
             .ToArray();
     }
 
-    protected override async Task<IAiHelperClient.Teacher[]> GetTeachersByGroup(string group)
+    protected override async Task<IAiHelperClient.Teacher[]> GetTeachersByGroup(string groupName)
     {
-        return (await _teachersService.GetTeachersByGroupAsync(_universityId, group))
+        var group = (await _groupsService.GetGroupsAsync(_universityId, groupName)).Single();
+        return (await _teachersService.GetTeachersByGroupAsync(_universityId, group.Id))
             .Select(TeacherToAiModel)
             .ToArray();
     }

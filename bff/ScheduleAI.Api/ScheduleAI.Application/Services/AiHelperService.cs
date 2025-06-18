@@ -12,7 +12,7 @@ public class AiHelperService(
     public async Task<AiHelperResponseModel> AskHelper(string prompt, string universityId, string groupId)
     {
         var group = await groupsService.GetGroupByIdAsync(universityId, groupId);
-        IAiHelperClient helperClient = new AiHelper(universityId, scheduleService, teachersService);
+        IAiHelperClient helperClient = new AiHelper(universityId, scheduleService, groupsService, teachersService);
         var resp = await helperClient.Request(new IAiHelperClient.AiHelperRequest
         {
             Text = prompt,
