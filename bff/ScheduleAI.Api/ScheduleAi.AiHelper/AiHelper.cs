@@ -15,7 +15,8 @@ public class AiHelper : AiHelperClientBase
         IScheduleService scheduleService,
         IGroupsService groupsService,
         ITeachersService teachersService
-    ) : base(new Uri("https://simple-openai-proxy.nachert.art"))
+    ) : base(new Uri(Environment.GetEnvironmentVariable("AI_PROXY_URL") ??
+                     throw new Exception("AI_PROXY_URL environment variable is not set")))
     {
         _universityId = universityId;
         _scheduleService = scheduleService;
