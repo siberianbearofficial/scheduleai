@@ -4,11 +4,10 @@ import {LogoComponent} from '../../components/logo/logo.component';
 import FooterComponent from '../../components/footer/footer.component';
 import {HeaderComponent} from '../../components/header/header.component';
 import {AsyncPipe, DatePipe} from '@angular/common';
-import SimpleSearchBarComponent from '../../components/search-bar/search-bar.component'
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ChatService} from '../../services/chat.service';
-import {first, take} from 'rxjs';
+import {first} from 'rxjs';
 import {MessageRole} from '../../entities/message-entity';
 import {TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -25,7 +24,6 @@ import {MessageComponent} from '../../components/message/message.component';
     FooterComponent,
     HeaderComponent,
     DatePipe,
-    SimpleSearchBarComponent,
     AsyncPipe,
     TuiTextfieldComponent,
     TuiTextfieldDirective,
@@ -50,7 +48,7 @@ export class ChatPageComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       if (params['message']) {
         this.sendMessage(params['message']);
-         // Стираем лишний query-параметр, чтобы не отправить сообщение заново после обновления страницы
+        // Стираем лишний query-параметр, чтобы не отправить сообщение заново после обновления страницы
         this.router.navigate([this.route.snapshot.url]);
       }
     });

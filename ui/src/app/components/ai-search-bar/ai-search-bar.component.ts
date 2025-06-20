@@ -1,14 +1,15 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, EventEmitter, inject, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {TuiDropdown, TuiIcon, TuiTextfield} from '@taiga-ui/core';
+import {tuiDialog, TuiDropdown, TuiIcon, TuiTextfield} from '@taiga-ui/core';
 import {TuiTooltip} from '@taiga-ui/kit';
 import {TeacherEntity} from '../../entities/teacher-entity';
 import {TeacherService} from '../../services/teachers.service';
 import {combineLatest, map, tap} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {TeacherCardComponent} from '../teacher-card/teacher-card.component';
 import {TuiLet} from '@taiga-ui/cdk';
+import {MobileSearchDialogComponent} from '../mobile-search-dialog/mobile-search-dialog.component';
 
 @Component({
   standalone: true,
@@ -21,9 +22,7 @@ import {TuiLet} from '@taiga-ui/cdk';
 })
 export default class SearchBarComponent {
   private readonly teacherService = inject(TeacherService);
-  private readonly destroyRef = inject(DestroyRef);
-
-  @Output() search = new EventEmitter<string>();
+  private readonly router = inject(Router);
 
   protected readonly control = new FormControl<string>("");
 
@@ -34,11 +33,24 @@ export default class SearchBarComponent {
     map(([search, teachers]) => teachers.filter(e => e.fullName.includes(search ?? "")))
   );
 
+  private readonly dialog = tuiDialog(MobileSearchDialogComponent, {
+    size: 'page',
+    closeable: false,
+    dismissible: true,
+  });
+
   onSearch() {
     const query = this.control.value;
     if (query?.trim()) {
-      this.search.emit(query);
+      void this.router.navigate(['/chat'], {
+        queryParams: {message: query},
+      });
     }
+  }
+
+  onClick() {
+    if (window.innerWidth < 767)
+      this.dialog(undefined).subscribe();
   }
 
   protected selectTeacher(teacher: TeacherEntity) {
