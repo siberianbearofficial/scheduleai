@@ -5,13 +5,24 @@
   font-size: 20pt;
   padding: 0 5%;
 
+  @media (max-width: 800px) {
+    flex-direction: column;
+  }
+  @media (min-width: 800px) {
+    flex-direction: row;
+  }
+
   .header-right-container {
     display: flex;
     gap: 1rem;
     align-items: center;
 
-    .selector {
-      width: 200px;
+    .university-selector {
+      width: 180px;
+    }
+
+    .group-selector {
+      width: 140px;
     }
   }
 }
