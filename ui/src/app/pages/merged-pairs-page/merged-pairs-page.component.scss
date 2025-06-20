@@ -31,9 +31,23 @@
 .schedule {
   flex: 1 1 auto;
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 4 карточки в ряд */
-  gap: 16px; /* промежуток между карточками */
+  gap: 1rem; /* промежуток между карточками */
   padding: 0 2%;
+
+  @media (max-width: 800px) {
+    grid-template-columns: repeat(1, 1fr); /* 1 карточка в ряд */
+  }
+  @media ((min-width: 801px) and (max-width: 1200px)) {
+    grid-template-columns: repeat(2, 1fr); /* 3 карточки в ряд */
+  }
+  @media (min-width: 1201px) {
+    grid-template-columns: repeat(3, 1fr); /* 3 карточки в ряд */
+  }
+
+  .pair-card {
+    display: flex;
+    justify-content: center;
+  }
 }
 
 .teacher-info {

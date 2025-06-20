@@ -33,7 +33,7 @@ import {MessageComponent} from '../../components/message/message.component';
     MessageComponent
   ],
   templateUrl: './chat-page.component.html',
-  styleUrl: './chat-page.component.less',
+  styleUrl: './chat-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatPageComponent implements OnInit {
