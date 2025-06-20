@@ -6,7 +6,6 @@
     padding-left: 1rem;
     padding-right: 1rem;
     margin-inline-start: 2rem;
-    margin-inline-end: 1rem;
   }
 }
 
@@ -23,8 +22,14 @@
 
     .assistant-cards-container {
       display: grid;
-      grid-template-columns: repeat(2, 1fr); /* 2 карточки в ряд */
       gap: 1rem;
+
+      @media (max-width: 900px) {
+        grid-template-columns: repeat(1, 1fr); /* 1 карточка в ряд */
+      }
+      @media (min-width: 901px) {
+        grid-template-columns: repeat(2, 1fr); /* 2 карточки в ряд */
+      }
     }
   }
 }

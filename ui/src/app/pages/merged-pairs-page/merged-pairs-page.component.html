@@ -4,14 +4,6 @@
       <app-logo></app-logo>
     </div>
   </div>
-  <button class="back"
-          tuiButton
-          type="button"
-          icon="tuiIconChevronLeft"
-          routerLink="/"
-  >
-    < Назад
-  </button>
   <div class="schedule-container">
     <div class="schedule">
       @for (pair of mergedPairs$ | async; track pair.startTime) {
