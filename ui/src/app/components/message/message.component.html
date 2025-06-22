@@ -6,14 +6,14 @@
   </div>
 } @else if (message.role == MessageRole.Assistant) {
   <div class="assistant-message-container">
-    <tui-icon icon="@tui.user" [style.font-size.rem]="3"></tui-icon>
-    <div class="assistant-content-container">
+    <div class="assistant-header-container">
+      <tui-icon icon="@tui.user" [style.font-size.rem]="3"></tui-icon>
       <span [innerHtml]="message.html | dompurify"></span>
-      <div class="assistant-cards-container">
-        @for (pair of message.pairs; track message) {
-          <app-pair [pair]="pair"></app-pair>
-        }
-      </div>
+    </div>
+    <div class="assistant-cards-container">
+      @for (pair of message.pairs; track message) {
+        <app-pair [pair]="pair"></app-pair>
+      }
     </div>
   </div>
 }
