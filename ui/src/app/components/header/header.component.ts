@@ -1,8 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {LogoComponent} from '../logo/logo.component';
-import {RouterLink} from "@angular/router";
-import UniversitySelectorComponent from '../university-selector/university-selector.component';
-import GroupSelectorComponent from '../group-selector/group-selector.component';
 import {TuiButton, tuiDialog} from '@taiga-ui/core';
 import {SettingsFormComponent} from '../settings-form/settings-form.component';
 
@@ -11,9 +8,6 @@ import {SettingsFormComponent} from '../settings-form/settings-form.component';
   selector: 'app-header',
   imports: [
     LogoComponent,
-    RouterLink,
-    UniversitySelectorComponent,
-    GroupSelectorComponent,
     TuiButton
   ],
   templateUrl: './header.component.html',

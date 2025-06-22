@@ -1,9 +1,6 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
-import {TuiMessage} from '@taiga-ui/kit';
-import {LogoComponent} from '../../components/logo/logo.component';
-import FooterComponent from '../../components/footer/footer.component';
 import {HeaderComponent} from '../../components/header/header.component';
-import {AsyncPipe, DatePipe} from '@angular/common';
+import {AsyncPipe} from '@angular/common';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ChatService} from '../../services/chat.service';
@@ -17,20 +14,16 @@ import {MessageComponent} from '../../components/message/message.component';
   standalone: true,
   selector: 'app-chat-page',
   exportAs: 'app-chat-page',
-    imports: [
-        TuiMessage,
-        FormsModule,
-        LogoComponent,
-        FooterComponent,
-        HeaderComponent,
-        DatePipe,
-        AsyncPipe,
-        TuiTextfieldComponent,
-        TuiTextfieldDirective,
-        ReactiveFormsModule,
-        MessageComponent,
-        TuiButton
-    ],
+  imports: [
+    FormsModule,
+    HeaderComponent,
+    AsyncPipe,
+    TuiTextfieldComponent,
+    TuiTextfieldDirective,
+    ReactiveFormsModule,
+    MessageComponent,
+    TuiButton
+  ],
   templateUrl: './chat-page.component.html',
   styleUrl: './chat-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

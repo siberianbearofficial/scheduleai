@@ -1,14 +1,11 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {AsyncPipe} from '@angular/common';
-import {LogoComponent} from '../../components/logo/logo.component';
-import FooterComponent from '../../components/footer/footer.component';
-import {RouterLink} from '@angular/router';
 import {MergedPairsService} from '../../services/merged-pairs.service';
 import {BehaviorSubject, EMPTY, Observable, switchMap} from 'rxjs';
 import {TeacherService} from '../../services/teachers.service';
 import {PairComponent} from '../../components/pair/pair.component';
 import {TuiCardLarge, TuiHeader} from '@taiga-ui/layout';
-import {TuiAppearance, TuiButton, TuiTitle} from '@taiga-ui/core';
+import {TuiAppearance, TuiTitle} from '@taiga-ui/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {PairEntity} from '../../entities/pair-entity';
 import {HeaderComponent} from '../../components/header/header.component';
@@ -18,15 +15,11 @@ import {HeaderComponent} from '../../components/header/header.component';
   standalone: true,
   imports: [
     AsyncPipe,
-    LogoComponent,
-    FooterComponent,
     PairComponent,
     TuiHeader,
     TuiAppearance,
     TuiCardLarge,
     TuiTitle,
-    TuiButton,
-    RouterLink,
     HeaderComponent
   ],
   templateUrl: './merged-pairs-page.component.html',

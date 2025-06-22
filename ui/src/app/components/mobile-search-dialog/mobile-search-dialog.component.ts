@@ -9,7 +9,6 @@ import {Router, RouterLink} from '@angular/router';
 import {AsyncPipe} from '@angular/common';
 import {TeacherEntity} from '../../entities/teacher-entity';
 import {TuiAutoFocus} from '@taiga-ui/cdk';
-import {TuiInputInline} from '@taiga-ui/kit';
 
 @Component({
   selector: 'app-mobile-search-dialog',
@@ -20,7 +19,6 @@ import {TuiInputInline} from '@taiga-ui/kit';
     AsyncPipe,
     ReactiveFormsModule,
     TuiAutoFocus,
-    TuiInputInline
   ],
   templateUrl: './mobile-search-dialog.component.html',
   standalone: true,

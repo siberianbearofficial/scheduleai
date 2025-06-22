@@ -5,7 +5,6 @@ import GroupSelectorComponent from '../group-selector/group-selector.component';
 import {UniversitiesService} from '../../services/universities.service';
 import {map} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
-import {TuiLet} from '@taiga-ui/cdk';
 import {injectContext} from '@taiga-ui/polymorpheus';
 import {GroupsService} from '../../services/groups.service';
 
@@ -18,7 +17,6 @@ import {GroupsService} from '../../services/groups.service';
     GroupSelectorComponent,
     TuiButton,
     AsyncPipe,
-    TuiLet
   ],
   templateUrl: './first-dialog.component.html',
   styleUrl: './first-dialog.component.scss',

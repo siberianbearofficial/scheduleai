@@ -1,11 +1,11 @@
 .page {
-  display: flex;
   width: 100vw;
   height: 100vh;
   @supports (-webkit-touch-callout: none) {
     height: -webkit-fill-available;
   }
-  justify-content: space-between;
+  display: flex;
+  justify-content: flex-start;
   flex-direction: column;
   gap: 10px;
 
