@@ -8,10 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSingleton<IUniversityService, UniversityService>();
-builder.Services.AddScoped<IGroupsService, GroupsService>();
-builder.Services.AddScoped<ITeachersService, TeachersService>();
-builder.Services.AddScoped<IScheduleService, PairsService>();
-builder.Services.AddScoped<IAiHelperService, AiHelperService>();
+builder.Services.AddSingleton<IGroupsService, GroupsService>();
+builder.Services.AddSingleton<ITeachersService, TeachersService>();
+builder.Services.AddSingleton<IScheduleService, PairsService>();
+builder.Services.AddSingleton<IAiHelperService, AiHelperService>();
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
