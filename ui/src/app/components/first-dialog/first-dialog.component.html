@@ -1,0 +1,11 @@
+<div class="container">
+  <label>Ваше учебное заведение:</label>
+  <app-university-selector></app-university-selector>
+  <tui-expand [expanded]="universitySelected$ | async">
+    <div class="group-container">
+      <label>Ваша группа:</label>
+      <app-group-selector></app-group-selector>
+    </div>
+  </tui-expand>
+  <button tuiButton size="m" [disabled]="!(groupSelected$ | async)" (click)="close()">Готово</button>
+</div>

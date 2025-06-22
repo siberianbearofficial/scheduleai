@@ -28,6 +28,7 @@ export class UniversitiesService {
     loadingSelectedStatus: LoadingStatus.NotStarted,
   })
 
+  readonly universitiesInfo$ = toObservable(this.universities$$);
   readonly universities$ = toObservable(this.universities$$.universities);
 
   readonly selectedUniversity$ = toObservable(this.universities$$.selectedUniversity);
