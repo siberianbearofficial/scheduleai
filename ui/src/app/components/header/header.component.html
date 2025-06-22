@@ -1,10 +1,4 @@
 <div class="container">
-  <div class="title">
-    <app-logo></app-logo>
-  </div>
-  <div class="header-right-container">
-<!--    <a routerLink="/teacherSchedule">Расписание преподователей</a>-->
-    <app-university-selector class="university-selector"></app-university-selector>
-    <app-group-selector class="group-selector"></app-group-selector>
-  </div>
+  <app-logo></app-logo>
+  <button tuiButton iconStart="@tui.ellipsis-vertical" appearance="flat" size="m" (click)="openSettings()"></button>
 </div>

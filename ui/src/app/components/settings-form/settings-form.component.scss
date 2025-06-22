@@ -1,0 +1,12 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+
+  .contacts-container {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+  }
+}

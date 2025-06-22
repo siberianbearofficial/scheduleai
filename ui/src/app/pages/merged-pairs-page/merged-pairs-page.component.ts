@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@a
 import {AsyncPipe} from '@angular/common';
 import {LogoComponent} from '../../components/logo/logo.component';
 import FooterComponent from '../../components/footer/footer.component';
-import {Router, RouterLink} from '@angular/router';
+import {RouterLink} from '@angular/router';
 import {MergedPairsService} from '../../services/merged-pairs.service';
 import {BehaviorSubject, EMPTY, Observable, switchMap} from 'rxjs';
 import {TeacherService} from '../../services/teachers.service';
@@ -11,6 +11,7 @@ import {TuiCardLarge, TuiHeader} from '@taiga-ui/layout';
 import {TuiAppearance, TuiButton, TuiTitle} from '@taiga-ui/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {PairEntity} from '../../entities/pair-entity';
+import {HeaderComponent} from '../../components/header/header.component';
 
 @Component({
   selector: 'app-merged-pairs-page',
@@ -25,7 +26,8 @@ import {PairEntity} from '../../entities/pair-entity';
     TuiCardLarge,
     TuiTitle,
     TuiButton,
-    RouterLink
+    RouterLink,
+    HeaderComponent
   ],
   templateUrl: './merged-pairs-page.component.html',
   styleUrl: './merged-pairs-page.component.scss',
@@ -34,7 +36,6 @@ import {PairEntity} from '../../entities/pair-entity';
 export class MergedPairsPageComponent implements OnInit {
   private readonly mergedPairsService: MergedPairsService = inject(MergedPairsService);
   private readonly teacherService: TeacherService = inject(TeacherService);
-  private readonly router = inject(Router);
   private readonly destroyRef: DestroyRef = inject(DestroyRef);
 
   readonly mergedPairs$: Observable<PairEntity[]> = this.mergedPairsService.mergedPairs$;
