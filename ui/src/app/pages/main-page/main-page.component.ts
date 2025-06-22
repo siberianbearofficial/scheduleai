@@ -4,6 +4,7 @@ import GroupSelectorComponent from '../../components/group-selector/group-select
 import UniversitySelectorComponent from '../../components/university-selector/university-selector.component';
 import {HeaderComponent} from '../../components/header/header.component';
 import FooterComponent from '../../components/footer/footer.component';
+import {TuiChip} from '@taiga-ui/kit';
 
 @Component({
   selector: 'app-main-page',
@@ -13,7 +14,8 @@ import FooterComponent from '../../components/footer/footer.component';
     UniversitySelectorComponent,
     HeaderComponent,
     FooterComponent,
-    SearchBarComponent
+    SearchBarComponent,
+    TuiChip
   ],
   templateUrl: './main-page.component.html',
   standalone: true,
