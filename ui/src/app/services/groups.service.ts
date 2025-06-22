@@ -12,7 +12,7 @@ interface GroupStore {
   readonly groups: GroupEntity[];
   readonly selectedGroup: GroupEntity | null;
   readonly loadingGroupsStatus: LoadingStatus;
-  loadingSelectedStatus: LoadingStatus;
+  readonly loadingSelectedStatus: LoadingStatus;
 }
 
 @Injectable({
@@ -30,13 +30,11 @@ export class GroupsService {
     loadingSelectedStatus: LoadingStatus.NotStarted,
   })
 
-  readonly groups$ = toObservable(this.groups$$).pipe(
-    map(store => store.groups)
-  );
+  readonly groupsInfo$ = toObservable(this.groups$$);
 
-  readonly selectedGroup$ = toObservable(this.groups$$).pipe(
-    map(store => store.selectedGroup),
-  )
+  readonly groups$ = toObservable(this.groups$$.groups);
+
+  readonly selectedGroup$ = toObservable(this.groups$$.selectedGroup);
 
   private loadGroups(universityId: string): Observable<undefined> {
     patchState(this.groups$$, {loadingGroupsStatus: LoadingStatus.InProgress});

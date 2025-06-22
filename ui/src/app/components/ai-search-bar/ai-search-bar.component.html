@@ -7,6 +7,7 @@
       [tuiDropdown]="dropdownContent"
       [tuiDropdownManual]="dropdownOpened"
       tuiDropdownDirection="bottom"
+      (click)="onClick()"
       (keyup.enter)="onSearch()"
     />
     <tui-icon tuiTooltip="Найдите нужного вам преподователя, просто спросив об этом нашего бота"/>

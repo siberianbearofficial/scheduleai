@@ -6,25 +6,31 @@
     padding-left: 1rem;
     padding-right: 1rem;
     margin-inline-start: 2rem;
-    margin-inline-end: 1rem;
   }
 }
 
 .assistant-message-container {
   display: flex;
+  flex-direction: column;
   gap: 1rem;
   align-items: start;
 
-  .assistant-content-container {
+  .assistant-header-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 1rem;
     font-size: 16px;
+  }
 
-    .assistant-cards-container {
-      display: grid;
+  .assistant-cards-container {
+    display: grid;
+    gap: 1rem;
+
+    @media (max-width: 900px) {
+      grid-template-columns: repeat(1, 1fr); /* 1 карточка в ряд */
+    }
+    @media (min-width: 901px) {
       grid-template-columns: repeat(2, 1fr); /* 2 карточки в ряд */
-      gap: 1rem;
     }
   }
 }

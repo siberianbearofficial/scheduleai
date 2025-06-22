@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {TuiBadge, TuiStatus} from '@taiga-ui/kit'
-import {TuiCardLarge, TuiCardMedium, TuiHeader} from '@taiga-ui/layout';
+import {TuiCardLarge, TuiHeader} from '@taiga-ui/layout';
 import {TuiHint, TuiSurface, TuiTitle} from '@taiga-ui/core';
 import moment from 'moment';
 import 'moment/locale/ru';
@@ -18,7 +18,6 @@ import {PairEntity, MergedPairStatus} from '../../entities/pair-entity';
     TuiTitle,
     TuiHint,
     DurationLabelPipe,
-    TuiCardMedium
   ],
   templateUrl: './pair.component.html',
   standalone: true,

@@ -1,16 +1,12 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
-import {TuiMessage} from '@taiga-ui/kit';
-import {LogoComponent} from '../../components/logo/logo.component';
-import FooterComponent from '../../components/footer/footer.component';
 import {HeaderComponent} from '../../components/header/header.component';
-import {AsyncPipe, DatePipe} from '@angular/common';
-import SimpleSearchBarComponent from '../../components/search-bar/search-bar.component'
+import {AsyncPipe} from '@angular/common';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ChatService} from '../../services/chat.service';
-import {first, take} from 'rxjs';
+import {first} from 'rxjs';
 import {MessageRole} from '../../entities/message-entity';
-import {TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
+import {TuiButton, TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {MessageComponent} from '../../components/message/message.component';
 
@@ -19,21 +15,17 @@ import {MessageComponent} from '../../components/message/message.component';
   selector: 'app-chat-page',
   exportAs: 'app-chat-page',
   imports: [
-    TuiMessage,
     FormsModule,
-    LogoComponent,
-    FooterComponent,
     HeaderComponent,
-    DatePipe,
-    SimpleSearchBarComponent,
     AsyncPipe,
     TuiTextfieldComponent,
     TuiTextfieldDirective,
     ReactiveFormsModule,
-    MessageComponent
+    MessageComponent,
+    TuiButton
   ],
   templateUrl: './chat-page.component.html',
-  styleUrl: './chat-page.component.less',
+  styleUrl: './chat-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatPageComponent implements OnInit {
@@ -50,7 +42,7 @@ export class ChatPageComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       if (params['message']) {
         this.sendMessage(params['message']);
-         // Стираем лишний query-параметр, чтобы не отправить сообщение заново после обновления страницы
+        // Стираем лишний query-параметр, чтобы не отправить сообщение заново после обновления страницы
         this.router.navigate([this.route.snapshot.url]);
       }
     });

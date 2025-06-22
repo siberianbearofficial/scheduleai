@@ -1,0 +1,20 @@
+<div class="container">
+  <div class="header-container">
+    <button tuiIconButton type="button" size="m" iconStart="@tui.arrow-left" appearance="flat"
+            (click)="close()"></button>
+    <textarea
+      class="input-area"
+      tuiAutoFocus
+      [formControl]="control"
+      placeholder="Кого хотите найти сегодня?"
+    ></textarea>
+    <button tuiIconButton type="button" size="m" appearance="flat" iconStart="@tui.send" (click)="onSearch()"></button>
+  </div>
+  <div class="cards-container">
+    @for (teacher of filtered$ | async; track teacher.id) {
+      <div [routerLink]="'/teacherSchedule/' + teacher.id">
+        <app-teacher-card [teacherId]="teacher.id" (click)="selectTeacher(teacher)"></app-teacher-card>
+      </div>
+    }
+  </div>
+</div>

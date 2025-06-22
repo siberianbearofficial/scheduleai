@@ -112,7 +112,6 @@ schemas:
 
     - name: collisions
       type: Pair[]
-      example: "[]"
 
     - name: waitTime
       type: duration?
