@@ -3,6 +3,7 @@ import {LogoComponent} from '../logo/logo.component';
 import UniversitySelectorComponent from '../university-selector/university-selector.component';
 import GroupSelectorComponent from '../group-selector/group-selector.component';
 import {TuiButton} from '@taiga-ui/core';
+import moment from 'moment';
 
 @Component({
   standalone: true,
@@ -18,5 +19,5 @@ import {TuiButton} from '@taiga-ui/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsFormComponent {
-
+  protected year: string = moment().format('YYYY');
 }
