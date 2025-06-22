@@ -9,7 +9,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {ChatService} from '../../services/chat.service';
 import {first} from 'rxjs';
 import {MessageRole} from '../../entities/message-entity';
-import {TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
+import {TuiButton, TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {MessageComponent} from '../../components/message/message.component';
 
@@ -17,19 +17,20 @@ import {MessageComponent} from '../../components/message/message.component';
   standalone: true,
   selector: 'app-chat-page',
   exportAs: 'app-chat-page',
-  imports: [
-    TuiMessage,
-    FormsModule,
-    LogoComponent,
-    FooterComponent,
-    HeaderComponent,
-    DatePipe,
-    AsyncPipe,
-    TuiTextfieldComponent,
-    TuiTextfieldDirective,
-    ReactiveFormsModule,
-    MessageComponent
-  ],
+    imports: [
+        TuiMessage,
+        FormsModule,
+        LogoComponent,
+        FooterComponent,
+        HeaderComponent,
+        DatePipe,
+        AsyncPipe,
+        TuiTextfieldComponent,
+        TuiTextfieldDirective,
+        ReactiveFormsModule,
+        MessageComponent,
+        TuiButton
+    ],
   templateUrl: './chat-page.component.html',
   styleUrl: './chat-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
