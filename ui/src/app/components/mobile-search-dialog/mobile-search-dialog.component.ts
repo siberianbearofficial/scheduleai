@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {TuiButton, TuiDialogContext, TuiTextfieldComponent, TuiTextfieldDirective} from '@taiga-ui/core';
+import {TuiButton, TuiDialogContext} from '@taiga-ui/core';
 import {injectContext} from '@taiga-ui/polymorpheus';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {TeacherService} from '../../services/teachers.service';
@@ -9,18 +9,18 @@ import {Router, RouterLink} from '@angular/router';
 import {AsyncPipe} from '@angular/common';
 import {TeacherEntity} from '../../entities/teacher-entity';
 import {TuiAutoFocus} from '@taiga-ui/cdk';
+import {TuiInputInline} from '@taiga-ui/kit';
 
 @Component({
   selector: 'app-mobile-search-dialog',
   imports: [
-    TuiTextfieldComponent,
-    TuiTextfieldDirective,
     TuiButton,
     TeacherCardComponent,
     RouterLink,
     AsyncPipe,
     ReactiveFormsModule,
-    TuiAutoFocus
+    TuiAutoFocus,
+    TuiInputInline
   ],
   templateUrl: './mobile-search-dialog.component.html',
   standalone: true,
