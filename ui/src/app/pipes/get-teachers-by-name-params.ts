@@ -1,5 +1,4 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import {parseJson} from '@angular/cli/src/utilities/json-file';
 
 export interface GetTeachersByNameParams {
   readonly substring: string;
@@ -12,7 +11,7 @@ export interface GetTeachersByNameParams {
 export class GetTeachersByNameParamsPipe implements PipeTransform {
 
   transform(value: string, ...args: unknown[]): GetTeachersByNameParams {
-    return parseJson(value) as GetTeachersByNameParams;
+    return JSON.parse(value) as GetTeachersByNameParams;
   }
 
 }

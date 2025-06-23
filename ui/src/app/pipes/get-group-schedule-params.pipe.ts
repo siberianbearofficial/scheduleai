@@ -1,5 +1,4 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import {parseJson} from '@angular/cli/src/utilities/json-file';
 import {Moment} from 'moment';
 
 export interface GetGroupScheduleParams {
@@ -15,7 +14,7 @@ export interface GetGroupScheduleParams {
 export class GetGroupScheduleParamsPipe implements PipeTransform {
 
   transform(value: string, ...args: unknown[]): GetGroupScheduleParams {
-    return parseJson(value);
+    return JSON.parse(value) as GetGroupScheduleParams;
   }
 
 }

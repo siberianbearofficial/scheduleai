@@ -1,5 +1,4 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import {parseJson} from '@angular/cli/src/utilities/json-file';
 
 export interface GetTeachersByGroupParams {
   readonly group: string;
@@ -12,7 +11,7 @@ export interface GetTeachersByGroupParams {
 export class GetTeachersByGroupParamsPipe implements PipeTransform {
 
   transform(value: string, ...args: unknown[]): GetTeachersByGroupParams {
-    return parseJson(value) as GetTeachersByGroupParams;
+    return JSON.parse(value) as GetTeachersByGroupParams;
   }
 
 }
