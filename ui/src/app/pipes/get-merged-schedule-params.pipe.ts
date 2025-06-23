@@ -3,10 +3,10 @@ import {parseJson} from '@angular/cli/src/utilities/json-file';
 import {Moment} from 'moment';
 
 export interface GetMergedScheduleParams {
-  group: string;
-  teacherId: string;
-  from: Moment;
-  to: Moment;
+  readonly group: string;
+  readonly teacherId: string;
+  readonly from: Moment;
+  readonly to: Moment;
 }
 
 @Pipe({

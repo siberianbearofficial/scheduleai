@@ -3,9 +3,9 @@ import {parseJson} from '@angular/cli/src/utilities/json-file';
 import {Moment} from 'moment';
 
 export interface GetTeacherScheduleParams {
-  teacherId: string;
-  from: Moment;
-  to: Moment;
+  readonly teacherId: string;
+  readonly from: Moment;
+  readonly to: Moment;
 }
 
 @Pipe({

@@ -1,9 +1,15 @@
 import {inject, Injectable} from '@angular/core';
-import {AiHelperRequestModel, AiHelperToolCall, BffClient} from '../bff-client/bff-client';
+import {
+  AiHelperRequestModel,
+  AiHelperTask,
+  AiHelperTaskStatus,
+  AiHelperToolCall,
+  BffClient
+} from '../bff-client/bff-client';
 import {patchState, signalState} from '@ngrx/signals';
 import {MessageEntity, MessageRole, ToolCallEntity} from '../entities/message-entity';
 import {toObservable} from '@angular/core/rxjs-interop';
-import {combineLatest, EMPTY, interval, Observable, of, switchMap, take, tap} from 'rxjs';
+import {combineLatest, concatMap, EMPTY, first, interval, Observable, of, switchMap, tap} from 'rxjs';
 import {UniversitiesService} from './universities.service';
 import {GroupsService} from './groups.service';
 import moment from 'moment';
@@ -30,7 +36,7 @@ export class ChatService {
   private addMessage(message: MessageEntity): MessageEntity {
     patchState(this.messages$$, store => {
       return {
-        messages: store.messages.concat([message])
+        messages: [...store.messages, message]
       };
     });
     return message;
@@ -40,10 +46,11 @@ export class ChatService {
     patchState(this.messages$$, store => {
       const messages = store.messages.slice();
       const index = messages.findIndex(m => m == oldMessage);
-      messages[index] = newMessage;
-      return {
-        messages: messages
-      };
+      if (index === undefined)
+        messages.push(newMessage);
+      else
+        messages[index] = newMessage;
+      return {messages};
     });
     return newMessage;
   }
@@ -64,58 +71,30 @@ export class ChatService {
         prompt: message,
       }))),
       tap(resp => console.log(resp.detail)),
-      switchMap(resp => this.pollTask(resp.data.id))
+      concatMap(resp => this.pollTask(resp.data))
     )
   }
 
-  private pollTask(taskId: string): Observable<boolean> {
-    let message: MessageEntity = this.addMessage({
-      html: null,
-      role: MessageRole.Assistant,
-      timestamp: moment(),
-      pairs: [],
-      toolCalls: [],
-      inProgress: true,
-    });
+  private pollTask(task: AiHelperTask): Observable<boolean> {
+    let message: MessageEntity = this.addMessage(messageFromTask(task, true));
     return interval(1000).pipe(
-      switchMap(() => this.bffClient.aiHelperGET(taskId).pipe(
+      switchMap(() => this.bffClient.aiHelperGET(task.id).pipe(
         tap(resp => console.log(resp.detail)),
         switchMap(resp => {
-          if (resp.data.status == 2) {
-            message = this.replaceMessage(message, {
-              html: resp.data.response?.text ?? null,
-              role: MessageRole.Assistant,
-              timestamp: moment(),
-              pairs: resp.data.response?.pairs?.map(pairToEntity) ?? [],
-              toolCalls: message.toolCalls,
-              inProgress: false,
-            });
+          if (resp.data.status == AiHelperTaskStatus._2) {  // COMPLETED
+            message = this.replaceMessage(message, messageFromTask(resp.data, false));
             return of(true);
           }
-          if (resp.data.status == 3) {
-            message = this.replaceMessage(message, {
-              html: null,
-              role: MessageRole.Assistant,
-              timestamp: moment(),
-              pairs: [],
-              toolCalls: message.toolCalls,
-              inProgress: false,
-            });
+          if (resp.data.status == AiHelperTaskStatus._3) {  // FAILED
+            message = this.replaceMessage(message, messageFromTask(resp.data, false));
             return of(false)
           }
           if (resp.data.toolCalls?.length != message.toolCalls.length) {
-            message = this.replaceMessage(message, {
-              html: null,
-              role: MessageRole.Assistant,
-              timestamp: moment(),
-              pairs: [],
-              toolCalls: resp.data.toolCalls?.map(toolCallToEntity) ?? [],
-              inProgress: true,
-            })
+            message = this.replaceMessage(message, messageFromTask(resp.data, true))
           }
           return EMPTY;
         }),
-        take(1),
+        first(),
       )),
     )
   }
@@ -128,4 +107,13 @@ const toolCallToEntity = (toolCall: AiHelperToolCall): ToolCallEntity => ({
   result: toolCall.result ?? null,
   isSuccess: toolCall.isSuccess ?? false,
   error: toolCall.errorMessage ?? null,
+});
+
+const messageFromTask = (task: AiHelperTask, inProgress: boolean): MessageEntity => ({
+  html: task.response?.text ?? null,
+  role: MessageRole.Assistant,
+  timestamp: moment(),
+  pairs: task.response?.pairs?.map(pairToEntity) ?? [],
+  toolCalls: task.toolCalls?.map(toolCallToEntity) ?? [],
+  inProgress: inProgress,
 });

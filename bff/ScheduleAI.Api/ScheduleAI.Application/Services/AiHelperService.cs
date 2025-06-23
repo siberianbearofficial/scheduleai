@@ -73,10 +73,12 @@ public class AiHelperService(
         return Task.FromResult(_tasks[taskId].AiHelperTask);
     }
 
+    private static TimeSpan TaskLifeTime { get; } = TimeSpan.FromDays(1);
+
     private void ClearOldTasks()
     {
         foreach (var task in _tasks.Values.Where(t =>
-                         DateTime.UtcNow - t.StartedAt > TimeSpan.FromDays(1))
+                         DateTime.UtcNow - t.StartedAt > TaskLifeTime)
                      .ToArray())
         {
             _tasks.Remove(task.AiHelperTask.Id);

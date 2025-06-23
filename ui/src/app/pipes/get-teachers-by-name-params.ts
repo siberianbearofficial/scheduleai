@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import {parseJson} from '@angular/cli/src/utilities/json-file';
 
 export interface GetTeachersByNameParams {
-  substring: string;
+  readonly substring: string;
 }
 
 @Pipe({

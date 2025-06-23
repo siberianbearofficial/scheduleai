@@ -3,9 +3,9 @@ import {parseJson} from '@angular/cli/src/utilities/json-file';
 import {Moment} from 'moment';
 
 export interface GetGroupScheduleParams {
-  group: string;
-  from: Moment;
-  to: Moment;
+  readonly group: string;
+  readonly from: Moment;
+  readonly to: Moment;
 }
 
 @Pipe({
@@ -15,7 +15,7 @@ export interface GetGroupScheduleParams {
 export class GetGroupScheduleParamsPipe implements PipeTransform {
 
   transform(value: string, ...args: unknown[]): GetGroupScheduleParams {
-    return parseJson(value) as GetGroupScheduleParams;
+    return parseJson(value);
   }
 
 }
