@@ -10,7 +10,9 @@ public class AiHelperService(
     ITeachersService teachersService,
     IScheduleService scheduleService) : IAiHelperService
 {
-    private readonly Dictionary<Guid, AiHelperTask> _tasks = [];
+    private readonly Dictionary<Guid, TaskRecord> _tasks = [];
+
+    private record TaskRecord(AiHelperTask AiHelperTask, Task AsyncTask, DateTime StartedAt);
 
     public Task<AiHelperTask> AskHelper(string prompt, string universityId, string groupId)
     {
@@ -21,24 +23,23 @@ public class AiHelperService(
             Prompt = prompt,
             Status = AiHelperTaskStatus.NotStarted,
         };
-        _tasks.Add(task.Id, task);
-        StartTask(task, universityId, groupId);
+        _tasks.Add(task.Id, new TaskRecord(task, StartTask(task, universityId, groupId), DateTime.UtcNow));
         return Task.FromResult(task);
     }
 
-    private async void StartTask(AiHelperTask task, string universityId, string groupId)
+    private async Task StartTask(AiHelperTask task, string universityId, string groupId)
     {
         try
         {
             task.Status = AiHelperTaskStatus.InProgress;
-            task.StartedAt = DateTime.Now;
+            task.StartedAt = DateTime.UtcNow;
 
             var group = await groupsService.GetGroupByIdAsync(universityId, groupId);
             IAiHelperClient helperClient = new AiHelper(universityId, scheduleService, groupsService, teachersService);
             var resp = await helperClient.Request(new IAiHelperClient.AiHelperRequest
             {
                 Text = task.Prompt,
-                CurrentTime = DateTime.Now,
+                CurrentTime = DateTime.UtcNow,
                 Group = group.Name,
             }, onToolCalled: args => task.ToolCalls.Add(new AiHelperToolCall
             {
@@ -57,28 +58,28 @@ public class AiHelperService(
                 Pairs = resp.Pairs?.Select(AiHelper.PairFromAiModel).ToArray()
             };
             task.Status = AiHelperTaskStatus.Completed;
-            task.FinishedAt = DateTime.Now;
+            task.FinishedAt = DateTime.UtcNow;
         }
         catch (Exception e)
         {
             task.Status = AiHelperTaskStatus.Failed;
-            task.FinishedAt = DateTime.Now;
+            task.FinishedAt = DateTime.UtcNow;
             Console.WriteLine(e);
         }
     }
 
     public Task<AiHelperTask> GetTask(Guid taskId)
     {
-        return Task.FromResult(_tasks[taskId]);
+        return Task.FromResult(_tasks[taskId].AiHelperTask);
     }
 
     private void ClearOldTasks()
     {
         foreach (var task in _tasks.Values.Where(t =>
-                         t.FinishedAt != null && DateTime.Now - t.FinishedAt > TimeSpan.FromDays(1))
+                         DateTime.UtcNow - t.StartedAt > TimeSpan.FromDays(1))
                      .ToArray())
         {
-            _tasks.Remove(task.Id);
+            _tasks.Remove(task.AiHelperTask.Id);
         }
     }
 }
