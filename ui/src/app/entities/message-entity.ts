@@ -12,6 +12,7 @@ export interface MessageEntity {
   readonly timestamp: Moment;
   readonly pairs: PairEntity[];
   readonly toolCalls: ToolCallEntity[];
+  readonly inProgress: boolean;
 }
 
 export interface ToolCallEntity {

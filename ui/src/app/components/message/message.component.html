@@ -8,7 +8,17 @@
   <div class="assistant-message-container">
     <div class="assistant-header-container">
       <tui-icon icon="@tui.user" [style.font-size.rem]="3"></tui-icon>
-      <span [innerHtml]="message.html | dompurify"></span>
+      <div class="assistant-content-container">
+        @for (toolCall of message.toolCalls; track toolCall) {
+          <app-tool-call [toolCall]="toolCall"></app-tool-call>
+        }
+        @if (message.html !== null) {
+          <span [innerHtml]="message.html | dompurify"></span>
+        }
+        @if (message.inProgress) {
+          <tui-loader></tui-loader>
+        }
+      </div>
     </div>
     <div class="assistant-cards-container">
       @for (pair of message.pairs; track message) {

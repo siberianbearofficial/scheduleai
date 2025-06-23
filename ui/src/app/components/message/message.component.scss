@@ -20,6 +20,14 @@
     flex-direction: row;
     gap: 1rem;
     font-size: 16px;
+
+    .assistant-content-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      min-height: 48px;
+      justify-content: center;
+    }
   }
 
   .assistant-cards-container {

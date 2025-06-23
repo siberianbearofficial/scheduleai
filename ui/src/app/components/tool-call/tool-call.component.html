@@ -1,0 +1,24 @@
+<div class="container">
+  <tui-icon icon="@tui.wrench"></tui-icon>
+  @switch (toolCall.name) {
+    @case ("GetGroupSchedule") {
+      <p>Получение расписания группы <b>{{ (toolCall.parameter | getGroupScheduleParams).group }}</b></p>
+    }
+    @case ("GetTeacherSchedule") {
+      <p>Получение расписания преподавателя <b>{{ (toolCall.parameter | getTeacherScheduleParams).teacherId }}</b></p>
+    }
+    @case ("GetMergedSchedule") {
+      <p *tuiLet="toolCall.parameter | getMergedScheduleParams as mergedScheduleParams">
+        Сопоставление расписаний группы <b>{{ mergedScheduleParams.group }}</b>
+        и преподавателя <b>{{ mergedScheduleParams.teacherId }}</b>
+      </p>
+    }
+    @case ("GetTeachersByGroup") {
+      <p>Поиск преподавателей группы <b>{{ (toolCall.parameter | getTeachersByGroupParams).group }}</b></p>
+    }
+    @case ("GetTeachersByName") {
+      <p>Поиск преподавателей по ФИО: <i>{{ (toolCall.parameter | getTeachersByNameParams).substring }}</i></p>
+    }
+  }
+
+</div>

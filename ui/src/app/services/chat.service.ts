@@ -55,6 +55,7 @@ export class ChatService {
       timestamp: moment(),
       pairs: [],
       toolCalls: [],
+      inProgress: false,
     });
     return combineLatest([this.universityService.selectedUniversity$, this.groupsService.selectedGroup$]).pipe(
       switchMap(([university, group]) => this.bffClient.aiHelperPOST(AiHelperRequestModel.fromJS({
@@ -74,6 +75,7 @@ export class ChatService {
       timestamp: moment(),
       pairs: [],
       toolCalls: [],
+      inProgress: true,
     });
     return interval(1000).pipe(
       switchMap(() => this.bffClient.aiHelperGET(taskId).pipe(
@@ -86,10 +88,19 @@ export class ChatService {
               timestamp: moment(),
               pairs: resp.data.response?.pairs?.map(pairToEntity) ?? [],
               toolCalls: message.toolCalls,
+              inProgress: false,
             });
             return of(true);
           }
           if (resp.data.status == 3) {
+            message = this.replaceMessage(message, {
+              html: null,
+              role: MessageRole.Assistant,
+              timestamp: moment(),
+              pairs: [],
+              toolCalls: message.toolCalls,
+              inProgress: false,
+            });
             return of(false)
           }
           if (resp.data.toolCalls?.length != message.toolCalls.length) {
@@ -99,6 +110,7 @@ export class ChatService {
               timestamp: moment(),
               pairs: [],
               toolCalls: resp.data.toolCalls?.map(toolCallToEntity) ?? [],
+              inProgress: true,
             })
           }
           return EMPTY;
