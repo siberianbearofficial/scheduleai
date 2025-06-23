@@ -26,4 +26,18 @@ public class TeachersController(ITeachersService teachersService) : Controller
             Data = teachers
         });
     }
+
+    [HttpGet("{teacherId}")]
+    public async Task<ActionResult<ResponseSchema<Teacher>>> GetTeacherByName(
+        [FromQuery] [Required] string universityId,
+        string teacherId)
+    {
+        var teacher = await teachersService.GetTeacherByIdAsync(universityId, teacherId);
+
+        return Ok(new ResponseSchema<Teacher>()
+        {
+            Detail = "Teacher was selected",
+            Data = teacher
+        });
+    }
 }
