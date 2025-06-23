@@ -9,7 +9,7 @@ import {
 import {patchState, signalState} from '@ngrx/signals';
 import {MessageEntity, MessageRole, ToolCallEntity} from '../entities/message-entity';
 import {toObservable} from '@angular/core/rxjs-interop';
-import {combineLatest, concatMap, EMPTY, first, interval, Observable, of, switchMap, tap} from 'rxjs';
+import {combineLatest, concatMap, EMPTY, interval, Observable, of, switchMap, take, tap} from 'rxjs';
 import {UniversitiesService} from './universities.service';
 import {GroupsService} from './groups.service';
 import moment from 'moment';
@@ -89,12 +89,12 @@ export class ChatService {
             message = this.replaceMessage(message, messageFromTask(resp.data, false));
             return of(false)
           }
-          if (resp.data.toolCalls?.length != message.toolCalls.length) {
+          if (resp.data.toolCalls?.length !== message.toolCalls.length) {
             message = this.replaceMessage(message, messageFromTask(resp.data, true))
           }
           return EMPTY;
         }),
-        first(),
+        take(1),
       )),
     )
   }
