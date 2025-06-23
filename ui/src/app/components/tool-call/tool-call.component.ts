@@ -8,6 +8,8 @@ import {GetTeachersByNameParamsPipe} from '../../pipes/get-teachers-by-name-para
 import {GetTeacherScheduleParamsPipe} from '../../pipes/get-teacher-schedule-params.pipe';
 import {TuiLet} from '@taiga-ui/cdk';
 import {GetMergedScheduleParamsPipe} from '../../pipes/get-merged-schedule-params.pipe';
+import {TeacherByIdPipe} from '../../pipes/teacher-by-id.pipe';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
   standalone: true,
@@ -22,6 +24,8 @@ import {GetMergedScheduleParamsPipe} from '../../pipes/get-merged-schedule-param
     TuiLet,
     GetMergedScheduleParamsPipe,
     TuiIcon,
+    TeacherByIdPipe,
+    AsyncPipe,
   ],
   templateUrl: './tool-call.component.html',
   styleUrl: './tool-call.component.scss',

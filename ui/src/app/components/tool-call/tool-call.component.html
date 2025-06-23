@@ -5,12 +5,13 @@
       <p>Получение расписания группы <b>{{ (toolCall.parameter | getGroupScheduleParams).group }}</b></p>
     }
     @case ("GetTeacherSchedule") {
-      <p>Получение расписания преподавателя <b>{{ (toolCall.parameter | getTeacherScheduleParams).teacherId }}</b></p>
+      <p>Получение расписания преподавателя
+        <b>{{ ((toolCall.parameter | getTeacherScheduleParams).teacherId | teacherById | async)?.fullName }}</b></p>
     }
     @case ("GetMergedSchedule") {
       <p *tuiLet="toolCall.parameter | getMergedScheduleParams as mergedScheduleParams">
         Сопоставление расписаний группы <b>{{ mergedScheduleParams.group }}</b>
-        и преподавателя <b>{{ mergedScheduleParams.teacherId }}</b>
+        и преподавателя <b>{{ (mergedScheduleParams.teacherId | teacherById | async)?.fullName }}</b>
       </p>
     }
     @case ("GetTeachersByGroup") {

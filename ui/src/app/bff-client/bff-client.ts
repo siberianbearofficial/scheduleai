@@ -340,6 +340,69 @@ export class BffClient {
   /**
    * @return OK
    */
+  teachers2(universityId: string, teacherId: string): Observable<TeacherResponseSchema> {
+    let url_ = this.baseUrl + "/api/v1/teachers/{teacherId}?";
+    if (teacherId === undefined || teacherId === null)
+      throw new Error("The parameter 'teacherId' must be defined.");
+    url_ = url_.replace("{teacherId}", encodeURIComponent("" + teacherId));
+    if (universityId === undefined || universityId === null)
+      throw new Error("The parameter 'universityId' must be defined and cannot be null.");
+    else
+      url_ += "universityId=" + encodeURIComponent("" + universityId) + "&";
+    url_ = url_.replace(/[?&]$/, "");
+
+    let options_: any = {
+      observe: "response",
+      responseType: "blob",
+      headers: new HttpHeaders({
+        "Accept": "text/plain"
+      })
+    };
+
+    return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_: any) => {
+      return this.processTeachers2(response_);
+    })).pipe(_observableCatch((response_: any) => {
+      if (response_ instanceof HttpResponseBase) {
+        try {
+          return this.processTeachers2(response_ as any);
+        } catch (e) {
+          return _observableThrow(e) as any as Observable<TeacherResponseSchema>;
+        }
+      } else
+        return _observableThrow(response_) as any as Observable<TeacherResponseSchema>;
+    }));
+  }
+
+  protected processTeachers2(response: HttpResponseBase): Observable<TeacherResponseSchema> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse ? response.body :
+        (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+        let result200: any = null;
+        let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+        result200 = TeacherResponseSchema.fromJS(resultData200);
+        return _observableOf(result200);
+      }));
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+      }));
+    }
+    return _observableOf<TeacherResponseSchema>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
   universities(): Observable<IUniversityArrayResponseSchema> {
     let url_ = this.baseUrl + "/api/v1/universities";
     url_ = url_.replace(/[?&]$/, "");
@@ -1186,6 +1249,49 @@ export class TeacherArrayResponseSchema implements ITeacherArrayResponseSchema {
 
 export interface ITeacherArrayResponseSchema {
   data: Teacher[] | undefined;
+  detail?: string | undefined;
+}
+
+export class TeacherResponseSchema implements ITeacherResponseSchema {
+  data!: Teacher;
+  detail?: string | undefined;
+
+  constructor(data?: ITeacherResponseSchema) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+    if (!data) {
+      this.data = new Teacher();
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      this.data = _data["data"] ? Teacher.fromJS(_data["data"]) : new Teacher();
+      this.detail = _data["detail"];
+    }
+  }
+
+  static fromJS(data: any): TeacherResponseSchema {
+    data = typeof data === 'object' ? data : {};
+    let result = new TeacherResponseSchema();
+    result.init(data);
+    return result;
+  }
+
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data["data"] = this.data ? this.data.toJSON() : <any>undefined;
+    data["detail"] = this.detail;
+    return data;
+  }
+}
+
+export interface ITeacherResponseSchema {
+  data: Teacher;
   detail?: string | undefined;
 }
 
