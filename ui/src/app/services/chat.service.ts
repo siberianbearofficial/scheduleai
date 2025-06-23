@@ -43,7 +43,6 @@ export class ChatService {
   }
 
   private replaceMessage(oldMessage: MessageEntity, newMessage: MessageEntity): MessageEntity {
-    console.log("replaceMessage");
     patchState(this.messages$$, store => {
       const messages = store.messages.slice();
       const index = messages.findIndex(m => m == oldMessage);
@@ -53,7 +52,6 @@ export class ChatService {
         messages[index] = newMessage;
       return {messages};
     });
-    console.log("messageReplaced");
     return newMessage;
   }
 
@@ -91,9 +89,7 @@ export class ChatService {
             message = this.replaceMessage(message, messageFromTask(resp.data, false));
             return of(false)
           }
-          console.log("in progress")
           if (resp.data.toolCalls?.length !== message.toolCalls.length) {
-            console.log("ok")
             message = this.replaceMessage(message, messageFromTask(resp.data, true))
           }
           return EMPTY;
