@@ -6,12 +6,12 @@
   </div>
 } @else if (message.role == MessageRole.Assistant) {
   <div class="assistant-message-container">
+    @for (toolCall of message.toolCalls; track toolCall) {
+      <app-tool-call [toolCall]="toolCall"></app-tool-call>
+    }
     <div class="assistant-header-container">
       <tui-icon icon="@tui.user" [style.font-size.rem]="3"></tui-icon>
       <div class="assistant-content-container">
-        @for (toolCall of message.toolCalls; track toolCall) {
-          <app-tool-call [toolCall]="toolCall"></app-tool-call>
-        }
         @if (message.html !== null) {
           <span [innerHtml]="message.html | dompurify"></span>
         }
