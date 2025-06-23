@@ -18,7 +18,7 @@ export const API_BASE_URL = "API_BASE_URL";
 @Injectable({
   providedIn: 'root'
 })
-export class Client {
+export class BffClient {
   private http: HttpClient;
   private baseUrl: string;
   protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
