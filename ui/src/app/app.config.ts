@@ -9,8 +9,8 @@ import {API_BASE_URL} from './bff-client/bff-client';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    { provide: API_BASE_URL, useValue: "https://scheduleai-bff.nachert.art" },
-    // { provide: API_BASE_URL, useValue: "http://localhost:5046" },
+    // { provide: API_BASE_URL, useValue: "https://scheduleai-bff.nachert.art" },
+    { provide: API_BASE_URL, useValue: "http://localhost:5046" },
     provideAnimations(),
     provideZoneChangeDetection({eventCoalescing: true}),
     provideRouter(routes),

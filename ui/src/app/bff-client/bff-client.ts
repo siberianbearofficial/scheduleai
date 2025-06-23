@@ -16,7 +16,7 @@ import {HttpClient, HttpHeaders, HttpResponse, HttpResponseBase} from '@angular/
 export const API_BASE_URL = "API_BASE_URL";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class BffClient {
   private http: HttpClient;
@@ -31,7 +31,7 @@ export class BffClient {
   /**
    * @return OK
    */
-  aiHelper(body: AiHelperRequestModel): Observable<AiHelperResponseModelResponseSchema> {
+  aiHelperPOST(body: AiHelperRequestModel): Observable<AiHelperTaskResponseSchema> {
     let url_ = this.baseUrl + "/api/v1/aiHelper";
     url_ = url_.replace(/[?&]$/, "");
 
@@ -48,20 +48,20 @@ export class BffClient {
     };
 
     return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_: any) => {
-      return this.processAiHelper(response_);
+      return this.processAiHelperPOST(response_);
     })).pipe(_observableCatch((response_: any) => {
       if (response_ instanceof HttpResponseBase) {
         try {
-          return this.processAiHelper(response_ as any);
+          return this.processAiHelperPOST(response_ as any);
         } catch (e) {
-          return _observableThrow(e) as any as Observable<AiHelperResponseModelResponseSchema>;
+          return _observableThrow(e) as any as Observable<AiHelperTaskResponseSchema>;
         }
       } else
-        return _observableThrow(response_) as any as Observable<AiHelperResponseModelResponseSchema>;
+        return _observableThrow(response_) as any as Observable<AiHelperTaskResponseSchema>;
     }));
   }
 
-  protected processAiHelper(response: HttpResponseBase): Observable<AiHelperResponseModelResponseSchema> {
+  protected processAiHelperPOST(response: HttpResponseBase): Observable<AiHelperTaskResponseSchema> {
     const status = response.status;
     const responseBlob =
       response instanceof HttpResponse ? response.body :
@@ -77,7 +77,7 @@ export class BffClient {
       return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
         let result200: any = null;
         let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-        result200 = AiHelperResponseModelResponseSchema.fromJS(resultData200);
+        result200 = AiHelperTaskResponseSchema.fromJS(resultData200);
         return _observableOf(result200);
       }));
     } else if (status !== 200 && status !== 204) {
@@ -85,7 +85,66 @@ export class BffClient {
         return throwException("An unexpected server error occurred.", status, _responseText, _headers);
       }));
     }
-    return _observableOf<AiHelperResponseModelResponseSchema>(null as any);
+    return _observableOf<AiHelperTaskResponseSchema>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  aiHelperGET(taskId: string): Observable<AiHelperTaskResponseSchema> {
+    let url_ = this.baseUrl + "/api/v1/aiHelper/{taskId}";
+    if (taskId === undefined || taskId === null)
+      throw new Error("The parameter 'taskId' must be defined.");
+    url_ = url_.replace("{taskId}", encodeURIComponent("" + taskId));
+    url_ = url_.replace(/[?&]$/, "");
+
+    let options_: any = {
+      observe: "response",
+      responseType: "blob",
+      headers: new HttpHeaders({
+        "Accept": "text/plain"
+      })
+    };
+
+    return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_: any) => {
+      return this.processAiHelperGET(response_);
+    })).pipe(_observableCatch((response_: any) => {
+      if (response_ instanceof HttpResponseBase) {
+        try {
+          return this.processAiHelperGET(response_ as any);
+        } catch (e) {
+          return _observableThrow(e) as any as Observable<AiHelperTaskResponseSchema>;
+        }
+      } else
+        return _observableThrow(response_) as any as Observable<AiHelperTaskResponseSchema>;
+    }));
+  }
+
+  protected processAiHelperGET(response: HttpResponseBase): Observable<AiHelperTaskResponseSchema> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse ? response.body :
+        (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+        let result200: any = null;
+        let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+        result200 = AiHelperTaskResponseSchema.fromJS(resultData200);
+        return _observableOf(result200);
+      }));
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+      }));
+    }
+    return _observableOf<AiHelperTaskResponseSchema>(null as any);
   }
 
   /**
@@ -281,6 +340,69 @@ export class BffClient {
   /**
    * @return OK
    */
+  teachers2(universityId: string, teacherId: string): Observable<TeacherResponseSchema> {
+    let url_ = this.baseUrl + "/api/v1/teachers/{teacherId}?";
+    if (teacherId === undefined || teacherId === null)
+      throw new Error("The parameter 'teacherId' must be defined.");
+    url_ = url_.replace("{teacherId}", encodeURIComponent("" + teacherId));
+    if (universityId === undefined || universityId === null)
+      throw new Error("The parameter 'universityId' must be defined and cannot be null.");
+    else
+      url_ += "universityId=" + encodeURIComponent("" + universityId) + "&";
+    url_ = url_.replace(/[?&]$/, "");
+
+    let options_: any = {
+      observe: "response",
+      responseType: "blob",
+      headers: new HttpHeaders({
+        "Accept": "text/plain"
+      })
+    };
+
+    return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_: any) => {
+      return this.processTeachers2(response_);
+    })).pipe(_observableCatch((response_: any) => {
+      if (response_ instanceof HttpResponseBase) {
+        try {
+          return this.processTeachers2(response_ as any);
+        } catch (e) {
+          return _observableThrow(e) as any as Observable<TeacherResponseSchema>;
+        }
+      } else
+        return _observableThrow(response_) as any as Observable<TeacherResponseSchema>;
+    }));
+  }
+
+  protected processTeachers2(response: HttpResponseBase): Observable<TeacherResponseSchema> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse ? response.body :
+        (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+        let result200: any = null;
+        let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+        result200 = TeacherResponseSchema.fromJS(resultData200);
+        return _observableOf(result200);
+      }));
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+      }));
+    }
+    return _observableOf<TeacherResponseSchema>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
   universities(): Observable<IUniversityArrayResponseSchema> {
     let url_ = this.baseUrl + "/api/v1/universities";
     url_ = url_.replace(/[?&]$/, "");
@@ -427,11 +549,79 @@ export interface IAiHelperResponseModel {
   pairs?: Pair[] | undefined;
 }
 
-export class AiHelperResponseModelResponseSchema implements IAiHelperResponseModelResponseSchema {
-  data!: AiHelperResponseModel;
+export class AiHelperTask implements IAiHelperTask {
+  id!: string;
+  prompt!: string | undefined;
+  status!: AiHelperTaskStatus;
+  response?: AiHelperResponseModel;
+  readonly toolCalls?: AiHelperToolCall[] | undefined;
+  startedAt?: Date | undefined;
+  finishedAt?: Date | undefined;
+
+  constructor(data?: IAiHelperTask) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      this.id = _data["id"];
+      this.prompt = _data["prompt"];
+      this.status = _data["status"];
+      this.response = _data["response"] ? AiHelperResponseModel.fromJS(_data["response"]) : <any>undefined;
+      if (Array.isArray(_data["toolCalls"])) {
+        (<any>this).toolCalls = [] as any;
+        for (let item of _data["toolCalls"])
+          (<any>this).toolCalls!.push(AiHelperToolCall.fromJS(item));
+      }
+      this.startedAt = _data["startedAt"] ? new Date(_data["startedAt"].toString()) : <any>undefined;
+      this.finishedAt = _data["finishedAt"] ? new Date(_data["finishedAt"].toString()) : <any>undefined;
+    }
+  }
+
+  static fromJS(data: any): AiHelperTask {
+    data = typeof data === 'object' ? data : {};
+    let result = new AiHelperTask();
+    result.init(data);
+    return result;
+  }
+
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data["id"] = this.id;
+    data["prompt"] = this.prompt;
+    data["status"] = this.status;
+    data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+    if (Array.isArray(this.toolCalls)) {
+      data["toolCalls"] = [];
+      for (let item of this.toolCalls)
+        data["toolCalls"].push(item.toJSON());
+    }
+    data["startedAt"] = this.startedAt ? this.startedAt.toISOString() : <any>undefined;
+    data["finishedAt"] = this.finishedAt ? this.finishedAt.toISOString() : <any>undefined;
+    return data;
+  }
+}
+
+export interface IAiHelperTask {
+  id: string;
+  prompt: string | undefined;
+  status: AiHelperTaskStatus;
+  response?: AiHelperResponseModel;
+  toolCalls?: AiHelperToolCall[] | undefined;
+  startedAt?: Date | undefined;
+  finishedAt?: Date | undefined;
+}
+
+export class AiHelperTaskResponseSchema implements IAiHelperTaskResponseSchema {
+  data!: AiHelperTask;
   detail?: string | undefined;
 
-  constructor(data?: IAiHelperResponseModelResponseSchema) {
+  constructor(data?: IAiHelperTaskResponseSchema) {
     if (data) {
       for (var property in data) {
         if (data.hasOwnProperty(property))
@@ -439,20 +629,20 @@ export class AiHelperResponseModelResponseSchema implements IAiHelperResponseMod
       }
     }
     if (!data) {
-      this.data = new AiHelperResponseModel();
+      this.data = new AiHelperTask();
     }
   }
 
   init(_data?: any) {
     if (_data) {
-      this.data = _data["data"] ? AiHelperResponseModel.fromJS(_data["data"]) : new AiHelperResponseModel();
+      this.data = _data["data"] ? AiHelperTask.fromJS(_data["data"]) : new AiHelperTask();
       this.detail = _data["detail"];
     }
   }
 
-  static fromJS(data: any): AiHelperResponseModelResponseSchema {
+  static fromJS(data: any): AiHelperTaskResponseSchema {
     data = typeof data === 'object' ? data : {};
-    let result = new AiHelperResponseModelResponseSchema();
+    let result = new AiHelperTaskResponseSchema();
     result.init(data);
     return result;
   }
@@ -465,9 +655,72 @@ export class AiHelperResponseModelResponseSchema implements IAiHelperResponseMod
   }
 }
 
-export interface IAiHelperResponseModelResponseSchema {
-  data: AiHelperResponseModel;
+export interface IAiHelperTaskResponseSchema {
+  data: AiHelperTask;
   detail?: string | undefined;
+}
+
+export enum AiHelperTaskStatus {
+  _0 = 0,
+  _1 = 1,
+  _2 = 2,
+  _3 = 3,
+}
+
+export class AiHelperToolCall implements IAiHelperToolCall {
+  toolName!: string | undefined;
+  toolDescription?: string | undefined;
+  parameter!: string | undefined;
+  isSuccess?: boolean;
+  result?: string | undefined;
+  errorMessage?: string | undefined;
+
+  constructor(data?: IAiHelperToolCall) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      this.toolName = _data["toolName"];
+      this.toolDescription = _data["toolDescription"];
+      this.parameter = _data["parameter"];
+      this.isSuccess = _data["isSuccess"];
+      this.result = _data["result"];
+      this.errorMessage = _data["errorMessage"];
+    }
+  }
+
+  static fromJS(data: any): AiHelperToolCall {
+    data = typeof data === 'object' ? data : {};
+    let result = new AiHelperToolCall();
+    result.init(data);
+    return result;
+  }
+
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data["toolName"] = this.toolName;
+    data["toolDescription"] = this.toolDescription;
+    data["parameter"] = this.parameter;
+    data["isSuccess"] = this.isSuccess;
+    data["result"] = this.result;
+    data["errorMessage"] = this.errorMessage;
+    return data;
+  }
+}
+
+export interface IAiHelperToolCall {
+  toolName: string | undefined;
+  toolDescription?: string | undefined;
+  parameter: string | undefined;
+  isSuccess?: boolean;
+  result?: string | undefined;
+  errorMessage?: string | undefined;
 }
 
 export class Group implements IGroup {
@@ -996,6 +1249,49 @@ export class TeacherArrayResponseSchema implements ITeacherArrayResponseSchema {
 
 export interface ITeacherArrayResponseSchema {
   data: Teacher[] | undefined;
+  detail?: string | undefined;
+}
+
+export class TeacherResponseSchema implements ITeacherResponseSchema {
+  data!: Teacher;
+  detail?: string | undefined;
+
+  constructor(data?: ITeacherResponseSchema) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+    if (!data) {
+      this.data = new Teacher();
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      this.data = _data["data"] ? Teacher.fromJS(_data["data"]) : new Teacher();
+      this.detail = _data["detail"];
+    }
+  }
+
+  static fromJS(data: any): TeacherResponseSchema {
+    data = typeof data === 'object' ? data : {};
+    let result = new TeacherResponseSchema();
+    result.init(data);
+    return result;
+  }
+
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data["data"] = this.data ? this.data.toJSON() : <any>undefined;
+    data["detail"] = this.detail;
+    return data;
+  }
+}
+
+export interface ITeacherResponseSchema {
+  data: Teacher;
   detail?: string | undefined;
 }
 
