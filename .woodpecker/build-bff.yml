@@ -1,0 +1,15 @@
+when:
+  - event: push
+
+steps:
+  - name: build and push
+    image: woodpeckerci/plugin-docker-buildx
+    settings:
+      repo: ghcr.io/siberianbearofficial/scheduleai-bff
+      registry: ghcr.io
+      username: siberianbearofficial
+      password:
+        from_secret: GITHUB_TOKEN
+      context: bff/ScheduleAI.Api
+      dockerfile: bff/ScheduleAI.Api/Dockerfile
+      tag: main
