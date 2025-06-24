@@ -1,14 +1,14 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace BmstuSchedule.Client.Models;
 
 public enum DayOfWeek
 {
-    [JsonProperty("monday")] Monday,
-    [JsonProperty("tuesday")] Tuesday,
-    [JsonProperty("wednesday")] Wednesday,
-    [JsonProperty("thursday")] Thursday,
-    [JsonProperty("friday")] Friday,
-    [JsonProperty("saturday")] Saturday,
-    [JsonProperty("sunday")] Sunday
+    [JsonPropertyName("monday")] Monday,
+    [JsonPropertyName("tuesday")] Tuesday,
+    [JsonPropertyName("wednesday")] Wednesday,
+    [JsonPropertyName("thursday")] Thursday,
+    [JsonPropertyName("friday")] Friday,
+    [JsonPropertyName("saturday")] Saturday,
+    [JsonPropertyName("sunday")] Sunday
 }

@@ -24,8 +24,8 @@ public class BmstuPair : IUniversityPair
             StartTime = scheduleItem.TimeSlot.StartTime,
             EndTime = scheduleItem.TimeSlot.EndTime,
             Rooms = scheduleItem.Rooms.Select(r => r.Name).ToArray(),
-            ActType = scheduleItem.Disciplines.Single().ActType,
-            Discipline = scheduleItem.Disciplines.Single().FullName,
+            ActType = scheduleItem.Discipline.ActType,
+            Discipline = scheduleItem.Discipline.FullName,
         };
     }
 }
