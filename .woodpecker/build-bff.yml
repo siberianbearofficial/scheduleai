@@ -23,14 +23,3 @@ steps:
         - "org.opencontainers.image.revision=${WOODPECKER_COMMIT_SHA}"
         - "org.opencontainers.image.source=https://github.com/siberianbearofficial/scheduleai"
     secrets: [ GITHUB_TOKEN ]
-
-  - name: deploy
-    image: alpine
-    commands:
-      - apk add curl
-      - curl -X POST \
-          'https://deploy-api.nachert.art/api/v1/stacks/schedule-ai/deployments'  \
-          -H 'accept: application/json' \
-          -H "Authorization: Basic ${DEPLOY_API_CREDENTIALS}" \
-          -d ''
-    secrets: [ DEPLOY_API_CREDENTIALS ]
