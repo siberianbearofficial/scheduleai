@@ -1,0 +1,35 @@
+pipeline:
+  clone:
+    image: docker.io/library/alpine:latest
+    commands:
+      - apk add git
+      - git clone https://github.com/siberianbearofficial/scheduleai.git  .
+      - cd bff || exit
+
+  login-to-registry:
+    image: plugins/docker
+    registry: ghcr.io
+    username: siberianbearofficial
+    password: ${GITHUB_TOKEN}
+    secrets: [ GITHUB_TOKEN ]
+
+  build-and-push:
+    image: plugins/docker
+    registry: ghcr.io
+    repo: ghcr.io/siberianbearofficial/scheduleai-bff
+    tags:
+      - main
+    auto_tag: true
+    secrets: [ GITHUB_TOKEN ]
+
+  deploy:
+    image: alpine
+    commands:
+      - apk add curl
+      - |
+        curl -X POST \
+          'https://deploy-api.nachert.art/api/v1/stacks/schedule-ai/deployments'  \
+          -H 'accept: application/json' \
+          -H "Authorization: Basic ${DEPLOY_API_CREDENTIALS}" \
+          -d ''
+    secrets: [ DEPLOY_API_CREDENTIALS ]
