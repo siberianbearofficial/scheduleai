@@ -12,17 +12,20 @@ steps:
         from_secret: GITHUB_TOKEN
       dockerfile: bff/ScheduleAI.Api/Dockerfile
       context: bff/ScheduleAI.Api
-      tags:
-        - main
-      auto_tag: true
+      tag: ghcr.io/siberianbearofficial/scheduleai-bff:main
       labels:
+        - "org.opencontainers.image.title=scheduleai"
+        - "org.opencontainers.image.description=Умное расписание преподавателей с AI агентом. Решение в рамках хакатона 'Идея. Код. Релиз'."
+        - "org.opencontainers.image.url=https://github.com/siberianbearofficial/scheduleai"
+        - "org.opencontainers.image.version=main"
         - "org.opencontainers.image.revision=${WOODPECKER_COMMIT_SHA}"
         - "org.opencontainers.image.source=https://github.com/siberianbearofficial/scheduleai"
+        - "org.opencontainers.image.licenses=GPL-3.0"
 
   - name: deploy
     image: curlimages/curl
     commands:
-      - curl -X 'POST' "${DEPLOY_URL}" -H "${DEPLOY_CREDS}"
+      - curl -X 'POST' $${DEPLOY_URL} -H $${DEPLOY_CREDS}
     environment:
       DEPLOY_URL: 'https://deploy-api.nachert.art/api/v1/stacks/schedule-ai/deployments'
       AUTH_HEADER:
