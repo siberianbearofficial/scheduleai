@@ -13,7 +13,8 @@ steps:
       repo: ghcr.io/siberianbearofficial/scheduleai-bff
       registry: ghcr.io
       username: siberianbearofficial
-      password: ${GITHUB_TOKEN}
+      password:
+        from_secret: GITHUB_TOKEN
       dockerfile: bff/ScheduleAI.Api/Dockerfile
       context: bff/ScheduleAI.Api
       tags:
@@ -22,6 +23,3 @@ steps:
       labels:
         - "org.opencontainers.image.revision=${WOODPECKER_COMMIT_SHA}"
         - "org.opencontainers.image.source=https://github.com/siberianbearofficial/scheduleai"
-    environment:
-      GITHUB_TOKEN:
-        from_secret: GITHUB_TOKEN
