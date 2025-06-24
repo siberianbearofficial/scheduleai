@@ -5,12 +5,11 @@ steps:
   - name: build and push
     image: woodpeckerci/plugin-docker-buildx
     settings:
-      repo: ghcr.io/siberianbearofficial/scheduleai/scheduleai-bff
+      repo: ghcr.io/siberianbearofficial/scheduleai-bff
       registry: ghcr.io
       username: siberianbearofficial
       password:
         from_secret: GITHUB_TOKEN
-      dockerfile: bff/ScheduleAI.Api/Dockerfile
       context: bff/ScheduleAI.Api
       tag: main
       labels:
@@ -25,8 +24,7 @@ steps:
   - name: deploy
     image: curlimages/curl
     commands:
-      - curl -X 'POST' $${DEPLOY_URL} -H $${AUTH_HEADER}
+      - curl -X 'POST' 'https://deploy-api.nachert.art/api/v1/stacks/schedule-ai/deployments' -H $${AUTH_HEADER}
     environment:
-      DEPLOY_URL: http://deploy-api:3000/api/v1/stacks/schedule-ai/deployments
       AUTH_HEADER:
           from_secret: DEPLOY_API_CREDENTIALS
