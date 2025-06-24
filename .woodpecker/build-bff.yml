@@ -10,16 +10,8 @@ steps:
       username: siberianbearofficial
       password:
         from_secret: GITHUB_TOKEN
-      context: bff/ScheduleAI.Api
+      context: bff
       tag: main
-      labels:
-        - "org.opencontainers.image.title=scheduleai"
-        - "org.opencontainers.image.description=Умное расписание преподавателей с AI агентом. Решение в рамках хакатона 'Идея. Код. Релиз'."
-        - "org.opencontainers.image.url=https://github.com/siberianbearofficial/scheduleai"
-        - "org.opencontainers.image.version=main"
-        - "org.opencontainers.image.revision=${WOODPECKER_COMMIT_SHA}"
-        - "org.opencontainers.image.source=https://github.com/siberianbearofficial/scheduleai"
-        - "org.opencontainers.image.licenses=GPL-3.0"
 
   - name: deploy
     image: curlimages/curl
