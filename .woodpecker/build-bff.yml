@@ -27,8 +27,8 @@ steps:
   - name: deploy
     image: curlimages/curl
     commands:
-      - curl -X 'POST' "${DEPLOY_URL}" -H "Authorization: Basic ${DEPLOY_CREDS}"
+      - curl -X 'POST' "${DEPLOY_URL}" -H "${DEPLOY_CREDS}"
     environment:
       - DEPLOY_URL: 'https://deploy-api.nachert.art/api/v1/stacks/schedule-ai/deployments'
-      - DEPLOY_CREDS:
+      - AUTH_HEADER:
           from_secret: DEPLOY_API_CREDENTIALS
