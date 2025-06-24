@@ -23,3 +23,12 @@ steps:
       labels:
         - "org.opencontainers.image.revision=${WOODPECKER_COMMIT_SHA}"
         - "org.opencontainers.image.source=https://github.com/siberianbearofficial/scheduleai"
+
+  - name: deploy
+    image: curlimages/curl
+    commands:
+      - curl -X 'POST' $${DEPLOY_URL} -H 'accept: application/json' -H 'Authorization: Basic $DEPLOY_CREDS' -d ''
+    environment:
+      - DEPLOY_URL: 'https://deploy-api.nachert.art/api/v1/stacks/schedule-ai/deployments'
+      - DEPLOY_CREDS:
+          from_secret: DEPLOY_API_CREDENTIALS
