@@ -30,17 +30,19 @@ public class BmstuScheduleClient
     /// Get list of teachers 
     /// </summary>
     /// <param name="name">Filter teachers by any part of full name</param>
+    /// <param name="groupId">Filter teachers by group ID</param>
     /// <param name="department">Filter teachers by department abbreviation</param>
     /// <param name="page">Page number</param>
     /// <param name="size">Page size</param>
     /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-    public async Task<TeacherListResponse> GetTeachers(string? name = null, string? department = null, int page = 1, int size = 20, CancellationToken? cancellationToken = null)
+    public async Task<TeacherListResponse> GetTeachers(string? name = null, int? groupId = null, string? department = null, int? page = null, int? size = null, CancellationToken? cancellationToken = null)
     {
         Dictionary<string, string?> query = [];
         if (name != null) query["name"] = Convert.ToString(name);
+        if (groupId != null) query["group_id"] = Convert.ToString(groupId);
         if (department != null) query["department"] = Convert.ToString(department);
-        query["page"] = Convert.ToString(page);
-        query["size"] = Convert.ToString(size);
+        if (page != null) query["page"] = Convert.ToString(page);
+        if (size != null) query["size"] = Convert.ToString(size);
         return await GetAsync<TeacherListResponse>($"/teachers", query, cancellationToken ?? CancellationToken.None);
     }
 
@@ -63,11 +65,11 @@ public class BmstuScheduleClient
     /// <param name="dtFrom">Start datetime</param>
     /// <param name="dtTo">End datetime</param>
     /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-    public async Task<TeacherScheduleResponse> GetTeacherSchedule(int teacherId, DateTime? dtFrom = null, DateTime? dtTo = null, CancellationToken? cancellationToken = null)
+    public async Task<TeacherScheduleResponse> GetTeacherSchedule(int teacherId, DateTime dtFrom, DateTime dtTo, CancellationToken? cancellationToken = null)
     {
         Dictionary<string, string?> query = [];
-        if (dtFrom != null) query["dt_from"] = dtFrom.Value.ToString("o");
-        if (dtTo != null) query["dt_to"] = dtTo.Value.ToString("o");
+        query["dt_from"] = dtFrom.ToString("o");
+        query["dt_to"] = dtTo.ToString("o");
         return await GetAsync<TeacherScheduleResponse>($"/teachers/{teacherId}/schedule", query, cancellationToken ?? CancellationToken.None);
     }
 
@@ -86,7 +88,7 @@ public class BmstuScheduleClient
     /// <param name="page">Page number</param>
     /// <param name="size">Page size</param>
     /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-    public async Task<GroupListResponse> GetGroups(string? abbr = null, string? course = null, string? department = null, string? faculty = null, string? filial = null, int page = 1, int size = 20, CancellationToken? cancellationToken = null)
+    public async Task<GroupListResponse> GetGroups(string? abbr = null, string? course = null, string? department = null, string? faculty = null, string? filial = null, int? page = null, int? size = null, CancellationToken? cancellationToken = null)
     {
         Dictionary<string, string?> query = [];
         if (abbr != null) query["abbr"] = Convert.ToString(abbr);
@@ -94,8 +96,8 @@ public class BmstuScheduleClient
         if (department != null) query["department"] = Convert.ToString(department);
         if (faculty != null) query["faculty"] = Convert.ToString(faculty);
         if (filial != null) query["filial"] = Convert.ToString(filial);
-        query["page"] = Convert.ToString(page);
-        query["size"] = Convert.ToString(size);
+        if (page != null) query["page"] = Convert.ToString(page);
+        if (size != null) query["size"] = Convert.ToString(size);
         return await GetAsync<GroupListResponse>($"/groups", query, cancellationToken ?? CancellationToken.None);
     }
 
@@ -137,12 +139,12 @@ public class BmstuScheduleClient
     /// <param name="page">Page number</param>
     /// <param name="size">Page size</param>
     /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-    public async Task<RoomListResponse> GetRooms(string? building = null, int page = 1, int size = 20, CancellationToken? cancellationToken = null)
+    public async Task<RoomListResponse> GetRooms(string? building = null, int? page = null, int? size = null, CancellationToken? cancellationToken = null)
     {
         Dictionary<string, string?> query = [];
         if (building != null) query["building"] = Convert.ToString(building);
-        query["page"] = Convert.ToString(page);
-        query["size"] = Convert.ToString(size);
+        if (page != null) query["page"] = Convert.ToString(page);
+        if (size != null) query["size"] = Convert.ToString(size);
         return await GetAsync<RoomListResponse>($"/rooms", query, cancellationToken ?? CancellationToken.None);
     }
 
@@ -162,16 +164,14 @@ public class BmstuScheduleClient
     /// Get schedule for a specific room 
     /// </summary>
     /// <param name="roomId">ID of the room</param>
-    /// <param name="day">Day of week</param>
     /// <param name="dtFrom">Start datetime</param>
     /// <param name="dtTo">End datetime</param>
     /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-    public async Task<RoomScheduleResponse> GetRoomSchedule(int roomId, Models.DayOfWeek? day = null, DateTime? dtFrom = null, DateTime? dtTo = null, CancellationToken? cancellationToken = null)
+    public async Task<RoomScheduleResponse> GetRoomSchedule(int roomId, DateTime dtFrom, DateTime dtTo, CancellationToken? cancellationToken = null)
     {
         Dictionary<string, string?> query = [];
-        if (day != null) query["day"] = Convert.ToString(day);
-        if (dtFrom != null) query["dt_from"] = dtFrom.Value.ToString("o");
-        if (dtTo != null) query["dt_to"] = dtTo.Value.ToString("o");
+        query["dt_from"] = dtFrom.ToString("o");
+        query["dt_to"] = dtTo.ToString("o");
         return await GetAsync<RoomScheduleResponse>($"/rooms/{roomId}/schedule", query, cancellationToken ?? CancellationToken.None);
     }
 
@@ -192,7 +192,6 @@ public class BmstuScheduleClient
     }
 
     #endregion
-
 
     #region Private helpers
 

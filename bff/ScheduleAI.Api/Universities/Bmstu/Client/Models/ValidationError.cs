@@ -1,10 +1,10 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace BmstuSchedule.Client.Models;
 
 public class ValidationError
 {
-    [JsonProperty("loc")] public required string?[] Loc { get; init; }
-    [JsonProperty("msg")] public required string Msg { get; init; }
-    [JsonProperty("type")] public required string Type { get; init; }
+    [JsonPropertyName("loc")] public required string?[] Loc { get; init; }
+    [JsonPropertyName("msg")] public required string Msg { get; init; }
+    [JsonPropertyName("type")] public required string Type { get; init; }
 }

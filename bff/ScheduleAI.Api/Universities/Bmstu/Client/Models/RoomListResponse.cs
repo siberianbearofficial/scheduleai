@@ -1,9 +1,9 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace BmstuSchedule.Client.Models;
 
 public class RoomListResponse
 {
-    [JsonProperty("detail")] public string? Detail { get; init; }
-    [JsonProperty("data")] public required RoomList Data { get; init; }
+    [JsonPropertyName("detail")] public string? Detail { get; init; }
+    [JsonPropertyName("data")] public required RoomList Data { get; init; }
 }

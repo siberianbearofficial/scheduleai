@@ -1,7 +1,6 @@
-﻿using Bmstu.Mock;
+﻿using Bmstu;
 using ScheduleAI.Core.Abstractions;
 using ScheduleAI.Core.Abstractions.Universities;
-using ScheduleAI.Core.Models;
 
 namespace ScheduleAI.Application.Services;
 
