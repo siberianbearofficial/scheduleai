@@ -22,4 +22,6 @@ steps:
       labels:
         - "org.opencontainers.image.revision=${WOODPECKER_COMMIT_SHA}"
         - "org.opencontainers.image.source=https://github.com/siberianbearofficial/scheduleai"
-    secrets: [ GITHUB_TOKEN ]
+    environment:
+      GITHUB_TOKEN:
+        from_secret: GITHUB_TOKEN
