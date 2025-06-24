@@ -2,15 +2,10 @@ when:
   - event: push
 
 steps:
-  - name: clone
-    image: woodpeckerci/plugin-git
-    settings:
-      lfs: false
-
-  - name: build-and-push
+  - name: build and push
     image: woodpeckerci/plugin-docker-buildx
     settings:
-      repo: ghcr.io/siberianbearofficial/scheduleai-bff
+      repo: ghcr.io/siberianbearofficial/scheduleai/scheduleai-bff
       registry: ghcr.io
       username: siberianbearofficial
       password:
