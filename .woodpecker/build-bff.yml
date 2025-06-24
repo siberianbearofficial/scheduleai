@@ -1,33 +1,34 @@
-pipeline:
-  clone:
-    image: docker.io/library/alpine:latest
-    commands:
-      - apk add git
-      - git clone https://github.com/siberianbearofficial/scheduleai.git  .
-      - cd bff || exit
+when:
+  - event: push
 
-  login-to-registry:
-    image: plugins/docker
-    registry: ghcr.io
-    username: siberianbearofficial
-    password: ${GITHUB_TOKEN}
+steps:
+  - name: clone
+    image: woodpeckerci/plugin-git
+    settings:
+      lfs: false
+
+  - name: build-and-push
+    image: woodpeckerci/plugin-docker-buildx
+    settings:
+      repo: ghcr.io/siberianbearofficial/scheduleai-bff
+      registry: ghcr.io
+      username: siberianbearofficial
+      password: ${GITHUB_TOKEN}
+      dockerfile: bff/ScheduleAI.Api/Dockerfile
+      context: bff/ScheduleAI.Api
+      tags:
+        - main
+      auto_tag: true
+      labels:
+        - "org.opencontainers.image.revision=${WOODPECKER_COMMIT_SHA}"
+        - "org.opencontainers.image.source=https://github.com/siberianbearofficial/scheduleai"
     secrets: [ GITHUB_TOKEN ]
 
-  build-and-push:
-    image: plugins/docker
-    registry: ghcr.io
-    repo: ghcr.io/siberianbearofficial/scheduleai-bff
-    tags:
-      - main
-    auto_tag: true
-    secrets: [ GITHUB_TOKEN ]
-
-  deploy:
+  - name: deploy
     image: alpine
     commands:
       - apk add curl
-      - |
-        curl -X POST \
+      - curl -X POST \
           'https://deploy-api.nachert.art/api/v1/stacks/schedule-ai/deployments'  \
           -H 'accept: application/json' \
           -H "Authorization: Basic ${DEPLOY_API_CREDENTIALS}" \
