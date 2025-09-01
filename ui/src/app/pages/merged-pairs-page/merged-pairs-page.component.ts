@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {AsyncPipe} from '@angular/common';
 import {MergedPairsService} from '../../services/merged-pairs.service';
-import {BehaviorSubject, combineLatest, EMPTY, NEVER, Observable, switchMap, tap} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, map, NEVER, Observable, switchMap, tap} from 'rxjs';
 import {TeacherService} from '../../services/teachers.service';
 import {PairComponent} from '../../components/pair/pair.component';
 import {TuiCardLarge, TuiHeader} from '@taiga-ui/layout';
@@ -10,7 +10,7 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {PairEntity} from '../../entities/pair-entity';
 import {HeaderComponent} from '../../components/header/header.component';
 import {TuiInputDateRangeModule} from '@taiga-ui/legacy';
-import {TuiDayRangePeriod} from '@taiga-ui/kit';
+import {TuiChevron, TuiDataListWrapper, TuiDayRangePeriod, TuiSelect} from '@taiga-ui/kit';
 import {TuiDay, TuiDayRange} from '@taiga-ui/cdk';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import moment from 'moment';
@@ -31,7 +31,10 @@ const today = TuiDay.currentLocal();
     HeaderComponent,
     TuiInputDateRangeModule,
     TuiTextfield,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TuiChevron,
+    TuiSelect,
+    TuiDataListWrapper,
   ],
   templateUrl: './merged-pairs-page.component.html',
   styleUrl: './merged-pairs-page.component.scss',
@@ -43,7 +46,6 @@ export class MergedPairsPageComponent implements OnInit {
   private readonly teacherService: TeacherService = inject(TeacherService);
   private readonly destroyRef: DestroyRef = inject(DestroyRef);
 
-  readonly mergedPairs$: Observable<PairEntity[]> = this.mergedPairsService.mergedPairs$;
   private readonly teacherId$$ = new BehaviorSubject<string | null>(null);
   protected readonly teacher$ = this.teacherId$$.pipe(
     switchMap(id => id ? this.teacherService.teacherById(id) : EMPTY)
@@ -84,7 +86,28 @@ export class MergedPairsPageComponent implements OnInit {
       .subscribe();
   }
 
-  protected readonly dateRangeControl = new FormControl(new TuiDayRange(today, today.append({day: 6})))
+  protected readonly dateRangeControl = new FormControl(new TuiDayRange(today, today.append({day: 6})));
+
+  protected readonly orders = [
+    "По времени",
+    "По удобству"
+  ];
+
+  protected readonly orderControl = new FormControl(this.orders[0]);
+
+  readonly mergedPairs$: Observable<PairEntity[]> = combineLatest(
+    this.mergedPairsService.mergedPairs$,
+    this.orderControl.valueChanges
+  ).pipe(
+    map(([mergedPairs, order]) => {
+      if (order == "По времени")
+        return mergedPairs.sort((a, b) => a.startTime.diff(b.startTime));
+      else if (order == "По удобству")
+        return mergedPairs.sort((a, b) => (b.convenience?.coefficient ?? 0) - (a.convenience?.coefficient ?? 0));
+      else
+        return mergedPairs;
+    })
+  );
 
   protected readonly datePeriods = [
     new TuiDayRangePeriod(

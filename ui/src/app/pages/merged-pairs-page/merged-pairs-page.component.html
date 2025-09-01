@@ -1,11 +1,24 @@
 <div class="page">
   <app-header></app-header>
-  <div class="filters-container">
-    <tui-input-date-range [items]="datePeriods" [formControl]="dateRangeControl">
-        Выберите период
-    </tui-input-date-range>
-  </div>
   <div class="schedule-container">
+    <div class="filters-container">
+      <tui-input-date-range [items]="datePeriods" [formControl]="dateRangeControl" class="field">
+        Выберите период
+      </tui-input-date-range>
+      <tui-textfield tuiChevron class="field">
+        <input
+          [formControl]="orderControl"
+          tuiSelect
+        />
+
+        <tui-data-list-wrapper
+          *tuiTextfieldDropdown
+          new
+          [items]="orders"
+        />
+      </tui-textfield>
+    </div>
+
     <div class="schedule">
       @for (pair of mergedPairs$ | async; track pair.startTime) {
         <div class="pair-card">
