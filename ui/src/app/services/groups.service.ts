@@ -76,6 +76,12 @@ export class GroupsService {
     })
   }
 
+  groupById(groupId: string): Observable<GroupEntity | undefined> {
+    return this.groups$.pipe(
+      map(groups => groups.find(g => g.id == groupId)),
+    );
+  }
+
 }
 
 const groupToEntity = (group: Group): GroupEntity => ({

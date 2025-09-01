@@ -6,6 +6,9 @@ import moment from 'moment';
 import 'moment/locale/ru';
 import {DurationLabelPipe} from '../../pipes/duration-label.pipe';
 import {PairEntity, MergedPairStatus} from '../../entities/pair-entity';
+import {GroupByIdPipe} from '../../pipes/group-by-id.pipe';
+import {AsyncPipe} from '@angular/common';
+import {HumanizedActTypePipe} from '../../pipes/humanized-act-type.pipe';
 
 @Component({
   selector: 'app-pair',
@@ -18,6 +21,9 @@ import {PairEntity, MergedPairStatus} from '../../entities/pair-entity';
     TuiTitle,
     TuiHint,
     DurationLabelPipe,
+    GroupByIdPipe,
+    AsyncPipe,
+    HumanizedActTypePipe,
   ],
   templateUrl: './pair.component.html',
   standalone: true,
@@ -49,14 +55,4 @@ export class PairComponent {
   }
 
   protected readonly MergedPairStatus = MergedPairStatus;
-
-  protected humanizeActType(actType: string): string {
-    return actTypeMap[actType] || actType;
-  }
 }
-
-const actTypeMap: Record<string, string> = {
-  "lecture": "Лекция",
-  "seminar": "Семинар",
-  "lab": "Лабораторная",
-} as const;

@@ -1,6 +1,6 @@
 .card-container {
   width: 320px;
-  height: 80px;
+  height: 120px;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -13,6 +13,12 @@
     .pair-time {
       font-size: 1.2rem;
     }
+  }
+
+  .discipline-label {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   .card-bottom-container {
