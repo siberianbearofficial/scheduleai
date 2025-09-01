@@ -1,14 +1,21 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {AsyncPipe} from '@angular/common';
 import {MergedPairsService} from '../../services/merged-pairs.service';
-import {BehaviorSubject, EMPTY, Observable, switchMap} from 'rxjs';
+import {BehaviorSubject, EMPTY, Observable, switchMap, tap} from 'rxjs';
 import {TeacherService} from '../../services/teachers.service';
 import {PairComponent} from '../../components/pair/pair.component';
 import {TuiCardLarge, TuiHeader} from '@taiga-ui/layout';
-import {TuiAppearance, TuiTitle} from '@taiga-ui/core';
+import {TuiAppearance, TuiTextfield, TuiTitle} from '@taiga-ui/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {PairEntity} from '../../entities/pair-entity';
 import {HeaderComponent} from '../../components/header/header.component';
+import {TuiInputDateRangeModule} from '@taiga-ui/legacy';
+import {TuiDayRangePeriod} from '@taiga-ui/kit';
+import {TuiDay, TuiDayRange} from '@taiga-ui/cdk';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import moment from 'moment';
+
+const today = TuiDay.currentLocal();
 
 @Component({
   selector: 'app-merged-pairs-page',
@@ -20,7 +27,10 @@ import {HeaderComponent} from '../../components/header/header.component';
     TuiAppearance,
     TuiCardLarge,
     TuiTitle,
-    HeaderComponent
+    HeaderComponent,
+    TuiInputDateRangeModule,
+    TuiTextfield,
+    ReactiveFormsModule
   ],
   templateUrl: './merged-pairs-page.component.html',
   styleUrl: './merged-pairs-page.component.scss',
@@ -39,7 +49,35 @@ export class MergedPairsPageComponent implements OnInit {
 
   ngOnInit() {
     this.mergedPairsService.loadMergedPairsOnUniversityChange$.pipe(
-      takeUntilDestroyed(this.destroyRef)
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe();
+    this.dateRangeControl.valueChanges.pipe(
+      tap(range => this.mergedPairsService.setDateRange(
+        moment(range?.from.toLocalNativeDate()),
+        moment(range?.to.append({day: 1}).toLocalNativeDate()),
+      )),
+      takeUntilDestroyed(this.destroyRef),
     ).subscribe();
   }
+
+  protected readonly dateRangeControl = new FormControl(new TuiDayRange(today, today.append({day: 6})))
+
+  protected readonly datePeriods = [
+    new TuiDayRangePeriod(
+      new TuiDayRange(today, today),
+      'Сегодня',
+    ),
+    new TuiDayRangePeriod(
+      new TuiDayRange(today.append({day: 1}), today.append({day: 1})),
+      'Завтра',
+    ),
+    new TuiDayRangePeriod(
+      new TuiDayRange(today, today.append({day: 6})),
+      'На этой неделе',
+    ),
+    new TuiDayRangePeriod(
+      new TuiDayRange(today.append({day: 7}), today.append({day: 13})),
+      'На следующей неделе',
+    ),
+  ];
 }

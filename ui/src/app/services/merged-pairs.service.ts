@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {patchState, signalState} from '@ngrx/signals';
-import moment, {duration} from 'moment';
+import moment, {duration, Moment} from 'moment';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {combineLatest, EMPTY, map, Observable, switchMap, tap} from 'rxjs';
 import {
@@ -13,6 +13,12 @@ import {UniversitiesService} from './universities.service';
 import {GroupsService} from './groups.service';
 import {TeacherService} from './teachers.service';
 import {MergedPairStatus, PairEntity} from '../entities/pair-entity';
+
+interface PairsRangeStore {
+  readonly startTime: Moment;
+  readonly endTime: Moment;
+}
+
 
 interface MergedPairsStore {
   readonly mergedPairs: PairEntity[];
@@ -28,6 +34,11 @@ export class MergedPairsService {
   private readonly teacherService: TeacherService = inject(TeacherService);
 
 
+  private readonly pairsRange$$ = signalState<PairsRangeStore>({
+    startTime: moment(),
+    endTime: moment().add(7, 'days'),
+  })
+
   private readonly mergedPairs$$ = signalState<MergedPairsStore>({
     mergedPairs: [],
   })
@@ -36,13 +47,17 @@ export class MergedPairsService {
     tap(console.log),
   );
 
-  private loadMergedPairs(universityId: string, groupId: string, teacherId: string): Observable<undefined> {
+  setDateRange(startDate: Moment, endDate: Moment): void {
+    patchState(this.pairsRange$$, {startTime: startDate, endTime: endDate});
+  }
+
+  private loadMergedPairs(universityId: string, groupId: string, teacherId: string, startTime: Moment, endTime: Moment): Observable<undefined> {
     return this.bffClient.mergedPairs(MergedPairsRequestSchema.fromJS({
       universityId: universityId,
       groupId: groupId,
       teacherId: teacherId,
-      startTime: moment().toDate(),
-      endTime: moment().add(7, 'days').toDate(),
+      startTime: startTime.toDate(),
+      endTime: endTime.toDate(),
     })).pipe(
       tap(resp => console.log(resp.detail)),
       map(resp => resp.data?.map(pairToEntity)),
@@ -56,12 +71,13 @@ export class MergedPairsService {
   readonly loadMergedPairsOnUniversityChange$: Observable<undefined> = combineLatest([
     this.universityService.selectedUniversity$,
     this.groupsService.selectedGroup$,
-    this.teacherService.selectedTeacher$
+    this.teacherService.selectedTeacher$,
+    toObservable(this.pairsRange$$),
   ]).pipe(
-    switchMap(([university, group, teacher]) => {
+    switchMap(([university, group, teacher, range]) => {
       console.log(`University: ${university}, Group: ${group}, Teacher: ${teacher}`)
       if (university !== null && group !== null && teacher !== null)
-        return this.loadMergedPairs(university.id, group.id, teacher.id)
+        return this.loadMergedPairs(university.id, group.id, teacher.id, range.startTime, range.endTime)
       return EMPTY;
     }),
     switchMap(() => EMPTY),
