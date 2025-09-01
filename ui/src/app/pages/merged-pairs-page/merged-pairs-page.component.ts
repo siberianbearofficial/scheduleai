@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {AsyncPipe} from '@angular/common';
 import {MergedPairsService} from '../../services/merged-pairs.service';
-import {BehaviorSubject, EMPTY, Observable, switchMap, tap} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, NEVER, Observable, switchMap, tap} from 'rxjs';
 import {TeacherService} from '../../services/teachers.service';
 import {PairComponent} from '../../components/pair/pair.component';
 import {TuiCardLarge, TuiHeader} from '@taiga-ui/layout';
@@ -14,6 +14,7 @@ import {TuiDayRangePeriod} from '@taiga-ui/kit';
 import {TuiDay, TuiDayRange} from '@taiga-ui/cdk';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import moment from 'moment';
+import {ActivatedRoute} from '@angular/router';
 
 const today = TuiDay.currentLocal();
 
@@ -37,6 +38,7 @@ const today = TuiDay.currentLocal();
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MergedPairsPageComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
   private readonly mergedPairsService: MergedPairsService = inject(MergedPairsService);
   private readonly teacherService: TeacherService = inject(TeacherService);
   private readonly destroyRef: DestroyRef = inject(DestroyRef);
@@ -51,6 +53,7 @@ export class MergedPairsPageComponent implements OnInit {
     this.mergedPairsService.loadMergedPairsOnUniversityChange$.pipe(
       takeUntilDestroyed(this.destroyRef),
     ).subscribe();
+
     this.dateRangeControl.valueChanges.pipe(
       tap(range => this.mergedPairsService.setDateRange(
         moment(range?.from.toLocalNativeDate()),
@@ -58,6 +61,27 @@ export class MergedPairsPageComponent implements OnInit {
       )),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe();
+
+    combineLatest(
+      this.route.params.pipe(
+        switchMap(params => {
+          const teacherId = params['teacherId'];
+          if (teacherId)
+            return this.teacherService.teacherById(teacherId);
+          return NEVER;
+        }),
+      ),
+      this.teacherService.selectedTeacher$
+    ).pipe(
+      tap(([newTeacher, selectedTeacher]) => {
+        if (newTeacher && newTeacher.id !== selectedTeacher?.id) {
+          console.log("Selecting teacher:", newTeacher?.fullName);
+          this.teacherService.selectTeacher(newTeacher);
+        }
+      }),
+      takeUntilDestroyed(this.destroyRef),
+    )
+      .subscribe();
   }
 
   protected readonly dateRangeControl = new FormControl(new TuiDayRange(today, today.append({day: 6})))
