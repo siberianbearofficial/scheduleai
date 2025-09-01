@@ -23,9 +23,10 @@
       align-items: center;
       padding: 1rem;
       gap: 1rem;
+      flex-wrap: wrap;
 
       .field {
-        width: 15rem;
+        min-width: 15rem;
       }
     }
 

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {AsyncPipe} from '@angular/common';
 import {MergedPairsService} from '../../services/merged-pairs.service';
-import {BehaviorSubject, combineLatest, EMPTY, map, NEVER, Observable, switchMap, tap} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, map, NEVER, Observable, startWith, switchMap, tap} from 'rxjs';
 import {TeacherService} from '../../services/teachers.service';
 import {PairComponent} from '../../components/pair/pair.component';
 import {TuiCardLarge, TuiHeader} from '@taiga-ui/layout';
@@ -9,12 +9,13 @@ import {TuiAppearance, TuiTextfield, TuiTitle} from '@taiga-ui/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {PairEntity} from '../../entities/pair-entity';
 import {HeaderComponent} from '../../components/header/header.component';
-import {TuiInputDateRangeModule} from '@taiga-ui/legacy';
+import {TuiInputDateRangeModule, TuiMultiSelectModule, TuiTextfieldControllerModule} from '@taiga-ui/legacy';
 import {TuiChevron, TuiDataListWrapper, TuiDayRangePeriod, TuiSelect} from '@taiga-ui/kit';
-import {TuiDay, TuiDayRange} from '@taiga-ui/cdk';
+import {TuiDay, TuiDayRange, TuiLet} from '@taiga-ui/cdk';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import moment from 'moment';
 import {ActivatedRoute} from '@angular/router';
+import {HumanizedActTypePipe} from '../../pipes/humanized-act-type.pipe';
 
 const today = TuiDay.currentLocal();
 
@@ -35,6 +36,10 @@ const today = TuiDay.currentLocal();
     TuiChevron,
     TuiSelect,
     TuiDataListWrapper,
+    TuiMultiSelectModule,
+    TuiLet,
+    HumanizedActTypePipe,
+    TuiTextfieldControllerModule,
   ],
   templateUrl: './merged-pairs-page.component.html',
   styleUrl: './merged-pairs-page.component.scss',
@@ -95,11 +100,34 @@ export class MergedPairsPageComponent implements OnInit {
 
   protected readonly orderControl = new FormControl(this.orders[0]);
 
+  protected readonly actTypes$ = this.mergedPairsService.mergedPairs$.pipe(
+    map(pairs => {
+      let actTypes: string[] = [];
+      for (const pair of pairs) {
+        if (!actTypes.includes(pair.actType))
+          actTypes.push(pair.actType);
+      }
+      return actTypes;
+    })
+  );
+
+  protected readonly actTypesControl = new FormControl<string[]>([]);
+
   readonly mergedPairs$: Observable<PairEntity[]> = combineLatest(
     this.mergedPairsService.mergedPairs$,
-    this.orderControl.valueChanges
+    this.orderControl.valueChanges.pipe(
+      startWith(this.orders[0])
+    ),
+    this.actTypesControl.valueChanges.pipe(
+      startWith([] as string[])
+    )
   ).pipe(
-    map(([mergedPairs, order]) => {
+    map(([mergedPairs, order, actTypes]) => {
+      if (actTypes && actTypes.length) {
+        console.log("filtering by", actTypes)
+        mergedPairs = mergedPairs.filter(p => actTypes.includes(p.actType))
+      }
+
       if (order == "По времени")
         return mergedPairs.sort((a, b) => a.startTime.diff(b.startTime));
       else if (order == "По удобству")

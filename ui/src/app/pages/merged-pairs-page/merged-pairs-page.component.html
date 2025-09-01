@@ -17,6 +17,18 @@
           [items]="orders"
         />
       </tui-textfield>
+      <tui-multi-select class="field"
+        [formControl]="actTypesControl"
+        [tuiTextfieldLabelOutside]="true"
+      >
+        Тиы пар
+        <tui-data-list-wrapper
+          *tuiDataList
+          tuiMultiSelectGroup
+          [itemContent]="actTypeCardTemplate"
+          [items]="actTypes$ | async"
+        />
+      </tui-multi-select>
     </div>
 
     <div class="schedule">
@@ -46,3 +58,13 @@
     }
   </div>
 </div>
+
+
+	<ng-template
+    #actTypeCardTemplate
+    let-data
+>
+    <div class="template">
+        {{ data | humanizedActType }}
+    </div>
+</ng-template>
