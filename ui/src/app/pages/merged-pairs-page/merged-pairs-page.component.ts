@@ -7,7 +7,7 @@ import {PairComponent} from '../../components/pair/pair.component';
 import {TuiCardLarge, TuiHeader} from '@taiga-ui/layout';
 import {TuiAppearance, TuiTextfield, TuiTitle} from '@taiga-ui/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {PairEntity} from '../../entities/pair-entity';
+import {ComparePairsByConvenience, ComparePairsByStartTime, PairEntity} from '../../entities/pair-entity';
 import {HeaderComponent} from '../../components/header/header.component';
 import {TuiInputDateRangeModule, TuiMultiSelectModule, TuiTextfieldControllerModule} from '@taiga-ui/legacy';
 import {TuiChevron, TuiDataListWrapper, TuiDayRangePeriod, TuiSelect} from '@taiga-ui/kit';
@@ -69,23 +69,18 @@ export class MergedPairsPageComponent implements OnInit {
       takeUntilDestroyed(this.destroyRef),
     ).subscribe();
 
-    combineLatest(
-      this.route.params.pipe(
-        switchMap(params => {
-          const teacherId = params['teacherId'];
-          if (teacherId)
-            return this.teacherService.teacherById(teacherId);
-          return NEVER;
-        }),
-      ),
-      this.teacherService.selectedTeacher$
-    ).pipe(
-      tap(([newTeacher, selectedTeacher]) => {
-        if (newTeacher && newTeacher.id !== selectedTeacher?.id) {
-          console.log("Selecting teacher:", newTeacher?.fullName);
-          this.teacherService.selectTeacher(newTeacher);
-        }
+    this.route.params.pipe(
+      switchMap(params => {
+        const teacherId = params['teacherId'];
+        if (teacherId)
+          return this.teacherService.teacherById(teacherId);
+        return NEVER;
       }),
+      tap(teacher => {
+          if (teacher)
+            this.teacherService.selectTeacher(teacher);
+        }
+      ),
       takeUntilDestroyed(this.destroyRef),
     )
       .subscribe();
@@ -129,9 +124,9 @@ export class MergedPairsPageComponent implements OnInit {
       }
 
       if (order == "По времени")
-        return mergedPairs.sort((a, b) => a.startTime.diff(b.startTime));
+        return mergedPairs.sort(ComparePairsByStartTime);
       else if (order == "По удобству")
-        return mergedPairs.sort((a, b) => (b.convenience?.coefficient ?? 0) - (a.convenience?.coefficient ?? 0));
+        return mergedPairs.sort(ComparePairsByConvenience);
       else
         return mergedPairs;
     })
