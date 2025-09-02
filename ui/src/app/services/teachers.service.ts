@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {EMPTY, map, Observable, switchMap, tap} from 'rxjs';
-import {patchState, signalState} from '@ngrx/signals';
+import {getState, patchState, signalState} from '@ngrx/signals';
 import {TeacherEntity} from '../entities/teacher-entity';
 import {BffClient, Teacher} from '../bff-client/bff-client';
 import {UniversitiesService} from './universities.service';
@@ -57,9 +57,10 @@ export class TeacherService {
   )
 
   selectTeacher(teacher: TeacherEntity | null): void {
-    patchState(this.teachers$$, {
-      selectedTeacher: teacher
-    })
+    if (getState(this.teachers$$).selectedTeacher?.id !== teacher?.id)
+      patchState(this.teachers$$, {
+        selectedTeacher: teacher
+      })
   }
 }
 

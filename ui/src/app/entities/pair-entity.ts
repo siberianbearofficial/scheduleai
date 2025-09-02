@@ -1,8 +1,8 @@
 import {Duration, Moment} from 'moment';
 
 export enum MergedPairStatus {
-  BeforePairs ,
-  AfterPairs ,
+  BeforePairs,
+  AfterPairs,
   InGap,
   Collision,
   This,
@@ -24,3 +24,8 @@ export interface PairEntity {
     readonly collisions: PairEntity[];
   } | null;
 }
+
+export const ComparePairsByStartTime = (a: PairEntity, b: PairEntity): number => a.startTime.diff(b.startTime)
+export const ComparePairsByConvenience = (a: PairEntity, b: PairEntity): number =>
+  (b.convenience?.coefficient ?? 0) - (a.convenience?.coefficient ?? 0)
+

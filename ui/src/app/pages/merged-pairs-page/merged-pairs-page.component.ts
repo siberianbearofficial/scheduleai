@@ -1,14 +1,23 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {AsyncPipe} from '@angular/common';
 import {MergedPairsService} from '../../services/merged-pairs.service';
-import {BehaviorSubject, EMPTY, Observable, switchMap} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, map, NEVER, Observable, startWith, switchMap, tap} from 'rxjs';
 import {TeacherService} from '../../services/teachers.service';
 import {PairComponent} from '../../components/pair/pair.component';
 import {TuiCardLarge, TuiHeader} from '@taiga-ui/layout';
-import {TuiAppearance, TuiTitle} from '@taiga-ui/core';
+import {TuiAppearance, TuiTextfield, TuiTitle} from '@taiga-ui/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {PairEntity} from '../../entities/pair-entity';
+import {ComparePairsByConvenience, ComparePairsByStartTime, PairEntity} from '../../entities/pair-entity';
 import {HeaderComponent} from '../../components/header/header.component';
+import {TuiInputDateRangeModule, TuiMultiSelectModule, TuiTextfieldControllerModule} from '@taiga-ui/legacy';
+import {TuiChevron, TuiDataListWrapper, TuiDayRangePeriod, TuiSelect} from '@taiga-ui/kit';
+import {TuiDay, TuiDayRange, TuiLet} from '@taiga-ui/cdk';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import moment from 'moment';
+import {ActivatedRoute} from '@angular/router';
+import {HumanizedActTypePipe} from '../../pipes/humanized-act-type.pipe';
+
+const today = TuiDay.currentLocal();
 
 @Component({
   selector: 'app-merged-pairs-page',
@@ -20,18 +29,28 @@ import {HeaderComponent} from '../../components/header/header.component';
     TuiAppearance,
     TuiCardLarge,
     TuiTitle,
-    HeaderComponent
+    HeaderComponent,
+    TuiInputDateRangeModule,
+    TuiTextfield,
+    ReactiveFormsModule,
+    TuiChevron,
+    TuiSelect,
+    TuiDataListWrapper,
+    TuiMultiSelectModule,
+    TuiLet,
+    HumanizedActTypePipe,
+    TuiTextfieldControllerModule,
   ],
   templateUrl: './merged-pairs-page.component.html',
   styleUrl: './merged-pairs-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MergedPairsPageComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
   private readonly mergedPairsService: MergedPairsService = inject(MergedPairsService);
   private readonly teacherService: TeacherService = inject(TeacherService);
   private readonly destroyRef: DestroyRef = inject(DestroyRef);
 
-  readonly mergedPairs$: Observable<PairEntity[]> = this.mergedPairsService.mergedPairs$;
   private readonly teacherId$$ = new BehaviorSubject<string | null>(null);
   protected readonly teacher$ = this.teacherId$$.pipe(
     switchMap(id => id ? this.teacherService.teacherById(id) : EMPTY)
@@ -39,7 +58,96 @@ export class MergedPairsPageComponent implements OnInit {
 
   ngOnInit() {
     this.mergedPairsService.loadMergedPairsOnUniversityChange$.pipe(
-      takeUntilDestroyed(this.destroyRef)
+      takeUntilDestroyed(this.destroyRef),
     ).subscribe();
+
+    this.dateRangeControl.valueChanges.pipe(
+      tap(range => this.mergedPairsService.setDateRange(
+        moment(range?.from.toLocalNativeDate()),
+        moment(range?.to.append({day: 1}).toLocalNativeDate()),
+      )),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe();
+
+    this.route.params.pipe(
+      switchMap(params => {
+        const teacherId = params['teacherId'];
+        if (teacherId)
+          return this.teacherService.teacherById(teacherId);
+        return NEVER;
+      }),
+      tap(teacher => {
+          if (teacher)
+            this.teacherService.selectTeacher(teacher);
+        }
+      ),
+      takeUntilDestroyed(this.destroyRef),
+    )
+      .subscribe();
   }
+
+  protected readonly dateRangeControl = new FormControl(new TuiDayRange(today, today.append({day: 6})));
+
+  protected readonly orders = [
+    "По времени",
+    "По удобству"
+  ];
+
+  protected readonly orderControl = new FormControl(this.orders[0]);
+
+  protected readonly actTypes$ = this.mergedPairsService.mergedPairs$.pipe(
+    map(pairs => {
+      let actTypes: string[] = [];
+      for (const pair of pairs) {
+        if (!actTypes.includes(pair.actType))
+          actTypes.push(pair.actType);
+      }
+      return actTypes;
+    })
+  );
+
+  protected readonly actTypesControl = new FormControl<string[]>([]);
+
+  readonly mergedPairs$: Observable<PairEntity[]> = combineLatest(
+    this.mergedPairsService.mergedPairs$,
+    this.orderControl.valueChanges.pipe(
+      startWith(this.orders[0])
+    ),
+    this.actTypesControl.valueChanges.pipe(
+      startWith([] as string[])
+    )
+  ).pipe(
+    map(([mergedPairs, order, actTypes]) => {
+      if (actTypes && actTypes.length) {
+        console.log("filtering by", actTypes)
+        mergedPairs = mergedPairs.filter(p => actTypes.includes(p.actType))
+      }
+
+      if (order == "По времени")
+        return mergedPairs.sort(ComparePairsByStartTime);
+      else if (order == "По удобству")
+        return mergedPairs.sort(ComparePairsByConvenience);
+      else
+        return mergedPairs;
+    })
+  );
+
+  protected readonly datePeriods = [
+    new TuiDayRangePeriod(
+      new TuiDayRange(today, today),
+      'Сегодня',
+    ),
+    new TuiDayRangePeriod(
+      new TuiDayRange(today.append({day: 1}), today.append({day: 1})),
+      'Завтра',
+    ),
+    new TuiDayRangePeriod(
+      new TuiDayRange(today, today.append({day: 6})),
+      'На этой неделе',
+    ),
+    new TuiDayRangePeriod(
+      new TuiDayRange(today.append({day: 7}), today.append({day: 13})),
+      'На следующей неделе',
+    ),
+  ];
 }

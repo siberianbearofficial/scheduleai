@@ -1,6 +1,36 @@
 <div class="page">
   <app-header></app-header>
   <div class="schedule-container">
+    <div class="filters-container">
+      <tui-input-date-range [items]="datePeriods" [formControl]="dateRangeControl" class="field">
+        Выберите период
+      </tui-input-date-range>
+      <tui-textfield tuiChevron class="field">
+        <input
+          [formControl]="orderControl"
+          tuiSelect
+        />
+
+        <tui-data-list-wrapper
+          *tuiTextfieldDropdown
+          new
+          [items]="orders"
+        />
+      </tui-textfield>
+      <tui-multi-select class="field"
+        [formControl]="actTypesControl"
+        [tuiTextfieldLabelOutside]="true"
+      >
+        Типы пар
+        <tui-data-list-wrapper
+          *tuiDataList
+          tuiMultiSelectGroup
+          [itemContent]="actTypeCardTemplate"
+          [items]="actTypes$ | async"
+        />
+      </tui-multi-select>
+    </div>
+
     <div class="schedule">
       @for (pair of mergedPairs$ | async; track pair.startTime) {
         <div class="pair-card">
@@ -28,3 +58,13 @@
     }
   </div>
 </div>
+
+
+	<ng-template
+    #actTypeCardTemplate
+    let-data
+>
+    <div class="template">
+        {{ data | humanizedActType }}
+    </div>
+</ng-template>
