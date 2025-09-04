@@ -29,4 +29,6 @@ public interface IUniversity
 
     public Task<IEnumerable<IUniversityTeacher>> GetTeachersByGroup(string groupId,
         CancellationToken cancellationToken = default);
+
+    public Task<string?> GetGroupNameTemplate() => Task.FromResult<string?>(null);
 }

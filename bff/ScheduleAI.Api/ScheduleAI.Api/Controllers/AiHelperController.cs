@@ -11,11 +11,11 @@ namespace ScheduleAI.Api.Controllers;
 public class AiHelperController(IAiHelperService aiHelperService) : Controller
 {
     [HttpPost]
-    public async Task<ActionResult<ResponseSchema<AiHelperTask>>> PostAiHelperTask(
+    public async Task<ActionResult<ResponseSchema<IAiHelperTask>>> PostAiHelperTask(
         [FromBody] [Required] AiHelperRequestModel request)
     {
         var task = await aiHelperService.AskHelper(request.Prompt, request.UniversityId, request.GroupId);
-        return Ok(new ResponseSchema<AiHelperTask>
+        return Ok(new ResponseSchema<IAiHelperTask>
         {
             Detail = "AiHelper task was created.",
             Data = task,
@@ -23,10 +23,10 @@ public class AiHelperController(IAiHelperService aiHelperService) : Controller
     }
 
     [HttpGet("{taskId:guid}")]
-    public async Task<ActionResult<ResponseSchema<AiHelperTask>>> GetAiHelperTask(Guid taskId)
+    public async Task<ActionResult<ResponseSchema<IAiHelperTask>>> GetAiHelperTask(Guid taskId)
     {
         var task = await aiHelperService.GetTask(taskId);
-        return Ok(new ResponseSchema<AiHelperTask>
+        return Ok(new ResponseSchema<IAiHelperTask>
         {
             Detail = "AiHelper task was selected.",
             Data = task,

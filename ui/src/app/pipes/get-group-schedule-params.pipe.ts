@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import {Moment} from 'moment';
 
 export interface GetGroupScheduleParams {
-  readonly group: string;
+  readonly groupId: string | undefined;
   readonly from: Moment;
   readonly to: Moment;
 }

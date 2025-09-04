@@ -1,20 +1,17 @@
-﻿using System.Text.Json;
-using ScheduleAi.AiHelper;
+﻿using ScheduleAi.AiHelper;
+using ScheduleAI.Application.Models;
 using ScheduleAI.Core.Abstractions;
 using ScheduleAI.Core.Models;
 
 namespace ScheduleAI.Application.Services;
 
-public class AiHelperService(
-    IGroupsService groupsService,
-    ITeachersService teachersService,
-    IScheduleService scheduleService) : IAiHelperService
+public class AiHelperService(IGroupsService groupsService, IAiHelperClient helperClient) : IAiHelperService
 {
     private readonly Dictionary<Guid, TaskRecord> _tasks = [];
 
-    private record TaskRecord(AiHelperTask AiHelperTask, Task AsyncTask, DateTime StartedAt);
+    private record TaskRecord(IAiHelperTask AiHelperTask, Task AsyncTask, DateTime StartedAt);
 
-    public Task<AiHelperTask> AskHelper(string prompt, string universityId, string groupId)
+    public Task<IAiHelperTask> AskHelper(string prompt, string universityId, string groupId)
     {
         ClearOldTasks();
         var task = new AiHelperTask
@@ -24,7 +21,7 @@ public class AiHelperService(
             Status = AiHelperTaskStatus.NotStarted,
         };
         _tasks.Add(task.Id, new TaskRecord(task, StartTask(task, universityId, groupId), DateTime.UtcNow));
-        return Task.FromResult(task);
+        return Task.FromResult<IAiHelperTask>(task);
     }
 
     private async Task StartTask(AiHelperTask task, string universityId, string groupId)
@@ -35,21 +32,20 @@ public class AiHelperService(
             task.StartedAt = DateTime.UtcNow;
 
             var group = await groupsService.GetGroupByIdAsync(universityId, groupId);
-            IAiHelperClient helperClient = new AiHelper(universityId, scheduleService, groupsService, teachersService);
+
+            var context = new AiHelperRequestContext
+            {
+                UniversityId = universityId,
+                GroupId = groupId,
+            };
+            task.RequestContext = context;
             var resp = await helperClient.Request(new IAiHelperClient.AiHelperRequest
             {
                 Text = task.Prompt,
                 CurrentTime = DateTime.UtcNow,
-                Group = group.Name,
-            }, onToolCalled: args => task.ToolCalls.Add(new AiHelperToolCall
-            {
-                ToolName = args.ToolName,
-                ToolDescription = args.ToolDescription,
-                Parameter = args.Parameter,
-                IsSuccess = args.IsSuccess,
-                ErrorMessage = args.Exception?.Message,
-                Result = JsonSerializer.Serialize(args.Result),
-            }));
+                GroupId = groupId,
+                GroupName = group.Name,
+            }, context);
             if (resp == null)
                 throw new Exception("LLM returned invalid response");
             task.Response = new AiHelperResponseModel
@@ -68,7 +64,7 @@ public class AiHelperService(
         }
     }
 
-    public Task<AiHelperTask> GetTask(Guid taskId)
+    public Task<IAiHelperTask> GetTask(Guid taskId)
     {
         return Task.FromResult(_tasks[taskId].AiHelperTask);
     }

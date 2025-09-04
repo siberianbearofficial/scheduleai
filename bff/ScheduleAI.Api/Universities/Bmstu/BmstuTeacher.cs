@@ -16,7 +16,7 @@ public class BmstuTeacher : IUniversityTeacher
         {
             Id = model.Id.ToString(),
             FullName = $"{model.LastName} {model.FirstName} {model.MiddleName}".Trim(),
-            Departments = model.Departments,
+            Departments = model.Departments ?? [],
         };
     }
 }

@@ -1,12 +1,14 @@
-﻿namespace ScheduleAI.Core.Models;
+﻿using System.Text.Json.Serialization;
 
-public class AiHelperTask
+namespace ScheduleAI.Core.Models;
+
+public interface IAiHelperTask
 {
-    public required Guid Id { get; init; }
-    public required string Prompt { get; init; }
-    public required AiHelperTaskStatus Status { get; set; }
-    public AiHelperResponseModel? Response { get; set; }
-    public List<AiHelperToolCall> ToolCalls { get; } = [];
+    public Guid Id { get; }
+    public string Prompt { get; }
+    public AiHelperTaskStatus Status { get; }
+    public AiHelperResponseModel? Response { get; }
+    public IEnumerable<AiHelperToolCall> ToolCalls { get; }
     public DateTime? StartedAt { get; set; }
     public DateTime? FinishedAt { get; set; }
 }
