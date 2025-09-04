@@ -90,6 +90,10 @@ tools:
     result: Group[]
     description: Найти группы по подстроке. None, если не удалось найти группу либо групп, соответствующих подстроке слишком много. 
 
+  GetGroupNameTemplate:
+    result: string
+    description: Получение информации о структуре названий групп, используемых в университете студента
+
 schemas:
   Pair:
     - name: teachers

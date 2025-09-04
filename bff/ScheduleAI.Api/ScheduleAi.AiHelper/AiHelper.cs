@@ -6,17 +6,20 @@ namespace ScheduleAi.AiHelper;
 
 public class AiHelper : AiHelperClientBase<AiHelperRequestContext>
 {
+    private readonly IUniversityService _universityService;
     private readonly IScheduleService _scheduleService;
     private readonly IGroupsService _groupsService;
     private readonly ITeachersService _teachersService;
 
     public AiHelper(
+        IUniversityService universityService,
         IScheduleService scheduleService,
         IGroupsService groupsService,
         ITeachersService teachersService
     ) : base(new Uri(Environment.GetEnvironmentVariable("AI_PROXY_URL") ??
                      throw new Exception("AI_PROXY_URL environment variable is not set")))
     {
+        _universityService = universityService;
         _scheduleService = scheduleService;
         _teachersService = teachersService;
         _groupsService = groupsService;
@@ -174,6 +177,24 @@ public class AiHelper : AiHelperClientBase<AiHelperRequestContext>
         if (result.Length > MaxGroupsCount)
             throw new Exception("Too many groups found");
         return result;
+    }
+
+    protected override Task<string> GetGroupNameTemplate(AiHelperRequestContext? context)
+    {
+        return ProcessFunction(
+            context,
+            nameof(GetGroupNameTemplate),
+            () => _GetGroupNameTemplate(context),
+            new { }
+        );
+    }
+
+    private async Task<string> _GetGroupNameTemplate(AiHelperRequestContext? context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        var university = _universityService.GetUniversity(context.UniversityId);
+        return await university.GetGroupNameTemplate() ??
+               throw new Exception("This university doesn't support group name template");
     }
 
     private static async Task<TResult> ProcessFunction<TResult>(AiHelperRequestContext? context, string name,
