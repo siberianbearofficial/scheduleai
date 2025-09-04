@@ -22,7 +22,7 @@ public class AiHelper : AiHelperClientBase<AiHelperRequestContext>
         _groupsService = groupsService;
     }
 
-    protected override Task<IAiHelperClient.Pair[]> GetGroupSchedule(string? groupName,
+    protected override Task<IAiHelperClient.Pair[]> GetGroupSchedule(string? groupId,
         DateTime from,
         DateTime to, AiHelperRequestContext? context)
     {
@@ -30,31 +30,28 @@ public class AiHelper : AiHelperClientBase<AiHelperRequestContext>
         return ProcessFunction(
             context,
             nameof(GetGroupSchedule),
-            () => _GetGroupSchedule(groupName, from, to, context),
+            () => _GetGroupSchedule(groupId, from, to, context),
             new
             {
-                group = groupName,
+                groupId,
                 from,
                 to,
             }
         );
     }
 
-    private async Task<IAiHelperClient.Pair[]> _GetGroupSchedule(string? groupName,
+    private async Task<IAiHelperClient.Pair[]> _GetGroupSchedule(string? groupId,
         DateTime from,
         DateTime to, AiHelperRequestContext context)
     {
-        var group = groupName == null
-            ? null
-            : (await _groupsService.GetGroupsAsync(context.UniversityId, groupName)).Single();
         return (await _scheduleService.GetGroupScheduleAsync(context.UniversityId,
-                group?.Id ?? context.GroupId, from,
+                groupId ?? context.GroupId, from,
                 to))
             .Select(PairToAiModel)
             .ToArray();
     }
 
-    protected override Task<IAiHelperClient.Pair[]> GetMergedSchedule(string? groupName,
+    protected override Task<IAiHelperClient.Pair[]> GetMergedSchedule(string? groupId,
         string teacherId,
         DateTime from, DateTime to, AiHelperRequestContext? context)
     {
@@ -62,10 +59,10 @@ public class AiHelper : AiHelperClientBase<AiHelperRequestContext>
         return ProcessFunction(
             context,
             nameof(GetMergedSchedule),
-            () => _GetMergedSchedule(groupName, teacherId, from, to, context),
+            () => _GetMergedSchedule(groupId, teacherId, from, to, context),
             new
             {
-                group = groupName,
+                groupId,
                 teacherId,
                 from,
                 to,
@@ -73,42 +70,35 @@ public class AiHelper : AiHelperClientBase<AiHelperRequestContext>
         );
     }
 
-    private async Task<IAiHelperClient.Pair[]> _GetMergedSchedule(string? groupName,
+    private async Task<IAiHelperClient.Pair[]> _GetMergedSchedule(string? groupId,
         string teacherId,
         DateTime from, DateTime to, AiHelperRequestContext context)
     {
-        var group = groupName == null
-            ? null
-            : (await _groupsService.GetGroupsAsync(context.UniversityId, groupName)).Single();
         return (await _scheduleService.GetMergedScheduleAsync(context.UniversityId,
-                group?.Id ?? context.GroupId,
+                groupId ?? context.GroupId,
                 teacherId, from, to))
             .Select(PairToAiModel)
             .ToArray();
     }
 
-    protected override Task<IAiHelperClient.Teacher[]> GetTeachersByGroup(string? groupName,
+    protected override Task<IAiHelperClient.Teacher[]> GetTeachersByGroup(string? groupId,
         AiHelperRequestContext? context)
     {
         ArgumentNullException.ThrowIfNull(context);
         return ProcessFunction(
             context,
             nameof(GetTeachersByGroup),
-            () => _GetTeachersByGroup(groupName, context),
-            new { group = groupName }
+            () => _GetTeachersByGroup(groupId, context),
+            new { groupId }
         );
     }
 
-    private async Task<IAiHelperClient.Teacher[]> _GetTeachersByGroup(string? groupName,
+    private async Task<IAiHelperClient.Teacher[]> _GetTeachersByGroup(string? groupId,
         AiHelperRequestContext? context)
     {
         ArgumentNullException.ThrowIfNull(context);
-
-        var group = groupName == null
-            ? null
-            : (await _groupsService.GetGroupsAsync(context.UniversityId, groupName)).Single();
         return (await _teachersService.GetTeachersByGroupAsync(context.UniversityId,
-                group?.Id ?? context.GroupId))
+                groupId ?? context.GroupId))
             .Select(TeacherToAiModel)
             .ToArray();
     }
@@ -158,6 +148,29 @@ public class AiHelper : AiHelperClientBase<AiHelperRequestContext>
             .ToArray();
     }
 
+    protected override Task<IAiHelperClient.Group[]> GetGroupsByName(string substring, AiHelperRequestContext? context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        return ProcessFunction(
+            context,
+            nameof(GetGroupsByName),
+            () => _GetGroupsByName(substring, context),
+            new { substring }
+        );
+    }
+
+    private async Task<IAiHelperClient.Group[]> _GetGroupsByName(string substring, AiHelperRequestContext? context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        return (await _groupsService.GetGroupsAsync(context.UniversityId, substring))
+            .Select(e => new IAiHelperClient.Group
+            {
+                Id = e.Id,
+                Name = e.Name,
+            })
+            .ToArray();
+    }
+
     private static async Task<TResult> ProcessFunction<TResult>(AiHelperRequestContext? context, string name,
         Func<Task<TResult>> handler, object parameters)
     {
@@ -194,7 +207,7 @@ public class AiHelper : AiHelperClientBase<AiHelperRequestContext>
             Discipline = pair.Discipline ?? "",
             ActType = pair.ActType,
             Teachers = pair.Teachers,
-            Groups = pair.Groups,
+            GroupIds = pair.Groups,
             Rooms = pair.Rooms,
             StartTime = pair.StartTime,
             EndTime = pair.EndTime,
@@ -217,7 +230,7 @@ public class AiHelper : AiHelperClientBase<AiHelperRequestContext>
             Discipline = pair.Discipline,
             ActType = pair.ActType,
             Teachers = pair.Teachers,
-            Groups = pair.Groups,
+            Groups = pair.GroupIds,
             Rooms = pair.Rooms,
             StartTime = pair.StartTime,
             EndTime = pair.EndTime,

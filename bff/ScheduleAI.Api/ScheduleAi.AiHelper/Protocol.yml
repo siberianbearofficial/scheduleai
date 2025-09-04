@@ -10,10 +10,9 @@ endpoints:
 tools:
   GetGroupSchedule:
     params:
-      - name: group
+      - name: groupId
         type: string?
-        example: "ИУ7-64Б"
-        description: Название группы. Если не передано, будет использована группа студента
+        description: Идентификатор группы. Если не передан, будет использована группа студента
 
       - name: from
         type: datetime
@@ -28,10 +27,9 @@ tools:
 
   GetMergedSchedule:
     params:
-      - name: group
+      - name: groupId
         type: string?
-        example: "ИУ7-64Б"
-        description: Название группы. Если не передано, будет использована группа студента
+        description: Идентификатор группы. Если не передан, будет использована группа студента
 
       - name: teacherId
         type: string
@@ -50,10 +48,9 @@ tools:
 
   GetTeachersByGroup:
     params:
-      - name: group
+      - name: groupId
         type: string?
-        example: "ИУ7-64Б"
-        description: Название группы. Если не передано, будет использована группа студента
+        description: Идентификатор группы. Если не передан, будет использована группа студента
     
     result: Teacher[]
     description: Найти всех преподавателей, преподающих что-либо в указанной группе
@@ -83,13 +80,22 @@ tools:
     
     result: Pair[]
     description: Получить расписание преподавателя по его id. null, если преподавателя с таким id не существует
+    
+  GetGroupsByName:
+    params:
+      - name: substring
+        type: string
+        description: Подстрока для поиска
+        
+    result: Group[]
+    description: Найти группы по подстроке
 
 schemas:
   Pair:
     - name: teachers
       type: string[]
 
-    - name: groups
+    - name: groupIds
       type: string[]
 
     - name: startTime
@@ -144,7 +150,10 @@ schemas:
     - name: currentTime
       type: datetime
       
-    - name: group
+    - name: groupId
+      type: string
+      
+    - name: groupName
       type: string
   
   AiHelperResponse:

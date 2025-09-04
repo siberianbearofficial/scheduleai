@@ -43,7 +43,8 @@ public class AiHelperService(IGroupsService groupsService, IAiHelperClient helpe
             {
                 Text = task.Prompt,
                 CurrentTime = DateTime.UtcNow,
-                Group = group.Name,
+                GroupId = groupId,
+                GroupName = group.Name,
             }, context);
             if (resp == null)
                 throw new Exception("LLM returned invalid response");
