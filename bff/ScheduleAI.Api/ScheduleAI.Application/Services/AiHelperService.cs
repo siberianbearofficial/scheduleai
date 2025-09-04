@@ -5,7 +5,7 @@ using ScheduleAI.Core.Models;
 
 namespace ScheduleAI.Application.Services;
 
-public class AiHelperService(IAiHelperClient helperClient) : IAiHelperService
+public class AiHelperService(IGroupsService groupsService, IAiHelperClient helperClient) : IAiHelperService
 {
     private readonly Dictionary<Guid, TaskRecord> _tasks = [];
 
@@ -31,15 +31,19 @@ public class AiHelperService(IAiHelperClient helperClient) : IAiHelperService
             task.Status = AiHelperTaskStatus.InProgress;
             task.StartedAt = DateTime.UtcNow;
 
+            var group = await groupsService.GetGroupByIdAsync(universityId, groupId);
+
             var context = new AiHelperRequestContext
             {
                 UniversityId = universityId,
                 GroupId = groupId,
             };
+            task.RequestContext = context;
             var resp = await helperClient.Request(new IAiHelperClient.AiHelperRequest
             {
                 Text = task.Prompt,
                 CurrentTime = DateTime.UtcNow,
+                Group = group.Name,
             }, context);
             if (resp == null)
                 throw new Exception("LLM returned invalid response");

@@ -143,6 +143,9 @@ schemas:
 
     - name: currentTime
       type: datetime
+      
+    - name: group
+      type: string
   
   AiHelperResponse:
     - name: text
