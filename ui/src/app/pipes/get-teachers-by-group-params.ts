@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 export interface GetTeachersByGroupParams {
-  readonly group: string;
+  readonly groupId: string;
 }
 
 @Pipe({

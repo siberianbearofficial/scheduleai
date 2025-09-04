@@ -10,6 +10,7 @@ import {TuiLet} from '@taiga-ui/cdk';
 import {GetMergedScheduleParamsPipe} from '../../pipes/get-merged-schedule-params.pipe';
 import {TeacherByIdPipe} from '../../pipes/teacher-by-id.pipe';
 import {AsyncPipe} from '@angular/common';
+import {GroupByIdPipe} from '../../pipes/group-by-id.pipe';
 
 @Component({
   standalone: true,
@@ -26,6 +27,7 @@ import {AsyncPipe} from '@angular/common';
     TuiIcon,
     TeacherByIdPipe,
     AsyncPipe,
+    GroupByIdPipe,
   ],
   templateUrl: './tool-call.component.html',
   styleUrl: './tool-call.component.scss',

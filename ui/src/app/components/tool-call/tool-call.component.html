@@ -2,9 +2,9 @@
   <tui-icon icon="@tui.wrench"></tui-icon>
   @switch (toolCall.name) {
     @case ("GetGroupSchedule") {
-      <p *tuiLet="toolCall.parameter | getGroupScheduleParams as param">Получение расписания
-        @if (param.group) {
-          группы <b>{{ param.group }}</b>
+      <p *tuiLet="toolCall.parameter | getGroupScheduleParams as params">Получение расписания
+        @if ((params.groupId | groupById | async)?.name) {
+          группы <b>{{ (params.groupId | groupById | async)?.name }}</b>
         } @else {
           вашей группы
         }
@@ -18,8 +18,8 @@
     @case ("GetMergedSchedule") {
       <p *tuiLet="toolCall.parameter | getMergedScheduleParams as params">
         Сопоставление расписаний
-        @if (params.group) {
-          группы <b>{{ params.group }}</b>
+        @if ((params.groupId | groupById | async)?.name) {
+          группы <b>{{ (params.groupId | groupById | async)?.name }}</b>
         } @else {
           вашей группы
         }
@@ -29,8 +29,8 @@
     @case ("GetTeachersByGroup") {
       <p *tuiLet="toolCall.parameter | getTeachersByGroupParams as params">
         Поиск преподавателей
-        @if (params.group) {
-          группы <b>{{ params.group }}</b>
+        @if ((params.groupId | groupById | async)?.name) {
+          группы <b>{{ (params.groupId | groupById | async)?.name }}</b>
         } @else {
           вашей группы
         }
@@ -38,6 +38,15 @@
     }
     @case ("GetTeachersByName") {
       <p>Поиск преподавателей по ФИО: <i>{{ (toolCall.parameter | getTeachersByNameParams).substring }}</i></p>
+    }
+    @case ("GetGroupsByName") {
+      <p>Поиск группы по названию: <i>{{ (toolCall.parameter | getTeachersByNameParams).substring }}</i></p>
+    }
+    @case ("GetGroupNameTemplate") {
+      <p>Получение шаблона названий групп</p>
+    }
+    @default {
+      <p>Получение иных данных</p>
     }
   }
 

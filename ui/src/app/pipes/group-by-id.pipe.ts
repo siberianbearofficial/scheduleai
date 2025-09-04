@@ -1,5 +1,5 @@
 import {inject, Pipe, PipeTransform} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {GroupsService} from '../services/groups.service';
 import {GroupEntity} from '../entities/group-entity';
 
@@ -10,7 +10,9 @@ import {GroupEntity} from '../entities/group-entity';
 export class GroupByIdPipe implements PipeTransform {
   private readonly groupsService = inject(GroupsService);
 
-  transform(value: string, ...args: unknown[]): Observable<GroupEntity | undefined> {
+  transform(value: string | undefined, ...args: unknown[]): Observable<GroupEntity | undefined> {
+    if (!value)
+      return of(undefined);
     return this.groupsService.groupById(value);
   }
 

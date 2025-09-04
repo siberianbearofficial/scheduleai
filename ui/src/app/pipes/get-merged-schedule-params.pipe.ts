@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import {Moment} from 'moment';
 
 export interface GetMergedScheduleParams {
-  readonly group: string;
+  readonly groupId: string;
   readonly teacherId: string;
   readonly from: Moment;
   readonly to: Moment;
