@@ -159,16 +159,21 @@ public class AiHelper : AiHelperClientBase<AiHelperRequestContext>
         );
     }
 
+    private const int MaxGroupsCount = 10;
+
     private async Task<IAiHelperClient.Group[]> _GetGroupsByName(string substring, AiHelperRequestContext? context)
     {
         ArgumentNullException.ThrowIfNull(context);
-        return (await _groupsService.GetGroupsAsync(context.UniversityId, substring))
+        var result = (await _groupsService.GetGroupsAsync(context.UniversityId, substring))
             .Select(e => new IAiHelperClient.Group
             {
                 Id = e.Id,
                 Name = e.Name,
             })
             .ToArray();
+        if (result.Length > MaxGroupsCount)
+            throw new Exception("Too many groups found");
+        return result;
     }
 
     private static async Task<TResult> ProcessFunction<TResult>(AiHelperRequestContext? context, string name,
