@@ -2,7 +2,13 @@
   <tui-icon icon="@tui.wrench"></tui-icon>
   @switch (toolCall.name) {
     @case ("GetGroupSchedule") {
-      <p>Получение расписания группы <b>{{ (toolCall.parameter | getGroupScheduleParams).group }}</b></p>
+      <p *tuiLet="toolCall.parameter | getGroupScheduleParams as param">Получение расписания
+        @if (param.group) {
+          группы <b>{{ param.group }}</b>
+        } @else {
+          вашей группы
+        }
+      </p>
     }
     @case ("GetTeacherSchedule") {
       <p *tuiLet="toolCall.parameter | getTeacherScheduleParams as params">
@@ -11,12 +17,24 @@
     }
     @case ("GetMergedSchedule") {
       <p *tuiLet="toolCall.parameter | getMergedScheduleParams as params">
-        Сопоставление расписаний группы <b>{{ params.group }}</b>
+        Сопоставление расписаний
+        @if (params.group) {
+          группы <b>{{ params.group }}</b>
+        } @else {
+          вашей группы
+        }
         и преподавателя <b>{{ (params.teacherId | teacherById | async)?.fullName }}</b>
       </p>
     }
     @case ("GetTeachersByGroup") {
-      <p>Поиск преподавателей группы <b>{{ (toolCall.parameter | getTeachersByGroupParams).group }}</b></p>
+      <p *tuiLet="toolCall.parameter | getTeachersByGroupParams as params">
+        Поиск преподавателей
+        @if (params.group) {
+          группы <b>{{ params.group }}</b>
+        } @else {
+          вашей группы
+        }
+      </p>
     }
     @case ("GetTeachersByName") {
       <p>Поиск преподавателей по ФИО: <i>{{ (toolCall.parameter | getTeachersByNameParams).substring }}</i></p>
