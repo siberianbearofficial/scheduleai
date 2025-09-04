@@ -1,67 +1,214 @@
-﻿using ScheduleAI.Core.Abstractions;
+﻿using System.Text.Json;
+using ScheduleAI.Core.Abstractions;
 using ScheduleAI.Core.Models;
 
 namespace ScheduleAi.AiHelper;
 
-public class AiHelper : AiHelperClientBase
+public class AiHelper : AiHelperClientBase<AiHelperRequestContext>
 {
-    private readonly string _universityId;
     private readonly IScheduleService _scheduleService;
     private readonly IGroupsService _groupsService;
     private readonly ITeachersService _teachersService;
 
     public AiHelper(
-        string universityId,
         IScheduleService scheduleService,
         IGroupsService groupsService,
         ITeachersService teachersService
     ) : base(new Uri(Environment.GetEnvironmentVariable("AI_PROXY_URL") ??
                      throw new Exception("AI_PROXY_URL environment variable is not set")))
     {
-        _universityId = universityId;
         _scheduleService = scheduleService;
         _teachersService = teachersService;
         _groupsService = groupsService;
     }
 
-    protected override async Task<IAiHelperClient.Pair[]> GetGroupSchedule(string groupName, DateTime from, DateTime to)
+    protected override async Task<IAiHelperClient.Pair[]> GetGroupSchedule(string? groupName,
+        DateTime from,
+        DateTime to, AiHelperRequestContext? context)
     {
-        var group = (await _groupsService.GetGroupsAsync(_universityId, groupName)).Single();
-        return (await _scheduleService.GetGroupScheduleAsync(_universityId, group.Id, from, to))
-            .Select(PairToAiModel)
-            .ToArray();
+        ArgumentNullException.ThrowIfNull(context);
+        var parameters = JsonSerializer.Serialize(new
+        {
+            group = groupName,
+            from,
+            to,
+        });
+        try
+        {
+            var group = groupName == null
+                ? null
+                : (await _groupsService.GetGroupsAsync(context.UniversityId, groupName)).Single();
+            var result = (await _scheduleService.GetGroupScheduleAsync(context.UniversityId,
+                    group?.Id ?? context.GroupId, from,
+                    to))
+                .Select(PairToAiModel)
+                .ToArray();
+            context.ToolCalls.Add(new AiHelperToolCall
+            {
+                ToolName = nameof(GetGroupSchedule),
+                Parameter = parameters,
+                IsSuccess = true,
+                Result = JsonSerializer.Serialize(result)
+            });
+            return result;
+        }
+        catch (Exception e)
+        {
+            context.ToolCalls.Add(new AiHelperToolCall
+            {
+                ToolName = nameof(GetGroupSchedule),
+                Parameter = parameters,
+                IsSuccess = false,
+                ErrorMessage = e.Message
+            });
+            throw;
+        }
     }
 
-    protected override async Task<IAiHelperClient.Pair[]> GetMergedSchedule(string groupName, string teacherId,
-        DateTime from, DateTime to)
+    protected override async Task<IAiHelperClient.Pair[]> GetMergedSchedule(string? groupName,
+        string teacherId,
+        DateTime from, DateTime to, AiHelperRequestContext? context)
     {
-        var group = (await _groupsService.GetGroupsAsync(_universityId, groupName)).Single();
-        return (await _scheduleService.GetMergedScheduleAsync(_universityId, group.Id, teacherId, from, to))
-            .Select(PairToAiModel)
-            .ToArray();
+        ArgumentNullException.ThrowIfNull(context);
+        var parameters = JsonSerializer.Serialize(new
+        {
+            group = groupName,
+            teacherId,
+            from,
+            to,
+        });
+        try
+        {
+            var group = groupName == null
+                ? null
+                : (await _groupsService.GetGroupsAsync(context.UniversityId, groupName)).Single();
+            var result = (await _scheduleService.GetMergedScheduleAsync(context.UniversityId,
+                    group?.Id ?? context.GroupId,
+                    teacherId, from, to))
+                .Select(PairToAiModel)
+                .ToArray();
+            context.ToolCalls.Add(new AiHelperToolCall
+            {
+                ToolName = nameof(GetMergedSchedule),
+                Parameter = parameters,
+                IsSuccess = true,
+                Result = JsonSerializer.Serialize(result)
+            });
+            return result;
+        }
+        catch (Exception e)
+        {
+            context.ToolCalls.Add(new AiHelperToolCall
+            {
+                ToolName = nameof(GetMergedSchedule),
+                Parameter = parameters,
+                IsSuccess = false,
+                ErrorMessage = e.Message
+            });
+            throw;
+        }
     }
 
-    protected override async Task<IAiHelperClient.Teacher[]> GetTeachersByGroup(string groupName)
+    protected override async Task<IAiHelperClient.Teacher[]> GetTeachersByGroup(string? groupName,
+        AiHelperRequestContext? context)
     {
-        var group = (await _groupsService.GetGroupsAsync(_universityId, groupName)).Single();
-        return (await _teachersService.GetTeachersByGroupAsync(_universityId, group.Id))
-            .Select(TeacherToAiModel)
-            .ToArray();
+        ArgumentNullException.ThrowIfNull(context);
+        var parameters = JsonSerializer.Serialize(new { group = groupName });
+        try
+        {
+            var group = groupName == null
+                ? null
+                : (await _groupsService.GetGroupsAsync(context.UniversityId, groupName)).Single();
+            var result = (await _teachersService.GetTeachersByGroupAsync(context.UniversityId,
+                    group?.Id ?? context.GroupId))
+                .Select(TeacherToAiModel)
+                .ToArray();
+            context.ToolCalls.Add(new AiHelperToolCall
+            {
+                ToolName = nameof(GetTeachersByGroup),
+                Parameter = parameters,
+                IsSuccess = true,
+                Result = JsonSerializer.Serialize(result)
+            });
+            return result;
+        }
+        catch (Exception e)
+        {
+            context.ToolCalls.Add(new AiHelperToolCall
+            {
+                ToolName = nameof(GetTeachersByGroup),
+                Parameter = parameters,
+                IsSuccess = false,
+                ErrorMessage = e.Message
+            });
+            throw;
+        }
     }
 
-    protected override async Task<IAiHelperClient.Teacher[]> GetTeachersByName(string substring)
+    protected override async Task<IAiHelperClient.Teacher[]> GetTeachersByName(string substring,
+        AiHelperRequestContext? context)
     {
-        return (await _teachersService.GetTeachersAsync(_universityId, substring))
-            .Select(TeacherToAiModel)
-            .ToArray();
+        ArgumentNullException.ThrowIfNull(context);
+        var parameters = JsonSerializer.Serialize(new { substring });
+        try
+        {
+            var result = (await _teachersService.GetTeachersAsync(context.UniversityId, substring))
+                .Select(TeacherToAiModel)
+                .ToArray();
+            context.ToolCalls.Add(new AiHelperToolCall
+            {
+                ToolName = nameof(GetTeachersByName),
+                Parameter = parameters,
+                IsSuccess = true,
+                Result = JsonSerializer.Serialize(result)
+            });
+            return result;
+        }
+        catch (Exception e)
+        {
+            context.ToolCalls.Add(new AiHelperToolCall
+            {
+                ToolName = nameof(GetTeachersByName),
+                Parameter = parameters,
+                IsSuccess = false,
+                ErrorMessage = e.Message
+            });
+            throw;
+        }
     }
 
-    protected override async Task<IAiHelperClient.Pair[]> GetTeacherSchedule(string teacherId, DateTime from,
-        DateTime to)
+    protected override async Task<IAiHelperClient.Pair[]> GetTeacherSchedule(string teacherId,
+        DateTime from,
+        DateTime to, AiHelperRequestContext? context)
     {
-        return (await _scheduleService.GetTeacherScheduleAsync(_universityId, teacherId, from, to))
-            .Select(PairToAiModel)
-            .ToArray();
+        ArgumentNullException.ThrowIfNull(context);
+        var parameters = JsonSerializer.Serialize(new { teacherId, from, to });
+        try
+        {
+            var result = (await _scheduleService.GetTeacherScheduleAsync(context.UniversityId, teacherId, from,
+                    to))
+                .Select(PairToAiModel)
+                .ToArray();
+            context.ToolCalls.Add(new AiHelperToolCall
+            {
+                ToolName = nameof(GetTeacherSchedule),
+                Parameter = parameters,
+                IsSuccess = true,
+                Result = JsonSerializer.Serialize(result)
+            });
+            return result;
+        }
+        catch (Exception e)
+        {
+            context.ToolCalls.Add(new AiHelperToolCall
+            {
+                ToolName = nameof(GetTeacherSchedule),
+                Parameter = parameters,
+                IsSuccess = false,
+                ErrorMessage = e.Message
+            });
+            throw;
+        }
     }
 
     private static IAiHelperClient.Pair PairToAiModel(Pair pair)

@@ -1,3 +1,4 @@
+using ScheduleAi.AiHelper;
 using ScheduleAI.Application.Services;
 using ScheduleAI.Core.Abstractions;
 
@@ -11,6 +12,7 @@ builder.Services.AddSingleton<IUniversityService, UniversityService>();
 builder.Services.AddSingleton<IGroupsService, GroupsService>();
 builder.Services.AddSingleton<ITeachersService, TeachersService>();
 builder.Services.AddSingleton<IScheduleService, PairsService>();
+builder.Services.AddSingleton<IAiHelperClient, AiHelper>();
 builder.Services.AddSingleton<IAiHelperService, AiHelperService>();
 
 builder.Services.AddSwaggerGen();
