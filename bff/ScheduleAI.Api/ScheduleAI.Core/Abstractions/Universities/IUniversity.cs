@@ -31,4 +31,6 @@ public interface IUniversity
         CancellationToken cancellationToken = default);
 
     public Task<string?> GetGroupNameTemplate() => Task.FromResult<string?>(null);
+
+    public Task<TimeZoneInfo> GetTimeZone() => Task.FromResult<TimeZoneInfo>(TimeZoneInfo.Utc);
 }
