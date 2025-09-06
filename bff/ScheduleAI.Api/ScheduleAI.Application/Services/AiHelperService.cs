@@ -5,7 +5,10 @@ using ScheduleAI.Core.Models;
 
 namespace ScheduleAI.Application.Services;
 
-public class AiHelperService(IGroupsService groupsService, IAiHelperClient helperClient) : IAiHelperService
+public class AiHelperService(
+    IUniversityService universityService,
+    IGroupsService groupsService,
+    IAiHelperClient helperClient) : IAiHelperService
 {
     private readonly Dictionary<Guid, TaskRecord> _tasks = [];
 
@@ -32,6 +35,7 @@ public class AiHelperService(IGroupsService groupsService, IAiHelperClient helpe
             task.StartedAt = DateTime.UtcNow;
 
             var group = await groupsService.GetGroupByIdAsync(universityId, groupId);
+            var university = universityService.GetUniversity(universityId);
 
             var context = new AiHelperRequestContext
             {
@@ -42,7 +46,7 @@ public class AiHelperService(IGroupsService groupsService, IAiHelperClient helpe
             var resp = await helperClient.Request(new IAiHelperClient.AiHelperRequest
             {
                 Text = task.Prompt,
-                CurrentTime = DateTime.UtcNow,
+                CurrentTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, await university.GetTimeZone()),
                 GroupId = groupId,
                 GroupName = group.Name,
             }, context);

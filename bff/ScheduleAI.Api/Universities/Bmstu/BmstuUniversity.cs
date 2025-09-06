@@ -84,4 +84,10 @@ public class BmstuUniversity : IUniversity
                                             - `В` - вечерняя группа
                                         """);
     }
+
+    public Task<TimeZoneInfo> GetTimeZone()
+    {
+        return Task.FromResult(
+            TimeZoneInfo.CreateCustomTimeZone("moscow", TimeSpan.FromHours(3), "МСК", "Московское время"));
+    }
 }
